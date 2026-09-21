@@ -1,0 +1,863 @@
+# AGENTS.md
+
+## 1. Project Overview
+
+이 프로젝트는 영어 교재 기반의 **회독·아웃풋 중심 학습 Web App**이다.
+
+이 제품의 목적은 새로운 영어 콘텐츠를 계속 제공하는 것이 아니다.
+
+사용자가 이미 가지고 있는 메인 교재와 부교재를 반복하여:
+
+Learn
+→ Memorize
+→ Recall
+→ Output
+→ Write
+→ Review
+→ Repeat
+
+의 과정을 거치면서 최종적으로 **교재 없이도 배운 영어를 꺼내 쓸 수 있게 만드는 것**이 핵심이다.
+
+제품의 기본 철학:
+
+> Completion > Perfection
+
+한 번에 완벽하게 학습하는 것이 아니라,
+반복 회독을 통해 점진적으로 학습 완성도를 높인다.
+
+---
+
+## 2. Read Before Working
+
+코드 수정 또는 기능 구현 전 반드시 다음 문서를 확인한다.
+
+우선순위:
+
+1. `AGENTS.md`
+2. `docs/textbook_mastery_prd_v1_1.md`
+3. `docs/codex_handoff.md`
+4. 현재 작업 요청 또는 `docs/current_task.md`
+5. `docs/sources/` 안의 관련 교재 및 부교재
+
+기능 구현에 필요한 학습 콘텐츠가 있다면
+추측하거나 새로 만들지 말고 반드시 원본 Source를 확인한다.
+
+---
+
+## 3. Source of Truth
+
+충돌이 발생할 경우 아래 우선순위를 따른다.
+
+1. 사용자의 현재 명시적 요청
+2. `AGENTS.md`의 Non-Negotiable Rules
+3. PRD의 확정 Decision
+4. `codex_handoff.md`
+5. Source 교재/부교재
+6. 기존 구현
+
+단, 학습 콘텐츠 자체의 문장과 표현은
+항상 원본 교재/부교재를 Source of Truth로 한다.
+
+기존 코드와 PRD가 다르면 기존 코드를 기준으로 기능을 확대하지 않는다.
+먼저 PRD의 의도를 확인한다.
+
+---
+
+## 4. Non-Negotiable Content Rule
+
+# SOURCE LOCKED LEARNING
+
+이 프로젝트에서 가장 중요한 규칙이다.
+
+앱이 학습 Target으로 제시하는 모든 영어 콘텐츠는
+반드시 제공된 메인 교재 또는 부교재에 존재해야 한다.
+
+허용 Source:
+
+- Main Textbook
+- My Story
+- Real Conversations
+- Useful Expressions
+- Grammar Focus
+- What About You?
+- Beginner Template
+- Let’s Have a Talk
+- Supplementary My Story Notes
+- Supplementary Real Conversations Notes
+- Pronunciation / Intonation Notes
+- Source에 포함된 Writing Prompt 또는 Practice Sentence
+
+---
+
+## 5. Never Generate New Learning Content
+
+다음 행동은 금지한다.
+
+- 교재에 없는 영어 예문 생성
+- 새로운 Target Sentence 생성
+- 새로운 Target Expression 추가
+- “비슷한 예문 10개” 생성
+- 교재에 없는 Pattern Drill 생성
+- 교재 밖 고급 표현을 학습 항목으로 추천
+- AI가 새로 만든 문장을 Review 정답으로 등록
+- 사용자 Writing을 새로운 공식 학습 Sentence로 자동 등록
+
+예:
+
+BAD:
+
+> `I prefer` 문형을 연습하기 위해 새로운 예문 10개를 생성한다.
+
+GOOD:
+
+> Source 자료 안에 있는 `I prefer` Variation을 찾아 문제로 사용한다.
+
+새 학습 콘텐츠가 필요하지만 Source에 없다면
+임의 생성하지 말고 해당 콘텐츠가 없음을 명시한다.
+
+---
+
+## 6. User-Generated Output Exception
+
+사용자가 직접 작성하거나 말하는 내용은 자유롭게 생성 가능하다.
+
+예:
+
+- 자기 경험
+- 자기소개
+- 자유 작문
+- What About You 답변
+- Weekly Writing
+
+단, 앱이 피드백으로 새로운 영어를 가르칠 때는
+가능한 한 이미 학습한 Source 표현 안에서 해결한다.
+
+우선순위:
+
+1. 현재 Chapter 표현
+2. 이전에 학습한 Chapter 표현
+3. Source 안의 다른 표현
+
+Source 밖 표현이 꼭 필요하다면
+새 학습 Target으로 추가하지 않는다.
+
+---
+
+## 7. Product Learning Structure
+
+각 Chapter는 기본적으로 다음 구조를 가진다.
+
+1. My Story
+2. Real Conversations
+3. Output Practice
+4. Grammar Focus
+5. What About You?
+6. Weekly Writing
+7. Pronunciation & Intonation
+
+초기 회독 Core Learning:
+
+- My Story
+- Real Conversations
+- Output Practice
+- Weekly Writing
+
+Grammar Focus와 What About You는 초기에는 Recommended,
+고회차에서는 Required로 확장한다.
+
+Pronunciation & Intonation은 별도의 학습 영역이다.
+
+---
+
+## 8. My Story Rules
+
+My Story의 핵심 목적은 **본문 암기와 Recall**이다.
+
+기본 Flow:
+
+Read
+→ Chunk Recall
+→ Paragraph Recall
+→ Full Recall
+
+Read 단계에서는 자유롭게:
+
+- Korean
+- English
+- Korean + English
+
+전환할 수 있어야 한다.
+
+Recall에서는 한국어 Source를 먼저 보여주고
+사용자가 영어를 직접 꺼내도록 한다.
+
+영어 정답을 먼저 노출하지 않는다.
+
+---
+
+## 9. Recall Rules
+
+Recall UI의 기본 구조:
+
+- Korean Source
+- Speak / Think
+- Hint 1
+- Hint 2
+- Show Answer
+- Self Rating
+
+Self Rating:
+
+- 바로 나왔어요
+- 생각해서 나왔어요
+- 다시 봐야 해요
+
+Hint 역시 Source Text 안에서만 구성한다.
+
+### Recall에서 평가하지 않는 것
+
+Pronunciation accuracy.
+
+Recall과 Pronunciation은 서로 다른 학습 목표이다.
+
+발음이 부족하다는 이유만으로 Recall 실패로 처리하지 않는다.
+
+---
+
+## 10. Memorization Philosophy
+
+정답 문장과 단어 하나까지 100% 일치해야만 성공으로 만드는
+과도한 Hard Grading을 기본값으로 사용하지 않는다.
+
+핵심은:
+
+- Target Expression
+- 핵심 구조
+- 의미 보존
+- 본문 Recall 수준
+
+이다.
+
+자동 판정은 사용자 자기판정을 보조하는 역할로 설계한다.
+
+사용자의 학습 진행을 불필요하게 차단하지 않는다.
+
+---
+
+## 11. Real Conversations Rules
+
+Real Conversations는 일반 문장 암기보다
+Dialogue 특성을 활용한다.
+
+지원 구조:
+
+- User = A
+- User = B
+- Full Dialogue
+
+상대방 대사를 Prompt로 보여주고
+사용자가 다음 대사를 Recall할 수 있어야 한다.
+
+Full Dialogue에서는 전체 Conversation을 재현할 수 있게 한다.
+
+---
+
+## 12. Output Practice Rules
+
+Output Practice의 목적:
+
+> 외운 문장을 다른 상황에서도 꺼내 사용할 수 있게 만든다.
+
+문제 Source는 반드시 부교재 또는 메인 교재에 존재해야 한다.
+
+권장 Difficulty:
+
+- Level 1: Exact Recall
+- Level 2: Controlled Variation
+- Level 3: No Hint / Situation Recall
+
+AI가 Variation을 새로 생성하지 않는다.
+
+Source에 존재하는 Variation만 사용한다.
+
+---
+
+## 13. Grammar Focus Rules
+
+초기 회독:
+
+Recommended / Optional
+
+고회차:
+
+Required
+
+초기 회독에서 Grammar Focus를 Skip했다고
+Chapter Pass를 실패 처리하지 않는다.
+
+Grammar를 지나치게 깊게 파고들도록 강제하지 않는다.
+
+---
+
+## 14. What About You Rules
+
+What About You는:
+
+> Textbook English → My English
+
+로 이동하는 Bridge이다.
+
+Source:
+
+- What About You
+- Beginner Template
+- Let’s Have a Talk
+
+사용자 답변은 자유롭게 만들 수 있다.
+
+초기 회독에서는 Recommended,
+고회차에서는 Required.
+
+---
+
+## 15. Weekly Writing Rules
+
+각 Chapter 종료 시 Weekly Writing을 제공한다.
+
+목적:
+
+> 그 Chapter에서 학습한 표현들을 조합해 하나의 자기 이야기를 완성한다.
+
+지원 Mode:
+
+1. Free Writing
+2. Guided Writing
+3. Template Writing
+
+Guided Writing은 교재의 질문을 사용한다.
+
+Template Writing은 교재의 Beginner Template을 사용한다.
+
+AI가 새로운 Writing Prompt를 기본 학습 콘텐츠로 생성하지 않는다.
+
+---
+
+## 16. Writing Feedback Rules
+
+이 서비스는 일반적인 AI Writing Rewriter가 아니다.
+
+사용자 문장을 고급 영어로 전면 재작성하는 것을 기본 행동으로 하지 않는다.
+
+Feedback Priority:
+
+1. 현재 Chapter 표현을 사용했는가
+2. 이미 배운 표현을 사용했는가
+3. 의미가 전달되는가
+4. 필수적인 문법 오류가 있는가
+5. Source 안의 표현으로 개선할 수 있는가
+
+결과는 가능하면 다음처럼 보여준다.
+
+- 이번 글에서 사용한 표현
+- 아직 사용하지 않은 표현
+- 다시 활용해볼 표현
+
+새로운 표현을 많이 추천하는 방향으로 가지 않는다.
+
+---
+
+## 17. Review Rules
+
+Review는 새로운 콘텐츠 학습이 아니라
+이미 학습한 내용을 다시 꺼내는 영역이다.
+
+초기:
+
+Chapter Review
+
+중간:
+
+Mixed Chapters
+
+고회차:
+
+Smart Review / All Random
+
+초기 회독에서 학습하지 않은 Chapter의 문장을 섞지 않는다.
+
+---
+
+## 18. Review Workload
+
+기본 Review Set은 약 20~30분 안에 소화 가능한 분량을 목표로 한다.
+
+하지만 이는:
+
+- Timer가 아니다.
+- 강제 시간 제한이 아니다.
+- 하루 최소 학습 시간이 아니다.
+
+사용자는 언제든 중단하거나 계속할 수 있다.
+
+---
+
+## 19. Review UX
+
+사용자에게 압박감을 주는 Backlog UX를 사용하지 않는다.
+
+BAD:
+
+> 복습 83개 밀렸습니다.
+
+GOOD:
+
+> 오늘 추천 복습  
+> 약 20~30분
+
+Review 상태는 실패보다
+“다시 만날 시점”을 결정하는 데이터로 사용한다.
+
+---
+
+## 20. Smart Review Priority
+
+기본 우선순위:
+
+1. 다시 봐야 해요
+2. Hint 사용이 많은 항목
+3. 오래 보지 않은 항목
+4. 최근 학습 항목
+5. 안정적으로 Recall되는 항목
+
+세부 알고리즘은 PRD 또는 이후 테스트 결과에 따라 조정한다.
+
+임의로 Spaced Repetition 정책을 확정하지 않는다.
+
+---
+
+## 21. Pronunciation Rules
+
+Pronunciation & Intonation은 별도 Lab으로 취급한다.
+
+기본 구조:
+
+Listen
+→ Repeat
+→ Record
+→ Playback
+→ Retry
+
+Pronunciation 결과를 Recall Completion에 직접 연결하지 않는다.
+
+---
+
+## 22. Pass System
+
+기본 Pass Model:
+
+- Pass 1 — Familiar
+- Pass 2 — Reinforce
+- Pass 3 — Complete
+- Pass 4+ — Automatic
+
+회독이 올라갈수록 새로운 콘텐츠를 계속 추가하기보다
+**도움 장치를 점진적으로 줄이는 것**을 우선한다.
+
+예:
+
+Pass 1:
+- Korean prompt
+- Target hint
+- Template
+
+Later Pass:
+- Hint 감소
+- Chapter 표시 감소
+- Pattern 이름 제거
+- Mixed / Random 증가
+
+---
+
+## 23. No Forced Pace
+
+다음 행동은 금지한다.
+
+- 일정 시간이 지나면 자동 Chapter 이동
+- 특정 회독 완료 전 다음 Chapter Hard Lock
+- 하루 최소 문제 강제
+- 강제 Study Streak
+- Timer 기반 학습 실패 처리
+
+서비스는 학습 경로를 추천하지만
+최종 학습 속도는 사용자에게 맡긴다.
+
+---
+
+## 24. Completion UX
+
+Grammar 또는 Optional 영역을 하지 않았다고
+초기 Pass를 불완전하게 표현하지 않는다.
+
+GOOD:
+
+```text
+Chapter 3 · Pass 1 Complete
+
+My Story            ✓
+Real Conversations  ✓
+Output Practice     ✓
+Weekly Writing      ✓
+
+Grammar Focus       Next Pass
+What About You      Next Pass
+```
+
+BAD:
+
+```text
+Chapter 3
+80% Complete
+2 sections missing
+```
+
+---
+
+## 25. Main Platform
+
+기본 플랫폼:
+
+> PC + Mobile Responsive Web App
+
+모든 주요 기능은 PC와 Mobile 모두에서 접근 가능해야 한다.
+
+기능 자체를 디바이스별로 강제 분리하지 않는다.
+
+PC는 깊은 학습에 적합하게,
+Mobile은 Recall / Review에 편하게 설계한다.
+
+---
+
+## 26. Responsive UX Requirements
+
+모바일에서 다음을 특히 확인한다.
+
+- 주요 CTA가 한 손으로 접근 가능한가
+- Recall 버튼이 화면 밖으로 지나치게 밀리지 않는가
+- 긴 Korean Prompt가 읽기 편한가
+- Hint / Answer 버튼이 명확한가
+- 다음 문제 이동이 빠른가
+
+Desktop에서는:
+
+- 본문 비교 가독성
+- Korean / English 병렬 View
+- Writing 공간
+- Progress 확인
+
+을 중요하게 본다.
+
+---
+
+## 27. Development Principle
+
+전체 제품을 한 번에 구현하지 않는다.
+
+기본 개발 방식:
+
+Implement Small
+→ Run
+→ Test
+→ Get Feedback
+→ Revise
+→ Expand
+
+하나의 학습 Flow가 실제로 작동하는 것을 확인한 뒤
+다음 기능으로 넘어간다.
+
+---
+
+## 28. Current Task Scope
+
+`AGENTS.md`에는 특정 Phase의 구현 범위를 고정하지 않는다.
+
+예:
+
+- Chapter 3만 구현
+- My Story까지만 구현
+
+같은 내용은 현재 작업 Prompt 또는:
+
+`docs/current_task.md`
+
+에 기록한다.
+
+AGENTS.md는 프로젝트 전체에서 계속 유지될 규칙만 포함한다.
+
+---
+
+## 29. Do Not Overbuild
+
+Prototype 단계에서는 필요하지 않은 인프라를 미리 만들지 않는다.
+
+명시적 요구가 없다면 우선 추가하지 않는다.
+
+예:
+
+- Auth
+- Payments
+- Admin
+- Complex backend
+- Cloud database
+- Push Notification
+- Production analytics
+- Native App
+- Complex AI orchestration
+
+현재 학습 UX 검증에 필요한 최소 구현을 우선한다.
+
+---
+
+## 30. Local Prototype State
+
+Prototype에서 서버 DB가 요구되지 않았다면
+localStorage 또는 간단한 Client State를 사용할 수 있다.
+
+저장 대상 예:
+
+- currentChapter
+- currentPass
+- currentSection
+- chunkProgress
+- recallState
+- hintUsage
+- fullRecallCompleted
+- lastStudiedAt
+
+향후 DB로 이전할 수 있도록
+UI와 저장 로직을 과도하게 결합하지 않는다.
+
+---
+
+## 31. Content Provenance
+
+가능하면 모든 학습 Item에는 Source 정보를 유지한다.
+
+권장 Metadata:
+
+- contentId
+- chapterId
+- week
+- section
+- sourceType
+- sourceFile
+- sourcePage
+- koreanText
+- englishText
+- targetExpression
+- exerciseType
+- reviewEligibility
+
+Source 확인이 어려운 문장은
+학습 데이터에 추가하지 않는다.
+
+---
+
+## 32. Repository Structure
+
+권장 구조:
+
+```text
+.
+├── AGENTS.md
+├── docs/
+│   ├── textbook_mastery_prd_v1_1.md
+│   ├── codex_handoff.md
+│   ├── current_task.md
+│   └── sources/
+├── src/
+├── public/
+└── README.md
+```
+
+기존 프로젝트 구조가 있다면
+불필요하게 전면 재구성하지 않는다.
+
+---
+
+## 33. Content vs UI Separation
+
+학습 Source Data를 UI Component 안에 직접 길게 Hard-code하지 않는 것을 권장한다.
+
+가능하면:
+
+content data
+↓
+learning logic
+↓
+UI
+
+를 분리한다.
+
+목적:
+
+- 다른 Chapter 확장
+- Source 검증
+- Review 재사용
+- Pass별 Difficulty 조절
+
+을 쉽게 하기 위함이다.
+
+---
+
+## 34. Reusable Learning Components
+
+가능하면 Chapter마다 별도 페이지를 복제하지 않는다.
+
+재사용 가능한 구조를 선호한다.
+
+예:
+
+- ChapterOverview
+- SourceReader
+- RecallCard
+- HintPanel
+- RecallRating
+- DialoguePractice
+- OutputCard
+- WritingEditor
+- ReviewSession
+- ProgressSummary
+
+단, 지나친 추상화는 피한다.
+
+현재 Prototype에 필요한 수준보다 복잡한 Framework를 만들지 않는다.
+
+---
+
+## 35. Testing Requirements
+
+기능 구현 후 최소 다음을 확인한다.
+
+### Content
+
+- Source에 없는 영어 문장이 추가되지 않았는가?
+- Korean / English Pair가 올바른가?
+- Target Expression이 Source와 일치하는가?
+
+### Flow
+
+- 처음 화면부터 마지막 화면까지 진행 가능한가?
+- 뒤로가기 / 이어하기가 가능한가?
+- 상태가 정상적으로 저장되는가?
+
+### Recall
+
+- Hint 1이 작동하는가?
+- Hint 2가 작동하는가?
+- Answer Reveal이 작동하는가?
+- Self Rating이 저장되는가?
+
+### Responsive
+
+- Desktop 동작
+- Mobile 동작
+- 긴 텍스트 Overflow 없음
+- 핵심 CTA 접근 가능
+
+### Regression
+
+기존 학습 Flow를 깨뜨리지 않았는가?
+
+---
+
+## 36. Acceptance Before Moving to Next Phase
+
+현재 Phase가 다음 조건을 만족하기 전
+다음 Phase 기능을 대규모로 구현하지 않는다.
+
+- 실행 가능
+- 사용자가 실제로 테스트 가능
+- Source Rule 위반 없음
+- 기본 Responsive 동작
+- Progress 저장
+- 주요 Flow 완료 가능
+
+---
+
+## 37. Ambiguity Handling
+
+요구사항이 애매할 경우:
+
+1. PRD 확인
+2. Handoff 확인
+3. Source 확인
+4. 현재 Task 확인
+
+그래도 결정할 수 없다면
+제품 정책을 임의로 새로 만들지 않는다.
+
+작은 구현 세부사항은 합리적으로 결정할 수 있지만,
+다음과 같은 Product Decision은 임의로 확정하지 않는다.
+
+- Pass Completion 기준
+- Recall 자동 합격 기준
+- Review 간격
+- 새로운 AI 기능
+- Source 범위 확대
+- Grammar 필수 전환 시점
+- Writing 교정 정책
+
+---
+
+## 38. Open Questions
+
+PRD에서 아직 Open 상태인 항목은
+코드 구현 편의를 위해 임의 확정하지 않는다.
+
+특히:
+
+- Recall 자동 판정 기준
+- AI 평가와 Self Rating 비중
+- Spaced Review 간격
+- Smart Review Weight
+- Writing Correction 범위
+- STT Provider
+- Pronunciation Scoring
+
+은 테스트 후 결정한다.
+
+---
+
+## 39. Definition of Done
+
+하나의 기능은 코드가 존재한다고 완료된 것이 아니다.
+
+Done의 최소 조건:
+
+1. 실제 실행 가능
+2. 사용자 Flow에서 접근 가능
+3. Desktop과 Mobile에서 기본 사용 가능
+4. 상태가 필요한 경우 저장 가능
+5. Source Rule 위반 없음
+6. 기존 Flow를 깨뜨리지 않음
+7. 사용자가 직접 테스트할 수 있음
+
+---
+
+## 40. Final Decision Filter
+
+기능 또는 구현 방향이 애매할 때 다음 질문을 사용한다.
+
+> 이 기능이 사용자가 이미 배운 영어를
+> 더 잘 기억하고,
+> 더 잘 꺼내고,
+> 더 잘 활용하도록 돕는가?
+
+YES:
+검토 후 유지.
+
+NO:
+우선순위를 낮춘다.
+
+단순히 새로운 콘텐츠 양을 늘리는 기능은
+이 제품의 핵심 가치가 아니다.
