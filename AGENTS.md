@@ -861,3 +861,57 @@ NO:
 
 단순히 새로운 콘텐츠 양을 늘리는 기능은
 이 제품의 핵심 가치가 아니다.
+
+---
+
+## 41. Git Workflow Notifications and Approval
+
+모든 Git 상태 변경은 사용자의 명시적 승인을 받은 뒤 실행한다.
+
+### Before Starting Work
+
+작업을 시작하기 전에 다음 내용을 먼저 알린다.
+
+```text
+작업 시작 전 확인:
+origin/main의 최신 변경사항을 확인합니다.
+필요한 경우 사용자가 지시한 뒤에만 pull합니다.
+```
+
+확인 항목:
+
+- 현재 브랜치
+- 로컬 작업 트리 상태
+- 로컬 HEAD와 GitHub `origin/main`의 동기화 상태
+
+이 단계에서는 사용자의 명시적 지시 없이 다음 작업을 실행하지 않는다.
+
+- `git pull`
+- 브랜치 생성 또는 전환
+- 파일 수정
+
+### After Finishing Work
+
+작업을 마친 뒤 다음 내용을 먼저 알린다.
+
+```text
+작업 완료 후 확인:
+현재 변경사항을 확인합니다.
+사용자가 지시한 뒤에만 commit하고 origin/main 또는 승인된 작업 브랜치에 push합니다.
+```
+
+보고 항목:
+
+- 변경된 파일
+- 주요 diff 요약
+- 실행한 테스트와 결과
+- 현재 브랜치와 원격 저장소의 동기화 상태
+
+사용자의 명시적 지시 없이 다음 작업을 실행하지 않는다.
+
+- `git add`
+- `git commit`
+- `git push`
+- Pull Request 생성 또는 수정
+- Pull Request merge
+- 브랜치 삭제
