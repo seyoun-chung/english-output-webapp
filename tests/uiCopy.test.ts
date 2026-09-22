@@ -19,13 +19,15 @@ function renderScreen(screen: Screen, overrides: Partial<Progress> = {}) {
 }
 
 describe("approved UI copy and preserved Korean exceptions", () => {
-  it("uses concise overview labels and keeps future sections disabled", () => {
+  it("uses concise overview labels and keeps only the unimplemented pronunciation section disabled", () => {
     const html = renderScreen("overview");
     for (const label of ["In this chapter", "Chunks rated", "Read and recall", "Required", "Recommended", "6 chunks", ">Start "]) {
       expect(html).toContain(label);
     }
-    expect(html.match(/Coming later/g)).toHaveLength(6);
-    expect(html.match(/<button[^>]*disabled=""/g)).toHaveLength(6);
+    expect(html.match(/Coming later/g)).toHaveLength(1);
+    expect(html.match(/<button[^>]*disabled=""/g)).toHaveLength(1);
+    expect(html).toMatch(/<button class="section-row" disabled=""[^]*?Pronunciation[^]*?Coming later/);
+    expect(html.match(/class="section-row section-link"/g)).toHaveLength(6);
     expect(html).not.toMatch(/별도 학습|나의 속도로|다음 Phase/);
   });
 
