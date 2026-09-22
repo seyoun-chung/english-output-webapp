@@ -107,7 +107,7 @@ describe("My Story progress", () => {
     "not-json",
     "null",
     "{}",
-    JSON.stringify({ ...initialProgress(), version: 2 }),
+    JSON.stringify({ ...initialProgress(), version: 99 }),
     JSON.stringify({ ...initialProgress(), queue: [] }),
     JSON.stringify({ ...initialProgress(), queue: [1, 1] }),
     JSON.stringify({ ...initialProgress(), queue: [99] }),
