@@ -1,5 +1,17 @@
 # Current Task
 
+## Active increment — Chapter 3 pilot (2026-09-23)
+
+Phase 1 구현·피드백 반영·merge 후 사용자가 다음 단계의 자율 구현을 승인했다.
+이후 사용자가 범위를 **Chapter 3 전체 학습 흐름과 재사용 가능한 공통 기능의 구현·검증**으로 확대했다.
+최신 범위는 [chapter3_pilot_plan.md](./chapter3_pilot_plan.md)를 따른다.
+Real Conversations 세부 Source는 [real_conversations_plan.md](./real_conversations_plan.md)에 기록한다.
+아래 Phase 1 명세와 6개 Chunk는 기존 기능의 보존·회귀 검증 기준이다.
+확인 가능한 계정 사용 한도가 20% 이하로 남으면 개발 중단 후 안전 검사·상태 기록을 거쳐
+현재 작업 브랜치에 checkpoint commit·push하라는 추가 승인을 받았다. merge는 승인되지 않았다.
+이후 사용자가 STA Track 컴퓨터에서 확인할 수 있도록 현재 구현의 commit·push를 명시적으로 승인했다.
+대상은 `feature/chapter-3-real-conversations`이며 main 병합은 별도 승인이다.
+
 ## Phase 1 — Chapter 3 Prototype
 
 현재 구현 범위는 **Chapter 3 — Personality Traits의 My Story 학습 Flow 검증**이다.
