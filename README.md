@@ -19,13 +19,16 @@ Learn → Memorize → Recall → Output → Write → Review → Repeat
 
 ## Current Scope
 
-현재 작업 범위는 **Chapter 3 — Personality Traits**의 `My Story` 학습 흐름을 검증하는 Phase 1 프로토타입입니다.
+현재 작업 범위는 **Chapter 3 — Personality Traits**를 시범 챕터로 사용하는 로컬 프로토타입입니다. 다른 챕터로 확장하기 전에 공통 학습·저장·복습 기능을 검증합니다.
 
 ```text
 Chapter 3 Overview
 → My Story Read
 → Chunk Recall
 → Full Recall
+→ Real Conversations / Output Practice
+→ Weekly Writing / Chapter Review
+→ Pass 1 completion
 ```
 
 ## Documentation
@@ -34,15 +37,24 @@ Chapter 3 Overview
 - [`docs/textbook_mastery_prd_v1_1.md`](./docs/textbook_mastery_prd_v1_1.md): 제품 요구사항 문서
 - [`docs/codex_handoff.md`](./docs/codex_handoff.md): 기획 맥락과 구현 인수인계
 - [`docs/current_task.md`](./docs/current_task.md): 현재 Phase의 작업 범위와 완료 조건
+- [`docs/chapter3_pilot_plan.md`](./docs/chapter3_pilot_plan.md): Chapter 3 시범 챕터 범위와 제외 사항
+- [`docs/verification.md`](./docs/verification.md): 자동 검사 및 수동 검증 방법
+- [`docs/chapter3_pilot_handoff.md`](./docs/chapter3_pilot_handoff.md): 이번 구현과 검증 결과
 
 ## Development Status
 
-React + TypeScript + Vite + 일반 CSS로 위 네 화면만 구현했습니다.
+React + TypeScript + Vite + 일반 CSS를 유지하며 다음 기능을 구현했습니다.
 
 - 본문 한국어 / 영어 / 함께 보기, 원문 기반 힌트, 정답 확인, 6개 Chunk 자기평가
 - Full Recall과 `생각해서 나왔어요` 또는 `다시 봐야 해요`로 평가한 Chunk 재연습 (`바로 나왔어요`와 미평가 Chunk는 제외)
-- 그 외 영역은 비활성화하고 `Coming later`로 표시
-- Chunk Recall과 Full Recall에서 선택형 녹음·재생으로 내 목소리를 점검할 수 있습니다. STT·텍스트 변환·자동 채점은 하지 않습니다.
+- Real Conversations: 7개 원문 대화 읽기, A/B 역할 연습, 전체 대화 인출
+- Output Practice: 기본 6개 Chunk와 출처를 확인한 변형 6개, No hint 모드. 부교재 전체 문제를 전산화한 것은 아닙니다.
+- Weekly Writing: 자유 작문, 원문 질문 10개, 원문 템플릿 7개와 독립적인 로컬 초안
+- Grammar Focus: 원문 5쌍의 예문 / What About You?: 원문 질문에 개인 답안 작성 (선택 학습)
+- Chapter Review: 이미 자기평가한 원문 항목만 선택하여 복습. 작문 초안은 대상에서 제외
+- My Story, Real Conversations, 기본 Output Practice, Weekly Writing 완료 후 Pass 1 완료 가능
+- Pronunciation은 비활성화하고 `Coming later`로 표시
+- 말하기 연습에서 선택형 녹음·재생으로 내 목소리를 점검할 수 있습니다. STT·텍스트 변환·자동 채점은 하지 않습니다.
 - Paragraph Recall, 로그인, 서버 DB, 기기 간 동기화는 구현하지 않습니다.
 
 ## Local Development
@@ -51,7 +63,7 @@ Node.js 22.12 이상이 필요합니다. 터미널에서 프로젝트 폴더로 
 
 ```bash
 cd /path/to/english-output-webapp
-npm install
+npm ci
 npm run dev
 ```
 
@@ -61,6 +73,7 @@ npm run dev
 ```bash
 npm test         # 상태 전이, 저장 복원, Source 일치 및 힌트 규칙 검증
 npm run build   # TypeScript 검사 + 배포용 빌드
+npm run verify  # 민감정보·제외 파일 검사 + 테스트 + 빌드
 npm run preview # 빌드 결과 로컬 확인
 ```
 
@@ -69,7 +82,7 @@ npm run preview # 빌드 결과 로컬 확인
 ## Optional Voice Practice
 
 화면 용어는 **Chunk**, **Chunk Recall**을 사용하며 Full Recall 요약 배지는 **Self check**로 표시합니다.
-Chunk Recall 또는 Full Recall에서 `Record` → 마이크 권한 허용 → 직접 말하기 →
+말하기 연습에서 `Record` → 마이크 권한 허용 → 직접 말하기 →
 `Stop recording` → `Your recording`의 재생 버튼을 사용합니다.
 정답을 펼쳐도 녹음이 유지되므로 원문과 비교하면서 다시 들을 수 있습니다.
 `Record again`은 이전 녹음을 대체하고, 그 아래의 휴지통 아이콘이 있는 `Delete` 버튼으로 바로 지울 수 있습니다.
@@ -101,7 +114,9 @@ Chunk Recall 또는 Full Recall에서 `Record` → 마이크 권한 허용 → �
 ## Progress Storage
 
 진행 위치·본문 보기 방식·자기평가·힌트 사용·Full Recall 완료 여부·마지막 학습 시각은
-`english-output-webapp:progress` 키 하나에 `version: 1` 구조로 저장합니다.
+`english-output-webapp:progress` 키 하나에 `version: 2` 구조로 저장합니다.
+대화·Output·복습·선택 학습·작문 초안·Pass 1 완료 상태도 같은 구조에 저장합니다.
+기존 version 1의 My Story 기록은 유지하며 새 구조로 이전합니다.
 새로고침하면 학습 위치와 평가를 복원하며, 정답과 힌트는 다시 숨깁니다.
 손상되었거나 지원하지 않는 버전의 데이터는 초기 상태로 복구합니다.
 
@@ -115,3 +130,6 @@ Chunk Recall 또는 Full Recall에서 `Record` → 마이크 권한 허용 → �
 프로토타입의 My Story 본문은 `docs/current_task.md`의 승인된 6개 Chunk와 동일하며,
 메인 교재 `eBook_Bookcamp_Oct8.pdf` p.50–51을 출처로 기록합니다.
 이 본문은 앱 코드와 빌드에 포함되므로 PDF 제외 규칙이 본문 코드까지 숨겨주지는 않습니다.
+추가 학습 자료의 출처는 각 화면과 데이터 파일에 기록합니다. 원문 PDF를 Git에 넣지 않아도
+발췌한 학습 문장은 코드에 포함됩니다. 공개 배포 전에는 콘텐츠 사용 권한을 별도로 확인해야 합니다.
+작문·개인 답안에 민감정보를 입력하지 마세요. 초안은 서버로 전송하지 않지만 이 브라우저를 사용하는 사람이 볼 수 있습니다.

@@ -1,0 +1,42 @@
+.writing-screen { min-width: 0; width: 100%; }
+.writing-heading { margin-bottom: 28px; }
+.writing-heading > p:last-child { color: var(--muted); }
+.writing-card { background: white; border: 1px solid var(--line); border-radius: 18px; padding: 28px; }
+.writing-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+.writing-tabs button { min-height: 44px; border: 1px solid var(--line); border-radius: 8px; padding: 8px 22px; background: #f6f8fc; color: var(--muted); }
+.writing-tabs button[aria-pressed="true"] { color: var(--blue); border-color: #b8d0fc; background: #edf3ff; font-weight: 650; }
+.writing-prompts { margin-bottom: 24px; min-width: 0; }
+.writing-source-prompt { background: #f2f6fd; border-radius: 12px; padding: 20px; font-size: 19px; overflow-wrap: anywhere; }
+.writing-prompts summary { cursor: pointer; color: var(--blue); padding: 10px 0; min-height: 44px; }
+.writing-prompts summary:focus-visible, .writing-screen textarea:focus-visible, .writing-screen select:focus-visible { outline: 3px solid #6093ff; outline-offset: 3px; }
+.writing-question-list { display: grid; gap: 8px; margin: 8px 0 16px; }
+.writing-question-list button { display: flex; gap: 12px; text-align: left; background: white; color: var(--ink); border: 1px solid var(--line); border-radius: 9px; padding: 12px; min-height: 44px; overflow-wrap: anywhere; }
+.writing-question-list button span { color: var(--muted); flex-shrink: 0; }
+.writing-question-list button[aria-pressed="true"] { background: #edf3ff; border-color: #b8d0fc; }
+.writing-source { color: var(--muted); font-size: 12px; margin: 14px 0 0; }
+.writing-select-label, .writing-editor label { display: block; font-weight: 650; margin-bottom: 10px; }
+.writing-prompts select { width: 100%; min-width: 0; max-width: 100%; font: inherit; padding: 12px; color: var(--ink); background: white; border: 1px solid var(--line); border-radius: 8px; margin-bottom: 16px; text-overflow: ellipsis; }
+.writing-editor textarea { display: block; width: 100%; min-height: 280px; resize: vertical; font: inherit; line-height: 1.8; color: var(--ink); border: 1px solid #cbd7e8; border-radius: 12px; padding: 18px; background: #fcfdff; }
+.writing-editor textarea::placeholder { color: #71829a; }
+.writing-editor-foot { display: flex; justify-content: space-between; gap: 16px; color: var(--muted); font-size: 12px; margin-top: 10px; }
+.writing-editor-foot > span:last-child { white-space: nowrap; }
+.writing-actions { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-top: 24px; }
+.writing-actions button { min-height: 44px; }
+.writing-status { color: var(--muted); font-size: 13px; margin: 16px 0 0; }
+.grammar-columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+.grammar-columns > div { min-width: 0; }
+.grammar-pair { border-top: 1px solid var(--line); padding: 20px 0; }
+.grammar-pair p { font-size: 18px; margin: 0 0 6px; overflow-wrap: anywhere; }
+.grammar-pair small { color: var(--muted); }
+.grammar-form { color: var(--blue); font-size: 11px; font-weight: 650; }
+.grammar-note { border-radius: 12px; padding: 18px; background: #f2f6fd; }
+@media (max-width: 600px) {
+  .writing-card { padding: 18px; }
+  .writing-tabs { gap: 6px; }
+  .writing-tabs button { flex: 1; padding: 8px 10px; }
+  .writing-source-prompt { font-size: 17px; padding: 16px; }
+  .writing-editor textarea { min-height: 260px; padding: 14px; }
+  .writing-editor-foot { flex-direction: column; gap: 4px; }
+  .writing-actions > button { flex: 1; }
+  .grammar-columns { grid-template-columns: 1fr; gap: 16px; }
+}
