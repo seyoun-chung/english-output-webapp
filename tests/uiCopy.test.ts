@@ -18,10 +18,15 @@ function renderScreen(screen: Screen, overrides: Partial<Progress> = {}) {
   return renderToStaticMarkup(createElement(App));
 }
 
+function backButtonClasses(html: string) {
+  return [...html.matchAll(/<button\b([^>]*)>(?:(?!<\/button>)[\s\S])*?Back to overview(?:(?!<\/button>)[\s\S])*?<\/button>/g)]
+    .map((match) => match[1].match(/class="([^"]*)"/)?.[1] ?? "");
+}
+
 describe("approved UI copy and preserved Korean exceptions", () => {
   it("uses concise overview labels and keeps only the unimplemented pronunciation section disabled", () => {
     const html = renderScreen("overview");
-    for (const label of ["In this chapter", "Chunks rated", "Read and recall", "Required", "Recommended", "6 chunks", ">Start "]) {
+    for (const label of ["In this chapter", "필수 학습 완료", "Read and recall", "Required", "Optional · 5 example pairs", ">Start "]) {
       expect(html).toContain(label);
     }
     expect(html.match(/Coming later/g)).toHaveLength(1);
@@ -41,8 +46,90 @@ describe("approved UI copy and preserved Korean exceptions", () => {
     expect(html).toContain("Completed");
   });
 
-  it.each(["overview", "read", "recall", "full"] as const)(
-    "retains all four Korean sidebar descriptions on %s",
+  it("keeps chapter progress separate from the last visited optional section", () => {
+    const html = renderScreen("overview", { lastSection: "grammar" });
+    expect(html).toContain("필수 학습 완료");
+    expect(html).toContain("0 / 4");
+    expect(html).toContain("Grammar Focus");
+    expect(html).not.toContain("Core sections practiced");
+  });
+
+  it("shows core progress without a pass count on Home", () => {
+    const html = renderScreen("overview");
+    expect(html).not.toMatch(/Pass\s*1|1회독|현재\s*\d+회독/i);
+    expect(html).toContain("0 / 4");
+    expect(html).toContain("Required");
+    expect(html).toContain("Optional");
+  });
+
+  it.each(["read", "recall", "full", "conversation", "output", "grammar", "about", "writing", "review", "complete"] as const)(
+    "does not show a learning-pass count on %s",
+    (screen) => {
+      const html = renderScreen(screen);
+      expect(html).not.toMatch(/Pass\s*1|1회독|현재\s*\d+회독/i);
+    },
+  );
+
+  it.each(["read", "recall", "full", "conversation", "output", "grammar", "about", "writing", "review", "complete"] as const)(
+    "uses a boxed Back to overview button wherever it appears on %s",
+    (screen) => {
+      const html = renderScreen(screen);
+      const classes = backButtonClasses(html);
+      expect(classes.length).toBeGreaterThan(0);
+      for (const className of classes) {
+        expect(className.split(/\s+/)).toContain("secondary");
+        expect(className.split(/\s+/)).not.toContain("text-button");
+      }
+    },
+  );
+
+  it("starts with all nested chapter sections collapsed on Home", () => {
+    const html = renderScreen("overview");
+    const navigation = html.match(/<nav class="chapter-navigation"[\s\S]*?<\/nav>/)?.[0] ?? "";
+    expect(navigation).toContain('class="chapter-nav-home" aria-current="page"');
+    expect(navigation).toContain('class="chapter-nav-home-icon"');
+    for (const section of ["My Story", "Real Conversations", "Output Practice", "Weekly Writing"]) {
+      expect(navigation).toContain(`<strong>${section}</strong>`);
+    }
+    expect(navigation.match(/aria-expanded="false"/g)).toHaveLength(4);
+    expect(navigation).not.toContain('class="chapter-nav-children"');
+    expect(navigation).not.toContain("EXPLORE CHAPTER 3");
+  });
+
+  it("marks the current Real Conversations substep in the shared navigation", () => {
+    const progress = initialProgress();
+    const html = renderScreen("conversation", { conversation: { ...progress.conversation, view: "role", role: "B" } });
+    const navigation = html.match(/<nav class="chapter-navigation"[\s\S]*?<\/nav>/)?.[0] ?? "";
+    expect(navigation).toContain('aria-current="page">Play B</button>');
+  });
+
+  it.each([
+    ["output", ["Exact recall", "Variation", "No hint"]],
+    ["writing", ["Free", "Guided", "Template"]],
+  ] as const)("expands the %s modes only in their active section", (screen, labels) => {
+    const html = renderScreen(screen);
+    const navigation = html.match(/<nav class="chapter-navigation"[\s\S]*?<\/nav>/)?.[0] ?? "";
+    expect(navigation).toContain('aria-expanded="true"');
+    for (const label of labels) expect(navigation).toContain(`>${label}</button>`);
+  });
+
+  it("keeps Grammar actions in one footer with a single next step", () => {
+    const html = renderScreen("grammar");
+    const footer = html.match(/<div class="action-footer"[\s\S]*?<\/div><\/div>/)?.[0] ?? "";
+    expect(footer).toMatch(/action-footer-back[\s\S]*?Back to overview[\s\S]*?action-footer-middle[\s\S]*?Mark studied[\s\S]*?action-footer-forward[\s\S]*?Next: What About You\?/);
+    expect(footer).not.toMatch(/Skip to|Next: Weekly Writing/);
+  });
+
+  it("keeps Full Dialogue completion actions together inside its summary card", () => {
+    const progress = initialProgress();
+    const html = renderScreen("conversation", { conversation: { ...progress.conversation, view: "full", fullRecallCompleted: true } });
+    const summary = html.match(/<section class="panel conversation-panel conversation-summary"[\s\S]*?<\/section>/)?.[0] ?? "";
+    expect(summary).toMatch(/Back to overview[\s\S]*?Play A[\s\S]*?Next: Output Practice/);
+    expect(html.match(/Back to overview/g)).toHaveLength(1);
+  });
+
+  it.each(["read", "recall", "full"] as const)(
+    "retains the Korean guidance when My Story is expanded on %s",
     (screen) => {
       const html = renderScreen(screen);
       for (const label of ["오늘의 학습 살펴보기", "읽고, 의미 이해하기", "조금씩 꺼내 말하기", "하나의 이야기로 말하기"]) {
@@ -62,7 +149,7 @@ describe("approved UI copy and preserved Korean exceptions", () => {
 
   it("keeps the English answer hidden on entering recall", () => {
     const html = renderScreen("recall");
-    for (const label of ["Recall in chunks", "Hint 1", "Hint 2", "Show answer", "Read story", "Back to overview"]) {
+    for (const label of ["My Story · Chunk Recall", "Hint 1", "Hint 2", "Show answer", "Read story", "Back to overview"]) {
       expect(html).toContain(label);
     }
     expect(html).not.toContain("Have you taken the MBTI test?");
@@ -74,7 +161,7 @@ describe("approved UI copy and preserved Korean exceptions", () => {
       fullRecallCompleted: true,
       chunkRatings: { 1: "immediate", 2: "effort", 3: "review", 4: null, 5: null, 6: null },
     });
-    for (const label of ["Recall the whole story", "My Story complete", "My Story · Korean", "Recalled easily", "To review", "Review chunks", "Finish", "Practice all chunks", "Not rated yet", "Show English"]) {
+    for (const label of ["My Story · Full Recall", "My Story complete", "My Story · Korean", "Recalled easily", "To review", "Review chunks", "Next: Real Conversations", "Practice all chunks", "Not rated yet", "Show English"]) {
       expect(html).toContain(label);
     }
     for (const label of ["Self check", "바로 나왔어요", "생각해서 나왔어요", "다시 봐야 해요"]) {
