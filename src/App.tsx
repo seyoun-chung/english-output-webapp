@@ -7,9 +7,13 @@ import { ratingLabels } from "./learningLabels";
 import { OutputPractice } from "./OutputPractice";
 import { ReviewScreen } from "./ReviewScreen";
 import { buildReviewItems } from "./exerciseProgress";
+import type { PracticeMode } from "./exerciseProgress";
 import { WritingScreen } from "./WritingScreen";
+import type { WritingMode } from "./writingProgress";
 import { AboutScreen } from "./AboutScreen";
 import { GrammarScreen } from "./GrammarScreen";
+import { ActionFooter } from "./ActionFooter";
+import { RecallRatingButtons } from "./RecallRatingButtons";
 import { coreCompletion, isPassReady } from "./chapterCompletion";
 import {
   initialProgress,
@@ -20,15 +24,10 @@ import {
 } from "./progress";
 import type { Action, Progress, Rating, ReadMode, Screen } from "./progress";
 
-const steps: { screen: Screen; title: string; description: string }[] = [
-  {
-    screen: "overview",
-    title: "Chapter Overview",
-    description: "오늘의 학습 살펴보기",
-  },
+const storySteps: { screen: Screen; title: string; description: string }[] = [
   {
     screen: "read",
-    title: "My Story Read",
+    title: "Read",
     description: "읽고, 의미 이해하기",
   },
   {
@@ -42,15 +41,48 @@ const steps: { screen: Screen; title: string; description: string }[] = [
     description: "하나의 이야기로 말하기",
   },
 ];
+const conversationSteps = [
+  { key: "read", title: "Read" },
+  { key: "A", title: "Play A" },
+  { key: "B", title: "Play B" },
+  { key: "full", title: "Full Dialogue" },
+] as const;
+const outputModes: { mode: PracticeMode; title: string }[] = [
+  { mode: "exact", title: "Exact recall" },
+  { mode: "variation", title: "Variation" },
+  { mode: "no-hint", title: "No hint" },
+];
+const writingModes: { mode: WritingMode; title: string }[] = [
+  { mode: "free", title: "Free" },
+  { mode: "guided", title: "Guided" },
+  { mode: "template", title: "Template" },
+];
 const chapterSections = [
   { screen: "conversation", title: "Real Conversations", kind: "Required" },
   { screen: "output", title: "Output Practice", kind: "Required" },
-  { screen: "grammar", title: "Grammar Focus", kind: "Recommended" },
-  { screen: "about", title: "What About You?", kind: "Recommended" },
+  { screen: "grammar", title: "Grammar Focus", kind: "Optional" },
+  { screen: "about", title: "What About You?", kind: "Optional" },
   { screen: "writing", title: "Weekly Writing", kind: "Required" },
   { screen: "review", title: "Chapter Review", kind: "Practice" },
 ] as const;
 type ScreenProps = { progress: Progress; dispatch: Dispatch<Action> };
+
+function breadcrumbParts(progress: Progress): string[] {
+  const chapter = "Chapter 3";
+  switch (progress.currentScreen) {
+    case "overview": return [chapter, "Overview"];
+    case "read": return [chapter, "My Story", "Read"];
+    case "recall": return [chapter, "My Story", "Chunk Recall"];
+    case "full": return [chapter, "My Story", "Full Recall"];
+    case "conversation": return [chapter, "Real Conversations", conversationViewLabel(progress.conversation)];
+    case "output": return [chapter, "Output Practice", { exact: "Exact recall", variation: "Variation", "no-hint": "No hint" }[progress.output.mode]];
+    case "writing": return [chapter, "Weekly Writing", { free: "Free", guided: "Guided", template: "Template" }[progress.writing.mode]];
+    case "review": return [chapter, "Chapter Review"];
+    case "grammar": return [chapter, "Grammar Focus"];
+    case "about": return [chapter, "What About You?"];
+    case "complete": return [chapter, "Chapter progress"];
+  }
+}
 
 function BookIcon() {
   return (
@@ -66,6 +98,104 @@ function BookIcon() {
   );
 }
 
+function HomeIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z" />
+      <path d="M9 21v-7h6v7" />
+    </svg>
+  );
+}
+
+function ChapterNavigation({ progress, dispatch }: ScreenProps) {
+  const isStory = progress.currentScreen === "read" || progress.currentScreen === "recall" || progress.currentScreen === "full";
+  const isConversation = progress.currentScreen === "conversation";
+  type Group = "story" | "conversation" | "output" | "writing";
+  const activeGroup: Group | null = isStory ? "story" : isConversation ? "conversation"
+    : progress.currentScreen === "output" ? "output" : progress.currentScreen === "writing" ? "writing" : null;
+  const [expanded, setExpanded] = useState<Group | null>(activeGroup);
+  useEffect(() => setExpanded(activeGroup), [activeGroup]);
+  const toggle = (group: Group) => setExpanded(current => current === group ? null : group);
+  const conversationActive = (key: typeof conversationSteps[number]["key"]) =>
+    isConversation && (key === "read" ? progress.conversation.view === "read"
+      : key === "full" ? progress.conversation.view === "full"
+      : (progress.conversation.view === "role" || progress.conversation.view === "role-summary") && progress.conversation.role === key);
+  const openConversation = (key: typeof conversationSteps[number]["key"]) => {
+    dispatch({ type: "navigate", screen: "conversation" });
+    dispatch({ type: "conversation", action: key === "A" || key === "B"
+      ? { type: "role", role: key }
+      : { type: "view", view: key } });
+  };
+  const openOutput = (mode: PracticeMode) => {
+    setExpanded("output");
+    dispatch({ type: "output", value: { ...progress.output, mode } });
+  };
+  const openWriting = (mode: WritingMode) => {
+    setExpanded("writing");
+    dispatch({ type: "writing", value: { ...progress.writing, mode } });
+  };
+  const storyChildren = () => storySteps.map((step) => (
+    <li key={step.screen}>
+      <button aria-current={progress.currentScreen === step.screen ? "page" : undefined} onClick={() => dispatch({ type: "navigate", screen: step.screen })}>
+        <span>{step.title}</span><small>{step.description}</small>
+      </button>
+    </li>
+  ));
+  const conversationChildren = () => conversationSteps.map((step) => (
+    <li key={step.key}>
+      <button aria-current={conversationActive(step.key) ? "page" : undefined} onClick={() => openConversation(step.key)}>{step.title}</button>
+    </li>
+  ));
+  const outputChildren = () => outputModes.map(({ mode, title }) => (
+    <li key={mode}><button aria-current={progress.currentScreen === "output" && progress.output.mode === mode ? "page" : undefined} onClick={() => openOutput(mode)}>{title}</button></li>
+  ));
+  const writingChildren = () => writingModes.map(({ mode, title }) => (
+    <li key={mode}><button aria-current={progress.currentScreen === "writing" && progress.writing.mode === mode ? "page" : undefined} onClick={() => openWriting(mode)}>{title}</button></li>
+  ));
+  const disclosure = (group: Group, label: string, number: string, count: string) => (
+    <button className="chapter-nav-parent" aria-expanded={expanded === group} onClick={() => toggle(group)}>
+      <span className="chapter-nav-number">{number}</span><strong>{label}</strong><small>{count}</small><span className="chapter-nav-chevron" aria-hidden="true">⌄</span>
+    </button>
+  );
+  return (
+    <nav className="chapter-navigation" aria-label="Chapter 3 navigation">
+      <button className="chapter-nav-home" aria-current={progress.currentScreen === "overview" ? "page" : undefined} onClick={() => dispatch({ type: "navigate", screen: "overview" })}>
+        <span className="chapter-nav-home-icon"><HomeIcon /></span>
+        <span><strong>Home</strong><small>오늘의 학습 살펴보기</small></span>
+      </button>
+      <span className="eyebrow chapter-nav-label">CHAPTER 3</span>
+      <ol className="chapter-nav-list">
+        <li className={isStory ? "chapter-nav-group is-active" : "chapter-nav-group"}>
+          {disclosure("story", "My Story", "01", "3 steps")}
+          {expanded === "story" && <ol id="chapter-nav-story" className="chapter-nav-children">{storyChildren()}</ol>}
+        </li>
+        <li className={isConversation ? "chapter-nav-group is-active" : "chapter-nav-group"}>
+          {disclosure("conversation", "Real Conversations", "02", "4 steps")}
+          {expanded === "conversation" && <ol id="chapter-nav-conversation" className="chapter-nav-children">{conversationChildren()}</ol>}
+        </li>
+        {chapterSections.slice(1).map((section, index) => (
+          <li className={progress.currentScreen === section.screen ? "chapter-nav-group is-active" : "chapter-nav-group"} key={section.screen}>
+            {section.screen === "output" || section.screen === "writing"
+              ? <>
+                {disclosure(section.screen, section.title, `0${index + 3}`, "3 modes")}
+                {expanded === section.screen && <ol id={`chapter-nav-${section.screen}`} className="chapter-nav-children">{section.screen === "output" ? outputChildren() : writingChildren()}</ol>}
+              </>
+              : <button className="chapter-nav-parent" aria-current={progress.currentScreen === section.screen ? "page" : undefined} onClick={() => dispatch({ type: "navigate", screen: section.screen })}>
+                <span className="chapter-nav-number">0{index + 3}</span><strong>{section.title}</strong>
+              </button>}
+          </li>
+        ))}
+      </ol>
+      {expanded && (
+        <ol className="chapter-nav-mobile-steps" aria-label={`${expanded} choices`}>
+          {expanded === "story" ? storyChildren() : expanded === "conversation" ? conversationChildren() : expanded === "output" ? outputChildren() : writingChildren()}
+        </ol>
+      )}
+      <button className="chapter-nav-progress" aria-current={progress.currentScreen === "complete" ? "page" : undefined} onClick={() => dispatch({ type: "navigate", screen: "complete" })}>Chapter progress</button>
+    </nav>
+  );
+}
+
 function SourceNote() {
   return (
     <p className="source-note">
@@ -75,15 +205,15 @@ function SourceNote() {
 }
 
 function Overview({ progress, dispatch }: ScreenProps) {
-  const studied = Object.values(progress.chunkRatings).filter(Boolean).length;
   const resumeLabel = progress.lastSection === "myStory" ? "My Story" : chapterSections.find((section) => section.screen === progress.lastSection)?.title ?? "My Story";
   const core = coreCompletion(progress);
+  const coreCompleted = core.filter((section) => section.completed).length;
   return (
     <>
       <section className="chapter-hero">
         <div className="hero-copy">
           <span className="eyebrow">
-            CHAPTER 03 <span className="hero-dot">·</span> PASS 1
+            CHAPTER 03
           </span>
           <h1 tabIndex={-1}>
             Personality
@@ -95,10 +225,6 @@ function Overview({ progress, dispatch }: ScreenProps) {
             <br />
             읽고, 기억하고, 내 목소리로 꺼내보세요.
           </p>
-          <div className="hero-tags">
-            <span>My Story</span>
-            <span>6 chunks</span>
-          </div>
         </div>
         <div className="chapter-art" aria-hidden="true">
           <div className="art-orbit" />
@@ -111,11 +237,26 @@ function Overview({ progress, dispatch }: ScreenProps) {
         <section className="panel section-list">
           <div className="section-heading">
             <h2>In this chapter</h2>
-            <span className="badge">Pass 1</span>
+            <span className="badge">Required · 4 sections</span>
+          </div>
+          <div className="chapter-core-progress">
+            <div className="progress-label">
+              <span>필수 학습 완료</span>
+              <strong>{coreCompleted} / {core.length}</strong>
+            </div>
+            <progress max={core.length} value={coreCompleted} aria-label="필수 학습 완료 수" />
+            <ul className="core-checklist" aria-label="필수 학습 영역별 진행 상태">
+              {core.map((section) => (
+                <li key={section.id}>
+                  <span aria-hidden="true" className={section.completed ? "core-done" : "core-pending"}>{section.completed ? "✓" : "○"}</span>
+                  <span>{section.label}</span>
+                </li>
+              ))}
+            </ul>
           </div>
           <button
             className="section-row available"
-            onClick={() => dispatch({ type: "navigate", screen: progress.resumeScreen })}
+            onClick={() => dispatch({ type: "navigate", screen: progress.lastSection === "myStory" ? progress.resumeScreen : "read" })}
           >
             <span className="section-icon">
               <BookIcon />
@@ -136,9 +277,9 @@ function Overview({ progress, dispatch }: ScreenProps) {
               <span className="section-number">0{i + 2}</span>
               <span className="section-info">
                 <strong>{title}</strong>
-                {kind && <small>{kind}</small>}
+                <small>{screen === "grammar" ? "Optional · 5 example pairs" : kind}</small>
               </span>
-              <span className="section-link-arrow" aria-hidden="true">{core.find((item) => item.id === screen)?.completed ? "✓" : "↗"}</span>
+              <span className="section-link-arrow" aria-hidden="true">{core.find((item) => item.id === screen)?.completed || (screen === "grammar" && progress.grammar.studied) || (screen === "about" && progress.about.completedQuestionIds.length > 0) ? "✓" : "↗"}</span>
             </button>
           ))}
           <button className="section-row" disabled><span className="section-number">08</span><span className="section-info"><strong>Pronunciation</strong></span><span className="later-tag">Coming later</span></button>
@@ -146,17 +287,11 @@ function Overview({ progress, dispatch }: ScreenProps) {
         </section>
         <aside className="overview-aside">
           <section className="panel start-card">
-            <span className="eyebrow">작은 시작, 꾸준한 기억</span>
+            <span className="eyebrow">CONTINUE LEARNING</span>
             <h2>{resumeLabel}</h2>
             <p>
-              처음부터 완벽하지 않아도 괜찮아요.
-              <br />한 문장씩, 익숙해지는 만큼.
+              Pick up where you left off.
             </p>
-            <div className="progress-label">
-              <span>{progress.lastSection === "myStory" ? "Chunks rated" : "Core sections practiced"}</span>
-              <strong>{progress.lastSection === "myStory" ? `${studied} / 6` : `${core.filter((item) => item.completed).length} / 4`}</strong>
-            </div>
-            <progress max={progress.lastSection === "myStory" ? 6 : 4} value={progress.lastSection === "myStory" ? studied : core.filter((item) => item.completed).length} aria-label={progress.lastSection === "myStory" ? "Chunks rated" : "Core sections practiced"} />
             <button
               className="primary full-width"
               onClick={() => dispatch({ type: "resume" })}
@@ -200,11 +335,11 @@ function ScreenHeading({
   description?: string;
 }) {
   return (
-    <div className="page-heading">
-      <span className="eyebrow">{eyebrow}</span>
+    <header className="page-heading">
+      <p className="eyebrow">{eyebrow}</p>
       <h1 tabIndex={-1}>{title}</h1>
       {description && <p>{description}</p>}
-    </div>
+    </header>
   );
 }
 
@@ -217,8 +352,8 @@ function Reader({ progress, dispatch }: ScreenProps) {
   return (
     <>
       <ScreenHeading
-        eyebrow="01 / READ"
-        title="My Story"
+        eyebrow="CHAPTER 3 · REQUIRED"
+        title="My Story · Read"
         description="Read the story at your own pace."
       />
       <section className="panel reader-panel">
@@ -256,21 +391,11 @@ function Reader({ progress, dispatch }: ScreenProps) {
           ))}
         </div>
         <SourceNote />
+        <ActionFooter
+          back={<button className="secondary" onClick={() => dispatch({ type: "navigate", screen: "overview" })}>← Back to overview</button>}
+          forward={<button className="primary" onClick={() => dispatch({ type: "practice" })}>Start recall <span aria-hidden="true">→</span></button>}
+        />
       </section>
-      <div className="page-actions">
-        <button
-          className="secondary"
-          onClick={() => dispatch({ type: "navigate", screen: "overview" })}
-        >
-          ← Overview
-        </button>
-        <button
-          className="primary"
-          onClick={() => dispatch({ type: "practice" })}
-        >
-          Start recall <span aria-hidden="true">→</span>
-        </button>
-      </div>
     </>
   );
 }
@@ -289,9 +414,9 @@ function Recall({ progress, dispatch }: ScreenProps) {
   return (
     <>
       <ScreenHeading
-        eyebrow={`02 / ${isWeakPractice ? "PRACTICE AGAIN" : "CHUNK RECALL"}`}
-        title={isWeakPractice ? "Review chunks" : "Recall in chunks"}
-        description="Read the Korean text. Recall it in English."
+        eyebrow="CHAPTER 3 · REQUIRED"
+        title="My Story · Chunk Recall"
+        description={isWeakPractice ? "Review the chunks you marked to revisit." : "Read the Korean text. Recall it in English."}
       />
       <section className="panel recall-panel">
         <div className="recall-top">
@@ -370,46 +495,17 @@ function Recall({ progress, dispatch }: ScreenProps) {
                 ? "Full Recall로 이동해요."
                 : "다음 Chunk로 이동해요."}
             </p>
-            <div className="rating-buttons">
-              {(Object.keys(ratingLabels) as Rating[]).map((rating) => (
-                <button
-                  key={rating}
-                  className={`rating ${rating}`}
-                  onClick={() => dispatch({ type: "rate", rating })}
-                >
-                  <span aria-hidden="true">
-                    {rating === "immediate"
-                      ? "✓"
-                      : rating === "effort"
-                        ? "≈"
-                        : "↻"}
-                  </span>
-                  {ratingLabels[rating]}
-                </button>
-              ))}
-            </div>
+            <RecallRatingButtons onRate={(rating) => dispatch({ type: "rate", rating })} />
           </div>
         )}
         <SourceNote />
+        <ActionFooter
+          back={<button className="secondary" onClick={() => dispatch({ type: "navigate", screen: "overview" })}>← Back to overview</button>}
+          middle={<button className="secondary" onClick={() => progress.queueIndex > 0 ? dispatch({ type: "previous" }) : dispatch({ type: "navigate", screen: "read" })}>
+            {progress.queueIndex > 0 ? "Previous chunk" : "Read story"}
+          </button>}
+        />
       </section>
-      <div className="page-actions">
-        <button
-          className="secondary"
-          onClick={() =>
-            progress.queueIndex > 0
-              ? dispatch({ type: "previous" })
-              : dispatch({ type: "navigate", screen: "read" })
-          }
-        >
-          ← {progress.queueIndex > 0 ? "Previous chunk" : "Read story"}
-        </button>
-        <button
-          className="text-button"
-          onClick={() => dispatch({ type: "navigate", screen: "overview" })}
-        >
-          Back to overview
-        </button>
-      </div>
     </>
   );
 }
@@ -425,8 +521,8 @@ function FullRecall({ progress, dispatch }: ScreenProps) {
   return (
     <>
       <ScreenHeading
-        eyebrow="03 / FULL RECALL"
-        title="Recall the whole story"
+        eyebrow="CHAPTER 3 · REQUIRED"
+        title="My Story · Full Recall"
       />
       <section className="panel full-story">
         <div className="section-heading">
@@ -443,6 +539,20 @@ function FullRecall({ progress, dispatch }: ScreenProps) {
           {spoken ? "Done ✓" : "Done speaking"}
         </button>
         <SourceNote />
+        <div className="conversation-answer-toggle">
+          <button className="text-button" aria-expanded={showAnswer} onClick={() => setShowAnswer(!showAnswer)}>
+            {showAnswer ? "Hide English" : "Show English"}
+          </button>
+        </div>
+        {showAnswer && (
+          <div className="answer-box" aria-label="전체 영어 원문">
+            {chunks.map((c) => <p lang="en" key={c.id}>{c.english.join(" ")}</p>)}
+          </div>
+        )}
+        {!spoken && !progress.fullRecallCompleted && <ActionFooter
+          back={<button className="secondary" onClick={() => dispatch({ type: "navigate", screen: "overview" })}>← Back to overview</button>}
+          middle={<button className="secondary" onClick={() => dispatch({ type: "practice" })}>Practice all chunks</button>}
+        />}
       </section>
       {(spoken || progress.fullRecallCompleted) && (
         <section className="panel reflection">
@@ -499,49 +609,17 @@ function FullRecall({ progress, dispatch }: ScreenProps) {
               Not rated yet: {unassessed.map((c) => `Chunk ${c.id}`).join(", ")}
             </p>
           )}
-          <div className="reflection-actions">
-            <button
-              className="secondary"
-              disabled={!weak.length}
-              onClick={() => dispatch({ type: "practice", weakOnly: true })}
-            >
-              Review chunks{weak.length > 0 && ` (${weak.length})`}
-            </button>
-            <button
-              className="primary"
-              disabled={!spoken && !progress.fullRecallCompleted}
-              onClick={() => {
-                dispatch({ type: "complete" });
-                dispatch({ type: "navigate", screen: "overview" });
-              }}
-            >
-              Finish
-            </button>
+          <div className="reflection-practice-actions">
+            <button className="secondary" onClick={() => dispatch({ type: "practice" })}>Practice all chunks</button>
+            {weak.length > 0 && <button className="secondary" onClick={() => dispatch({ type: "practice", weakOnly: true })}>Review chunks ({weak.length})</button>}
           </div>
-        </section>
-      )}
-      <div className="page-actions">
-        <button
-          className="secondary"
-          onClick={() => dispatch({ type: "practice" })}
-        >
-          ← Practice all chunks
-        </button>
-        <button
-          className="text-button"
-          aria-expanded={showAnswer}
-          onClick={() => setShowAnswer(!showAnswer)}
-        >
-          {showAnswer ? "Hide English" : "Show English"}
-        </button>
-      </div>
-      {showAnswer && (
-        <section className="panel answer-box" aria-label="전체 영어 원문">
-          {chunks.map((c) => (
-            <p lang="en" key={c.id}>
-              {c.english.join(" ")}
-            </p>
-          ))}
+          <ActionFooter
+            back={<button className="secondary" onClick={() => dispatch({ type: "navigate", screen: "overview" })}>← Back to overview</button>}
+            forward={<button className="primary" disabled={!spoken && !progress.fullRecallCompleted} onClick={() => {
+              dispatch({ type: "complete" });
+              dispatch({ type: "navigate", screen: "conversation" });
+            }}>Next: Real Conversations <span aria-hidden="true">→</span></button>}
+          />
         </section>
       )}
     </>
@@ -554,20 +632,22 @@ function ChapterCompletion({ progress, dispatch }: ScreenProps) {
   const complete = ready && progress.pass1CompletedAt !== null;
   return (
     <>
-      <ScreenHeading eyebrow="CHAPTER 3 / PASS 1" title={complete ? "One chapter, more confidence." : "Your chapter, at your pace."} description={complete ? "Keep what you learned. Come back whenever you like." : "Build on what you’ve practiced. There’s no need to rush."} />
+      <ScreenHeading eyebrow="CHAPTER 3" title="Chapter progress" description={complete ? "Chapter complete. Come back whenever you like." : "Build on what you’ve practiced. There’s no need to rush."} />
       <section className="panel chapter-completion">
-        <div className="section-heading"><h2>{complete ? "Pass 1 complete" : "Core learning"}</h2><span className="badge">Chapter 3</span></div>
+        <div className="section-heading"><h2>{complete ? "Core learning complete" : "Core learning"}</h2><span className="badge">Chapter 3</span></div>
         <ul className="conversation-checklist">
           {items.map((item) => (
             <li key={item.id}><button className="text-button" onClick={() => dispatch({ type: "navigate", screen: item.id === "myStory" ? progress.resumeScreen : item.id })}>{item.label} <span aria-hidden="true">↗</span></button><span className={item.completed ? "is-complete" : "muted"}>{item.completed ? "Practiced ✓" : "Open to practice"}</span></li>
           ))}
         </ul>
-        <p className="muted">Grammar Focus and What About You? are optional for this pass.</p>
-        <div className="conversation-cta">
-          {ready && !complete && <button className="primary" onClick={() => dispatch({ type: "finishPass" })}>Finish Pass 1 <span aria-hidden="true">✓</span></button>}
-          <button className={complete ? "primary" : "secondary"} onClick={() => dispatch({ type: "navigate", screen: "review" })}>Chapter Review <span aria-hidden="true">→</span></button>
-          <button className="secondary" onClick={() => dispatch({ type: "navigate", screen: "overview" })}>Overview</button>
-        </div>
+        <p className="muted">Grammar Focus and What About You? are optional.</p>
+        <ActionFooter
+          back={<button className="secondary" onClick={() => dispatch({ type: "navigate", screen: "overview" })}>← Back to overview</button>}
+          middle={ready && !complete ? <button className="secondary" onClick={() => dispatch({ type: "navigate", screen: "review" })}>Chapter Review</button> : undefined}
+          forward={ready && !complete
+            ? <button className="primary" onClick={() => dispatch({ type: "finishPass" })}>Finish chapter <span aria-hidden="true">✓</span></button>
+            : <button className={complete ? "primary" : "secondary"} onClick={() => dispatch({ type: "navigate", screen: "review" })}>Chapter Review <span aria-hidden="true">→</span></button>}
+        />
       </section>
     </>
   );
@@ -599,10 +679,9 @@ export default function App() {
     main.current?.querySelector<HTMLHeadingElement>("h1")?.focus();
     window.scrollTo(0, 0);
   }, [progress.currentScreen, chunkId, conversationPosition, outputPosition, reviewPosition]);
-  const stepIndex = steps.findIndex((s) => s.screen === progress.currentScreen);
   const rated = Object.values(progress.chunkRatings).filter(Boolean).length;
   const sectionTitle = chapterSections.find((section) => section.screen === progress.currentScreen)?.title;
-  const isStoryScreen = stepIndex >= 0;
+  const locationParts = breadcrumbParts(progress);
   return (
     <div className="app-shell">
       <a className="skip-link" href="#main-content">
@@ -620,7 +699,7 @@ export default function App() {
           <span className="brand-caption">배운 영어를, 내 영어로.</span>
         </button>
         <span className="topbar-label">
-          CHAPTER 03 <span> / </span> PASS 1
+          CHAPTER 03
         </span>
       </header>
       <div className="workspace">
@@ -630,67 +709,29 @@ export default function App() {
             <h2>Chapter 3</h2>
             <p>Personality Traits</p>
           </div>
-          <nav aria-label="Chapter 3 학습 단계" className={!isStoryScreen ? "story-navigation-collapsed" : undefined}>
-            <ol className="step-list">
-              {steps.map((step, i) => (
-                <li key={step.screen}>
-                  <button
-                    aria-current={
-                      progress.currentScreen === step.screen
-                        ? "step"
-                        : undefined
-                    }
-                    onClick={() =>
-                      dispatch({ type: "navigate", screen: step.screen })
-                    }
-                  >
-                    <span className="step-number">
-                      {i === 0 ? "⌂" : `0${i}`}
-                    </span>
-                    <span>
-                      <strong>{step.title}</strong>
-                      <small>{step.description}</small>
-                    </span>
-                  </button>
-                </li>
-              ))}
-            </ol>
-          </nav>
-          <nav className="chapter-section-nav" aria-label="Chapter sections">
-            <span className="eyebrow">EXPLORE CHAPTER 3</span>
-            {!isStoryScreen && <button onClick={() => dispatch({ type: "navigate", screen: progress.resumeScreen })}>← My Story</button>}
-            {chapterSections.map((section) => <button key={section.screen} aria-current={progress.currentScreen === section.screen ? "page" : undefined} onClick={() => dispatch({ type: "navigate", screen: section.screen })}>{section.title}</button>)}
-            <button aria-current={progress.currentScreen === "complete" ? "page" : undefined} onClick={() => dispatch({ type: "navigate", screen: "complete" })}>Chapter progress</button>
-          </nav>
+          <ChapterNavigation progress={progress} dispatch={dispatch} />
           <div className="sidebar-progress">
-            <span>My Story progress</span>
+            <span>Chunks self-checked</span>
             <strong>
               {rated}
-              <small> / 6 Chunk</small>
+              <small> / 6 chunks</small>
             </strong>
             <progress max={6} value={rated} aria-label="평가한 Chunk 수" />
             <p>
               {progress.fullRecallCompleted
-                ? "전체 말하기 완료 ✓"
+                ? "Full Recall complete ✓"
                 : "한 번 더 꺼내볼 때마다 익숙해져요."}
             </p>
           </div>
         </aside>
         <main id="main-content" ref={main}>
           <nav className="breadcrumb" aria-label="현재 위치">
-            <span>Chapter 3</span>
-            <span className="breadcrumb-separator" aria-hidden="true">/</span>
-            {(stepIndex > 0 || progress.currentScreen === "conversation") && (
-              <>
-                <span>{progress.currentScreen === "conversation" ? "Real Conversations" : "My Story"}</span>
-                <span className="breadcrumb-separator" aria-hidden="true">/</span>
-              </>
-            )}
-            <span aria-current="page">
-              {progress.currentScreen === "conversation" ? conversationViewLabel(progress.conversation) : sectionTitle ?? (progress.currentScreen === "complete" ? "Pass 1" : stepIndex > 0
-                ? steps[stepIndex].title.replace("My Story ", "")
-                : "Overview")}
-            </span>
+            {locationParts.map((part, index) => (
+              <span className="breadcrumb-part" key={`${index}-${part}`}>
+                {index > 0 && <span className="breadcrumb-separator" aria-hidden="true">/</span>}
+                <span aria-current={index === locationParts.length - 1 ? "page" : undefined}>{part}</span>
+              </span>
+            ))}
           </nav>
           {storageError && (
             <div className="storage-warning" role="alert">
@@ -714,16 +755,16 @@ export default function App() {
           {progress.currentScreen === "full" && (
             <FullRecall progress={progress} dispatch={dispatch} />
           )}
-          {progress.currentScreen === "conversation" && <ConversationScreen progress={progress.conversation} dispatch={(action) => dispatch({ type: "conversation", action })} onOverview={() => dispatch({ type: "navigate", screen: "overview" })} />}
-          {progress.currentScreen === "output" && <OutputPractice progress={progress.output} onChange={(value) => dispatch({ type: "output", value })} onOverview={() => dispatch({ type: "navigate", screen: "overview" })} />}
-          {progress.currentScreen === "review" && <ReviewScreen progress={progress.review} onChange={(value) => dispatch({ type: "review", value })} eligibleItems={buildReviewItems({ chunkRatings: progress.chunkRatings, conversationRatings: progress.conversation.ratings, outputRatings: progress.output.ratings })} onOverview={() => dispatch({ type: "navigate", screen: "overview" })} />}
-          {progress.currentScreen === "writing" && <WritingScreen progress={progress.writing} onChange={(value) => dispatch({ type: "writing", value })} onOverview={() => dispatch({ type: "navigate", screen: "overview" })} />}
-          {progress.currentScreen === "about" && <AboutScreen progress={progress.about} onChange={(value) => dispatch({ type: "about", value })} onOverview={() => dispatch({ type: "navigate", screen: "overview" })} />}
-          {progress.currentScreen === "grammar" && <GrammarScreen progress={progress.grammar} onChange={(value) => dispatch({ type: "grammar", value })} onOverview={() => dispatch({ type: "navigate", screen: "overview" })} />}
+          {progress.currentScreen === "conversation" && <ConversationScreen progress={progress.conversation} dispatch={(action) => dispatch({ type: "conversation", action })} onOverview={() => dispatch({ type: "navigate", screen: "overview" })} onNext={() => dispatch({ type: "navigate", screen: "output" })} />}
+          {progress.currentScreen === "output" && <OutputPractice progress={progress.output} onChange={(value) => dispatch({ type: "output", value })} onOverview={() => dispatch({ type: "navigate", screen: "overview" })} onNext={() => dispatch({ type: "navigate", screen: "writing" })} />}
+          {progress.currentScreen === "review" && <ReviewScreen progress={progress.review} onChange={(value) => dispatch({ type: "review", value })} eligibleItems={buildReviewItems({ chunkRatings: progress.chunkRatings, conversationRatings: progress.conversation.ratings, outputRatings: progress.output.ratings })} onOverview={() => dispatch({ type: "navigate", screen: "overview" })} onNext={() => dispatch({ type: "navigate", screen: "complete" })} />}
+          {progress.currentScreen === "writing" && <WritingScreen progress={progress.writing} onChange={(value) => dispatch({ type: "writing", value })} onOverview={() => dispatch({ type: "navigate", screen: "overview" })} onNext={() => dispatch({ type: "navigate", screen: "review" })} />}
+          {progress.currentScreen === "about" && <AboutScreen progress={progress.about} onChange={(value) => dispatch({ type: "about", value })} onOverview={() => dispatch({ type: "navigate", screen: "overview" })} onNext={() => dispatch({ type: "navigate", screen: "writing" })} />}
+          {progress.currentScreen === "grammar" && <GrammarScreen progress={progress.grammar} onChange={(value) => dispatch({ type: "grammar", value })} onOverview={() => dispatch({ type: "navigate", screen: "overview" })} onNext={() => dispatch({ type: "navigate", screen: "about" })} />}
           {progress.currentScreen === "complete" && <ChapterCompletion progress={progress} dispatch={dispatch} />}
           <footer className="page-footer">
             <span>조금씩, 꾸준히, 내 것으로.</span>
-            <span>Chapter 3 · {sectionTitle ?? (progress.currentScreen === "complete" ? "Pass 1" : "My Story")}</span>
+            <span>Chapter 3 · {sectionTitle ?? (progress.currentScreen === "complete" ? "Chapter progress" : "My Story")}</span>
           </footer>
         </main>
       </div>

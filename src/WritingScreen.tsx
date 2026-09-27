@@ -1,6 +1,7 @@
 import { useId } from 'react';
 import { writingQuestions, writingTemplates } from './data/writing';
-import { completeWriting, editWritingDraft, hasOwnDraft, writingDraftKey, type WritingProgress } from './writingProgress';
+import { completeWriting, editWritingDraft, hasOwnDraft, isWritingModeComplete, writingDraftKey, type WritingMode, type WritingProgress } from './writingProgress';
+import { ActionFooter } from './ActionFooter';
 import './writing.css';
 
 /** Shared editor: learner output is never promoted into source content or review answers. */
@@ -22,19 +23,29 @@ export function QuestionPicker({ selectedId, onSelect }: { selectedId: string; o
   </div>;
 }
 
-export function WritingScreen({ progress, onChange, onOverview }: { progress: WritingProgress; onChange: (next: WritingProgress) => void; onOverview: () => void }) {
+export function WritingScreen({ progress, onChange, onOverview, onNext }: { progress: WritingProgress; onChange: (next: WritingProgress) => void; onOverview: () => void; onNext: () => void }) {
   const key = writingDraftKey(progress), draft = progress.drafts[key] ?? '';
   const template = writingTemplates.find(item => item.id === progress.selectedTemplateId) ?? writingTemplates[0];
-  const currentCompleted = progress.completed && progress.completedDraftKey === key;
+  const currentCompleted = progress.completedDrafts[key] === draft && hasOwnDraft(draft);
+  const modes: WritingMode[] = ['free', 'guided', 'template'];
+  const nextMode = modes[modes.indexOf(progress.mode) + 1];
+  const modeLabel = (mode: WritingMode) => ({ free: 'Free', guided: 'Guided', template: 'Template' })[mode];
+  const openNextMode = () => nextMode && onChange({ ...progress, mode: nextMode });
   return <section className="writing-screen" aria-labelledby="writing-title">
-    <header className="writing-heading"><p className="eyebrow">CHAPTER 3 / WEEKLY WRITING</p><h1 id="writing-title" tabIndex={-1}>Make it your story</h1><p>Choose one mode. Write your own story with the chapter’s expressions.</p></header>
+    <header className="writing-heading"><p className="eyebrow">CHAPTER 3 · REQUIRED</p><h1 id="writing-title" tabIndex={-1}>Weekly Writing</h1><p>Choose one mode. Write your own story with the chapter’s expressions.</p></header>
     <div className="writing-card">
-      <div className="writing-tabs" role="group" aria-label="Writing mode">{(['free', 'guided', 'template'] as const).map(mode => <button type="button" key={mode} aria-pressed={progress.mode === mode} onClick={() => onChange({ ...progress, mode })}>{mode === 'free' ? 'Free' : mode === 'guided' ? 'Guided' : 'Template'}</button>)}</div>
+      <div className="writing-tabs" role="group" aria-label="Writing mode">{modes.map(mode => <button type="button" key={mode} aria-pressed={progress.mode === mode} onClick={() => onChange({ ...progress, mode })}>{modeLabel(mode)}{isWritingModeComplete(progress, mode) ? ' ✓' : ''}</button>)}</div>
       {progress.mode === 'guided' && <QuestionPicker selectedId={progress.selectedQuestionId} onSelect={selectedQuestionId => onChange({ ...progress, selectedQuestionId })} />}
       {progress.mode === 'template' && <div className="writing-prompts"><label className="writing-select-label" htmlFor="writing-template">Beginner Template</label><select id="writing-template" value={progress.selectedTemplateId} onChange={event => onChange({ ...progress, selectedTemplateId: event.target.value })}>{writingTemplates.map((item, index) => <option key={item.id} value={item.id}>{index + 1}. {item.english}</option>)}</select><p className="writing-source-prompt" lang="en">{template.english}</p><p>Fill the blanks in your draft, then keep writing.</p><p className="writing-source">Source · Main textbook · Beginner Template · p.64</p></div>}
       <WritingEditor value={draft} onChange={text => onChange(editWritingDraft(progress, text))} />
-      <div className="writing-actions"><button className="secondary" onClick={onOverview}>Overview</button><button className="primary" disabled={!hasOwnDraft(draft) || currentCompleted} onClick={() => onChange(completeWriting(progress))}>{currentCompleted ? 'Completed ✓' : 'Mark complete'}</button></div>
-      <p className="writing-status" role="status">{progress.completed ? currentCompleted ? 'Weekly Writing complete. You can keep editing.' : 'Weekly Writing complete in another draft. This draft is separate.' : 'One finished draft completes Weekly Writing. No automatic grading.'}</p>
+      <ActionFooter
+        back={<button className="secondary" onClick={onOverview}>← Back to overview</button>}
+        middle={progress.completed && nextMode && <button className="secondary" onClick={onNext}>Continue to Chapter Review</button>}
+        forward={currentCompleted
+          ? <button className="primary" onClick={nextMode ? openNextMode : onNext}>Next: {nextMode ? modeLabel(nextMode) : 'Chapter Review'} <span aria-hidden="true">→</span></button>
+          : <button className="primary" disabled={!hasOwnDraft(draft)} onClick={() => onChange(completeWriting(progress))}>Mark complete</button>}
+      />
+      <p className="writing-status" role="status">{currentCompleted ? `${modeLabel(progress.mode)} draft complete. You can continue to ${nextMode ? modeLabel(nextMode) : 'Chapter Review'}.` : progress.completed ? 'Weekly Writing is complete in another draft. Finish this draft if you want to practice this mode.' : 'One finished draft completes Weekly Writing.'} No corrections or automatic grading yet.</p>
     </div>
   </section>;
 }

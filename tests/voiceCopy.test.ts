@@ -72,6 +72,8 @@ describe("concise recording guidance", () => {
   });
 
   it("uses Chunk consistently and removes the sidebar storage explanation", () => {
+    const progress = { ...initialProgress(), currentScreen: "read" };
+    vi.stubGlobal("localStorage", { getItem: () => JSON.stringify(progress) });
     const html = renderToStaticMarkup(createElement(App));
     expect(html).toContain("6 chunks");
     expect(html).toContain("Chunk Recall");

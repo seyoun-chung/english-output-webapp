@@ -3,14 +3,16 @@ import { conversationTurns, previousPartnerTurn, roleTurnIds } from "./data/conv
 import type { ConversationRole, ConversationTurn } from "./data/conversations";
 import { isConversationComplete, isRoleComplete } from "./conversationProgress";
 import type { ConversationAction, ConversationProgress } from "./conversationProgress";
-import type { Rating, ReadMode } from "./progress";
-import { ratingLabels } from "./learningLabels";
+import type { ReadMode } from "./progress";
 import { VoicePractice } from "./VoicePractice";
+import { ActionFooter } from "./ActionFooter";
+import { RecallRatingButtons } from "./RecallRatingButtons";
 
 type Props = {
   progress: ConversationProgress;
   dispatch: (action: ConversationAction) => void;
   onOverview: () => void;
+  onNext: () => void;
 };
 
 export function conversationViewLabel(progress: ConversationProgress) {
@@ -60,7 +62,7 @@ function CompletionStatus({ progress }: { progress: ConversationProgress }) {
   );
 }
 
-function RolePractice({ progress, dispatch }: Pick<Props, "progress" | "dispatch">) {
+function RolePractice({ progress, dispatch, onOverview }: Pick<Props, "progress" | "dispatch" | "onOverview">) {
   const [answer, setAnswer] = useState(false);
   const [hint, setHint] = useState<0 | 1 | 2>(0);
   const ids = roleTurnIds(progress.role);
@@ -107,21 +109,16 @@ function RolePractice({ progress, dispatch }: Pick<Props, "progress" | "dispatch
         <div className="rating-area">
           <h2>어땠나요?</h2>
           <p>선택하면 저장하고 {index === ids.length - 1 ? "역할 연습 결과를 확인해요." : "다음 대사로 이동해요."}</p>
-          <div className="rating-buttons">
-            {(Object.keys(ratingLabels) as Rating[]).map((rating) => (
-              <button key={rating} className={`rating ${rating}`} onClick={() => dispatch({ type: "rate", rating })}>
-                <span aria-hidden="true">{rating === "immediate" ? "✓" : rating === "effort" ? "≈" : "↻"}</span>{ratingLabels[rating]}
-              </button>
-            ))}
-          </div>
+          <RecallRatingButtons onRate={(rating) => dispatch({ type: "rate", rating })} />
         </div>
       )}
       <SourceNote />
-      <div className="conversation-bottom">
-        <button className="text-button" onClick={() => index > 0 ? dispatch({ type: "previous" }) : dispatch({ type: "view", view: "read" })}>
-          ← {index > 0 ? "Previous turn" : "Read dialogue"}
-        </button>
-      </div>
+      <ActionFooter
+        back={<button className="secondary" onClick={onOverview}>← Back to overview</button>}
+        middle={<button className="secondary" onClick={() => index > 0 ? dispatch({ type: "previous" }) : dispatch({ type: "view", view: "read" })}>
+          {index > 0 ? "Previous turn" : "Read dialogue"}
+        </button>}
+      />
     </section>
   );
 }
@@ -130,7 +127,7 @@ function TurnAnswer({ turn }: { turn: ConversationTurn }) {
   return <div className="answer-box"><span className="eyebrow">English · {turn.role}</span>{turn.english.map((line, i) => <p lang="en" key={i}>{line}</p>)}</div>;
 }
 
-function RoleSummary({ progress, dispatch }: Pick<Props, "progress" | "dispatch">) {
+function RoleSummary({ progress, dispatch, onOverview }: Pick<Props, "progress" | "dispatch" | "onOverview">) {
   const ids = roleTurnIds(progress.role);
   const easy = ids.filter((id) => progress.ratings[id] === "immediate").length;
   const review = ids.filter((id) => ["effort", "review"].includes(progress.ratings[id] ?? "")).length;
@@ -139,17 +136,18 @@ function RoleSummary({ progress, dispatch }: Pick<Props, "progress" | "dispatch"
       <div className="section-heading"><h2>Role {progress.role} practiced</h2><span className="badge">Self check</span></div>
       <div className="conversation-stats"><p>Recalled easily <strong>{easy}</strong></p><p>To review <strong>{review}</strong></p></div>
       <CompletionStatus progress={progress} />
-      <div className="conversation-cta">
-        <button className="secondary" onClick={() => dispatch({ type: "role", role: progress.role, restart: true })}>Practice {progress.role} again</button>
-        <button className="primary" onClick={() => progress.role === "A" ? dispatch({ type: "role", role: "B" }) : dispatch({ type: "view", view: "full" })}>
+      <ActionFooter
+        back={<button className="secondary" onClick={onOverview}>← Back to overview</button>}
+        middle={<button className="secondary" onClick={() => dispatch({ type: "role", role: progress.role, restart: true })}>Practice {progress.role} again</button>}
+        forward={<button className="primary" onClick={() => progress.role === "A" ? dispatch({ type: "role", role: "B" }) : dispatch({ type: "view", view: "full" })}>
           {progress.role === "A" ? "Play B" : "Full Dialogue"} <span aria-hidden="true">→</span>
-        </button>
-      </div>
+        </button>}
+      />
     </section>
   );
 }
 
-function FullDialogue({ progress, dispatch, onOverview }: Props) {
+function FullDialogue({ progress, dispatch, onOverview, onNext }: Props) {
   const [answer, setAnswer] = useState(false);
   return (
     <>
@@ -163,31 +161,33 @@ function FullDialogue({ progress, dispatch, onOverview }: Props) {
         <div className="conversation-answer-toggle"><button className="text-button" aria-expanded={answer} onClick={() => setAnswer(!answer)}>{answer ? "Hide English" : "Show English"}</button></div>
         {answer && <div className="conversation-full-answer" aria-label="English dialogue"><Dialogue mode="english" /></div>}
         <SourceNote />
+        {!progress.fullRecallCompleted && <ActionFooter back={<button className="secondary" onClick={onOverview}>← Back to overview</button>} />}
       </section>
       {progress.fullRecallCompleted && (
         <section className="panel conversation-panel conversation-summary">
           <div className="section-heading"><h2>{isConversationComplete(progress) ? "Real Conversations complete" : "Your progress"}</h2><span className="badge">Self check</span></div>
           <CompletionStatus progress={progress} />
-          <div className="conversation-cta">
-            <button className="secondary" onClick={() => dispatch({ type: "role", role: !isRoleComplete(progress, "A") ? "A" : "B", restart: true })}>
+          <ActionFooter
+            back={<button className="secondary" onClick={onOverview}>← Back to overview</button>}
+            middle={<button className="secondary" onClick={() => dispatch({ type: "role", role: !isRoleComplete(progress, "A") ? "A" : "B", restart: true })}>
               {!isRoleComplete(progress, "A") ? "Play A" : !isRoleComplete(progress, "B") ? "Play B" : "Practice again"}
-            </button>
-            <button className="primary" onClick={onOverview}>Back to overview <span aria-hidden="true">→</span></button>
-          </div>
+            </button>}
+            forward={<button className="primary" onClick={onNext}>Next: Output Practice <span aria-hidden="true">→</span></button>}
+          />
         </section>
       )}
     </>
   );
 }
 
-export function ConversationScreen({ progress, dispatch, onOverview }: Props) {
+export function ConversationScreen({ progress, dispatch, onOverview, onNext }: Props) {
   const roleActive = progress.view === "role" || progress.view === "role-summary";
   return (
     <div className="conversation-screen">
       <div className="page-heading">
-        <span className="eyebrow">04 / REAL CONVERSATIONS</span>
-        <h1 tabIndex={-1}>{progress.view === "read" ? "Real Conversations" : progress.view === "full" ? "Recall both sides" : `Take the part of ${progress.role}`}</h1>
-        <p>{progress.view === "read" ? "Read both sides. Then take a role." : progress.view === "full" ? "Follow the Korean dialogue. Recall both roles in English." : "Read your partner’s line. Say your part in English."}</p>
+        <span className="eyebrow">CHAPTER 3 · REQUIRED</span>
+        <h1 tabIndex={-1}>Real Conversations</h1>
+        <p>{progress.view === "read" ? "Read both sides. Then take a role." : progress.view === "full" ? "Full Dialogue · Follow the Korean dialogue. Recall both roles in English." : `${conversationViewLabel(progress)} · Read your partner’s line. Say your part in English.`}</p>
       </div>
       <div className="conversation-modes" role="group" aria-label="Conversation mode">
         <button aria-pressed={progress.view === "read"} onClick={() => dispatch({ type: "view", view: "read" })}>Read</button>
@@ -210,13 +210,15 @@ export function ConversationScreen({ progress, dispatch, onOverview }: Props) {
           </div>
           <Dialogue mode={progress.readMode} />
           <SourceNote />
-          <div className="conversation-cta"><button className="primary full-width" onClick={() => dispatch({ type: "role", role: "A" })}>Play A <span aria-hidden="true">→</span></button></div>
+          <ActionFooter
+            back={<button className="secondary" onClick={onOverview}>← Back to overview</button>}
+            forward={<button className="primary" onClick={() => dispatch({ type: "role", role: "A" })}>Play A <span aria-hidden="true">→</span></button>}
+          />
         </section>
       )}
-      {progress.view === "role" && <RolePractice key={`${progress.role}-${progress.positions[progress.role]}`} progress={progress} dispatch={dispatch} />}
-      {progress.view === "role-summary" && <RoleSummary progress={progress} dispatch={dispatch} />}
-      {progress.view === "full" && <FullDialogue progress={progress} dispatch={dispatch} onOverview={onOverview} />}
-      <div className="page-actions"><button className="text-button" onClick={onOverview}>← Back to overview</button></div>
+      {progress.view === "role" && <RolePractice key={`${progress.role}-${progress.positions[progress.role]}`} progress={progress} dispatch={dispatch} onOverview={onOverview} />}
+      {progress.view === "role-summary" && <RoleSummary progress={progress} dispatch={dispatch} onOverview={onOverview} />}
+      {progress.view === "full" && <FullDialogue progress={progress} dispatch={dispatch} onOverview={onOverview} onNext={onNext} />}
     </div>
   );
 }

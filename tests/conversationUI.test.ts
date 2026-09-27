@@ -6,7 +6,7 @@ import { initialConversationProgress } from "../src/conversationProgress";
 import type { ConversationProgress } from "../src/conversationProgress";
 import { conversationTurns, roleTurnIds } from "../src/data/conversations";
 
-const render = (p: ConversationProgress) => renderToStaticMarkup(createElement(ConversationScreen, { progress: p, dispatch: () => {}, onOverview: () => {} }));
+const render = (p: ConversationProgress) => renderToStaticMarkup(createElement(ConversationScreen, { progress: p, dispatch: () => {}, onOverview: () => {}, onNext: () => {} }));
 
 describe("Conversation screen safety and learning flow", () => {
   it("shows source Korean by default, without voice practice in Read", () => {
@@ -43,6 +43,7 @@ describe("Conversation screen safety and learning flow", () => {
     expect(html).not.toContain("Real Conversations complete");
     expect(html).toContain("0 / 4 rated");
     expect(html).toContain("0 / 3 rated");
+    expect(html).toContain("Next: Output Practice");
   });
   it("only labels this section complete, not Chapter or Pass", () => {
     const html = render({ ...initialConversationProgress(), view: "full", fullRecallCompleted: true, ratings: Object.fromEntries(conversationTurns.map((turn) => [turn.id, "review"])) });
