@@ -768,6 +768,9 @@ UI
 
 기존 학습 Flow를 깨뜨리지 않았는가?
 
+화면 간 이동·하단 버튼·필수/선택 표시를 수정할 때는
+[`skills/ux-flow-qa/SKILL.md`](skills/ux-flow-qa/SKILL.md)의 화면 상태별 검증 절차도 적용한다.
+
 ---
 
 ## 36. Acceptance Before Moving to Next Phase
