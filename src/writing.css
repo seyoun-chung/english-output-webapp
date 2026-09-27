@@ -20,8 +20,6 @@
 .writing-editor textarea::placeholder { color: #71829a; }
 .writing-editor-foot { display: flex; justify-content: space-between; gap: 16px; color: var(--muted); font-size: 12px; margin-top: 10px; }
 .writing-editor-foot > span:last-child { white-space: nowrap; }
-.writing-actions { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-top: 24px; }
-.writing-actions button { min-height: 44px; }
 .writing-status { color: var(--muted); font-size: 13px; margin: 16px 0 0; }
 .grammar-columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
 .grammar-columns > div { min-width: 0; }
@@ -37,6 +35,5 @@
   .writing-source-prompt { font-size: 17px; padding: 16px; }
   .writing-editor textarea { min-height: 260px; padding: 14px; }
   .writing-editor-foot { flex-direction: column; gap: 4px; }
-  .writing-actions > button { flex: 1; }
   .grammar-columns { grid-template-columns: 1fr; gap: 16px; }
 }
