@@ -11,6 +11,7 @@ if (args.some(arg => arg !== '--staged')) {
 const staged = args.includes('--staged')
 const git = (...args) => execFileSync('git', args, { stdio: ['ignore', 'pipe', 'pipe'], maxBuffer: 32 * 1024 * 1024 })
 const splitNull = buffer => buffer.toString('utf8').split('\0').filter(Boolean)
+const normalizeText = buffer => buffer.toString('utf8').replace(/\r\n/g, '\n')
 const findings = []
 const add = (path, category) => findings.push({ path, category })
 
@@ -59,7 +60,7 @@ try {
     // Ignore probes use the worktree. Reject mismatches so a different staged policy cannot pass.
     for (const path of [...new Set([...candidates, ...splitNull(git('ls-files', '--others', '--exclude-standard', '-z'))])].filter(p => /(?:^|\/)\.gitignore$/.test(p))) {
       try {
-        if (!tracked.has(path) || !readFileSync(path).equals(git('cat-file', 'blob', tracked.get(path).hash))) add(path, 'ignore-policy-not-staged')
+        if (!tracked.has(path) || normalizeText(readFileSync(path)) !== normalizeText(git('cat-file', 'blob', tracked.get(path).hash))) add(path, 'ignore-policy-not-staged')
       } catch { add(path, 'ignore-policy-unavailable') }
     }
   }
