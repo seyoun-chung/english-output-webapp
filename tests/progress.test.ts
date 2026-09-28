@@ -129,7 +129,7 @@ describe("Source locked content", () => {
   const task = readFileSync(
     new URL("../docs/current_task.md", import.meta.url),
     "utf8",
-  );
+  ).replace(/\r\n/g, "\n");
   it("uses exactly the six Korean and English chunks approved in current_task.md", () => {
     const approved = [
       ...task.matchAll(
