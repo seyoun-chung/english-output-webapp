@@ -45,10 +45,13 @@ describe('read-only Git candidate checks', () => {
     const run = (...args: string[]) => spawnSync(process.execPath, [script, ...args], { cwd: directory, encoding: 'utf8' })
     try {
       git('init', '-q')
-      writeFileSync(join(directory, '.gitignore'), 'docs/sources/*.pdf\nnode_modules/\n.env\n.env.local\n.env.*.local\n.DS_Store\nbuild/\ndist/\n.next/\n*.log\n')
+      const ignorePolicy = 'docs/sources/*.pdf\nnode_modules/\n.env\n.env.local\n.env.*.local\n.DS_Store\nbuild/\ndist/\n.next/\n*.log\n'
+      writeFileSync(join(directory, '.gitignore'), ignorePolicy)
       writeFileSync(join(directory, 'safe.txt'), 'ordinary text')
       git('add', '.gitignore', 'safe.txt')
       expect(run().status).toBe(0)
+      expect(run('--staged').status).toBe(0)
+      writeFileSync(join(directory, '.gitignore'), ignorePolicy.replace(/\n/g, '\r\n'))
       expect(run('--staged').status).toBe(0)
       const fake = ['gh', 'o_', 'z'.repeat(36)].join('')
       writeFileSync(join(directory, 'untracked.txt'), fake)
@@ -79,5 +82,5 @@ describe('read-only Git candidate checks', () => {
     } finally {
       rmSync(directory, { recursive: true, force: true })
     }
-  })
+  }, 15_000)
 })
