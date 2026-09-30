@@ -771,6 +771,11 @@ UI
 화면 간 이동·하단 버튼·필수/선택 표시를 수정할 때는
 [`skills/ux-flow-qa/SKILL.md`](skills/ux-flow-qa/SKILL.md)의 화면 상태별 검증 절차도 적용한다.
 
+사용자가 보고한 오류와 테스트에서 발견한 문제는
+[`docs/issue_log.md`](docs/issue_log.md)에 문제 정의, 확인된 사실과 원인 가설,
+해결 액션 아이템, 해결 여부 및 검증 결과를 기록한다. 실제 기기에서 검증하지 않은
+수정은 `해결 확인`으로 표시하지 않는다. 미해결 항목도 누락하지 않는다.
+
 ---
 
 ## 36. Acceptance Before Moving to Next Phase

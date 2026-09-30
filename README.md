@@ -39,6 +39,7 @@ Chapter 3 Overview
 - [`docs/current_task.md`](./docs/current_task.md): 현재 Phase의 작업 범위와 완료 조건
 - [`docs/chapter3_pilot_plan.md`](./docs/chapter3_pilot_plan.md): Chapter 3 시범 챕터 범위와 제외 사항
 - [`docs/verification.md`](./docs/verification.md): 자동 검사 및 수동 검증 방법
+- [`docs/issue_log.md`](./docs/issue_log.md): 사용자 테스트 문제, 해결 액션 아이템 및 검증 상태
 - [`docs/chapter3_pilot_handoff.md`](./docs/chapter3_pilot_handoff.md): 이번 구현과 검증 결과
 
 ## Development Status

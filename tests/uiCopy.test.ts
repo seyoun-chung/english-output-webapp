@@ -4,8 +4,10 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import App from "../src/App";
 import { VoicePractice } from "../src/VoicePractice";
 import * as audio from "../src/audioRecorder";
-import { initialProgress } from "../src/progress";
+import { initialProgress, updateProgress } from "../src/progress";
 import type { Progress, Screen } from "../src/progress";
+import { exactExercises } from "../src/data/outputPractice";
+import { completeWriting, editWritingDraft } from "../src/writingProgress";
 
 afterEach(() => {
   vi.unstubAllGlobals();
@@ -16,6 +18,16 @@ function renderScreen(screen: Screen, overrides: Partial<Progress> = {}) {
   const progress = { ...initialProgress(), ...overrides, currentScreen: screen };
   vi.stubGlobal("localStorage", { getItem: () => JSON.stringify(progress) });
   return renderToStaticMarkup(createElement(App));
+}
+
+function readyProgress(): Progress {
+  const progress = initialProgress();
+  progress.fullRecallCompleted = true;
+  progress.conversation.fullRecallCompleted = true;
+  for (const id of Object.keys(progress.conversation.ratings)) progress.conversation.ratings[Number(id)] = "effort";
+  for (const exercise of exactExercises) progress.output.ratings[exercise.id] = "review";
+  progress.writing = completeWriting(editWritingDraft(progress.writing, "My own reflection."));
+  return progress;
 }
 
 function backButtonClasses(html: string) {
@@ -60,6 +72,31 @@ describe("approved UI copy and preserved Korean exceptions", () => {
     expect(html).toContain("0 / 4");
     expect(html).toContain("Required");
     expect(html).toContain("Optional");
+  });
+
+  it("offers Finish chapter on Home only after all four required sections are done", () => {
+    expect(renderScreen("overview")).not.toContain("Finish chapter");
+    const html = renderScreen("overview", readyProgress());
+    expect(html).toContain("4 / 4");
+    expect(html).toContain("READY TO FINISH");
+    expect(html).toContain("Finish chapter");
+    expect(html.match(/Finish chapter/g)).toHaveLength(1);
+    expect(html).not.toContain("Chapter 3 complete ✓");
+  });
+
+  it("keeps the completed chapter clear after visiting Review and returning Home", () => {
+    const finished = updateProgress(readyProgress(), { type: "finishPass" });
+    const reviewed = updateProgress(finished, { type: "navigate", screen: "review" });
+    const returned = updateProgress(reviewed, { type: "navigate", screen: "overview" });
+    const home = renderScreen("overview", returned);
+    expect(home).toContain("Chapter 3 complete ✓");
+    expect(home).toContain("Chapter 4 isn&#x27;t available in this pilot yet.");
+    expect(home).toContain("Chapter Review");
+    expect(home).not.toContain("Finish chapter");
+    const progress = renderScreen("complete", returned);
+    expect(progress).toContain("Chapter 3 complete");
+    expect(progress).toContain("Completed ✓");
+    expect(progress).not.toContain("Finish chapter");
   });
 
   it.each(["read", "recall", "full", "conversation", "output", "grammar", "about", "writing", "review", "complete"] as const)(

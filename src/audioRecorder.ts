@@ -20,6 +20,19 @@ export type RecordingEnvironment = {
   revokeUrl: (url: string) => void;
 };
 
+export function preferredRecordingMimeType(
+  userAgent: string,
+  isTypeSupported: (type: string) => boolean,
+): string | undefined {
+  // iPhone/iPad Safari can report WebM support, but MP4 is the native
+  // recording/playback path. Other browsers keep their existing preference.
+  const appleMobile = /iPhone|iPad|iPod/i.test(userAgent);
+  const candidates = appleMobile
+    ? ["audio/mp4", "audio/webm;codecs=opus", "audio/ogg;codecs=opus"]
+    : ["audio/webm;codecs=opus", "audio/mp4", "audio/ogg;codecs=opus"];
+  return candidates.find((type) => isTypeSupported(type));
+}
+
 export const browserRecordingEnvironment: RecordingEnvironment = {
   isSupported: () =>
     typeof window !== "undefined" &&
@@ -29,12 +42,10 @@ export const browserRecordingEnvironment: RecordingEnvironment = {
   requestStream: () =>
     navigator.mediaDevices.getUserMedia({ audio: true, video: false }),
   createRecorder: (stream) => {
-    // Choose a format this browser can actually record; do not force WebM on Safari.
-    const mimeType = [
-      "audio/webm;codecs=opus",
-      "audio/mp4",
-      "audio/ogg;codecs=opus",
-    ].find((type) => MediaRecorder.isTypeSupported(type));
+    const mimeType = preferredRecordingMimeType(
+      navigator.userAgent,
+      (type) => MediaRecorder.isTypeSupported?.(type) ?? false,
+    );
     return new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
   },
   createUrl: (blob) => URL.createObjectURL(blob),
