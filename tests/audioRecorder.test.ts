@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { createAudioRecorder, emptyRecording } from "../src/audioRecorder";
+import { createAudioRecorder, emptyRecording, preferredRecordingMimeType } from "../src/audioRecorder";
 import type { RecordingEnvironment } from "../src/audioRecorder";
 
 class FakeRecorder {
@@ -42,6 +42,20 @@ function setup() {
 }
 
 describe("optional, memory-only voice recording", () => {
+  it("prefers MP4 on iPhone even when WebM is also reported as supported", () => {
+    const supports = vi.fn(() => true);
+    expect(preferredRecordingMimeType("Mozilla/5.0 (iPhone; CPU iPhone OS 18_4 like Mac OS X)", supports)).toBe("audio/mp4");
+    expect(supports).toHaveBeenCalledWith("audio/mp4");
+  });
+
+  it("falls back to WebM on iPhone when MP4 is unavailable", () => {
+    expect(preferredRecordingMimeType("iPhone", (type) => type === "audio/webm;codecs=opus")).toBe("audio/webm;codecs=opus");
+  });
+
+  it("keeps WebM first on non-Apple browsers", () => {
+    expect(preferredRecordingMimeType("Mozilla/5.0 (Linux; Android 15) Chrome/130", () => true)).toBe("audio/webm;codecs=opus");
+  });
+
   it("never requests the microphone before an explicit start", () => {
     const { controller, environment } = setup();
     expect(controller.getState()).toEqual(emptyRecording());

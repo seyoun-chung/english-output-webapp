@@ -208,6 +208,8 @@ function Overview({ progress, dispatch }: ScreenProps) {
   const resumeLabel = progress.lastSection === "myStory" ? "My Story" : chapterSections.find((section) => section.screen === progress.lastSection)?.title ?? "My Story";
   const core = coreCompletion(progress);
   const coreCompleted = core.filter((section) => section.completed).length;
+  const ready = isPassReady(progress);
+  const complete = ready && progress.pass1CompletedAt !== null;
   return (
     <>
       <section className="chapter-hero">
@@ -287,26 +289,26 @@ function Overview({ progress, dispatch }: ScreenProps) {
         </section>
         <aside className="overview-aside">
           <section className="panel start-card">
-            <span className="eyebrow">CONTINUE LEARNING</span>
-            <h2>{resumeLabel}</h2>
-            <p>
-              Pick up where you left off.
-            </p>
-            <button
-              className="primary full-width"
-              onClick={() => dispatch({ type: "resume" })}
-            >
-              {progress.lastStudiedAt ? "Continue" : "Start"}{" "}
-              <span aria-hidden="true">→</span>
-            </button>
-            {progress.lastStudiedAt && (
-              <button
-                className="text-button"
-                onClick={() => dispatch({ type: "navigate", screen: "read" })}
-              >
-                Read again
+            {complete ? <>
+              <span className="eyebrow">CHAPTER COMPLETE</span>
+              <h2>Chapter 3 complete ✓</h2>
+              <p>Chapter 4 isn't available in this pilot yet. You can review Chapter 3 anytime.</p>
+              <button className="primary full-width" onClick={() => dispatch({ type: "navigate", screen: "review" })}>Chapter Review <span aria-hidden="true">→</span></button>
+              <button className="text-button" onClick={() => dispatch({ type: "navigate", screen: "read" })}>Read again</button>
+            </> : ready ? <>
+              <span className="eyebrow">READY TO FINISH</span>
+              <h2>Core learning done</h2>
+              <p>All four required sections are complete. Finish the chapter when you're ready.</p>
+              <button className="primary full-width" onClick={() => dispatch({ type: "finishPass" })}>Finish chapter <span aria-hidden="true">✓</span></button>
+            </> : <>
+              <span className="eyebrow">CONTINUE LEARNING</span>
+              <h2>{resumeLabel}</h2>
+              <p>Pick up where you left off.</p>
+              <button className="primary full-width" onClick={() => dispatch({ type: "resume" })}>
+                {progress.lastStudiedAt ? "Continue" : "Start"}{" "}<span aria-hidden="true">→</span>
               </button>
-            )}
+              {progress.lastStudiedAt && <button className="text-button" onClick={() => dispatch({ type: "navigate", screen: "read" })}>Read again</button>}
+            </>}
           </section>
           <div className="gentle-note">
             <span aria-hidden="true">✦</span>
@@ -632,9 +634,9 @@ function ChapterCompletion({ progress, dispatch }: ScreenProps) {
   const complete = ready && progress.pass1CompletedAt !== null;
   return (
     <>
-      <ScreenHeading eyebrow="CHAPTER 3" title="Chapter progress" description={complete ? "Chapter complete. Come back whenever you like." : "Build on what you’ve practiced. There’s no need to rush."} />
+      <ScreenHeading eyebrow="CHAPTER 3" title={complete ? "Chapter 3 complete" : "Chapter progress"} description={complete ? "All four required sections are complete. Chapter 4 isn't available in this pilot yet." : ready ? "All four required sections are done. Finish the chapter when you're ready." : "Build on what you’ve practiced. There’s no need to rush."} />
       <section className="panel chapter-completion">
-        <div className="section-heading"><h2>{complete ? "Core learning complete" : "Core learning"}</h2><span className="badge">Chapter 3</span></div>
+        <div className="section-heading"><h2>{complete ? "Core learning complete" : "Core learning"}</h2><span className="badge">{complete ? "Completed ✓" : `${items.filter((item) => item.completed).length} / ${items.length} required`}</span></div>
         <ul className="conversation-checklist">
           {items.map((item) => (
             <li key={item.id}><button className="text-button" onClick={() => dispatch({ type: "navigate", screen: item.id === "myStory" ? progress.resumeScreen : item.id })}>{item.label} <span aria-hidden="true">↗</span></button><span className={item.completed ? "is-complete" : "muted"}>{item.completed ? "Practiced ✓" : "Open to practice"}</span></li>
