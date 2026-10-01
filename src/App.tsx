@@ -513,7 +513,6 @@ function Recall({ progress, dispatch }: ScreenProps) {
 }
 
 function FullRecall({ progress, dispatch }: ScreenProps) {
-  const [spoken, setSpoken] = useState(false);
   const [showAnswer, setShowAnswer] = useState(false);
   const weak = weakIds(progress);
   const remembered = chunks.filter(
@@ -537,8 +536,8 @@ function FullRecall({ progress, dispatch }: ScreenProps) {
           ))}
         </div>
         <VoicePractice />
-        <button className="primary full-width" onClick={() => setSpoken(true)}>
-          {spoken ? "Done ✓" : "Done speaking"}
+        <button className="primary full-width" onClick={() => dispatch({ type: "complete" })}>
+          {progress.fullRecallCompleted ? "Done ✓" : "Done speaking"}
         </button>
         <SourceNote />
         <div className="conversation-answer-toggle">
@@ -551,12 +550,12 @@ function FullRecall({ progress, dispatch }: ScreenProps) {
             {chunks.map((c) => <p lang="en" key={c.id}>{c.english.join(" ")}</p>)}
           </div>
         )}
-        {!spoken && !progress.fullRecallCompleted && <ActionFooter
+        {!progress.fullRecallCompleted && <ActionFooter
           back={<button className="secondary" onClick={() => dispatch({ type: "navigate", screen: "overview" })}>← Back to overview</button>}
           middle={<button className="secondary" onClick={() => dispatch({ type: "practice" })}>Practice all chunks</button>}
         />}
       </section>
-      {(spoken || progress.fullRecallCompleted) && (
+      {progress.fullRecallCompleted && (
         <section className="panel reflection">
           <div className="section-heading">
             <h2>
@@ -617,10 +616,7 @@ function FullRecall({ progress, dispatch }: ScreenProps) {
           </div>
           <ActionFooter
             back={<button className="secondary" onClick={() => dispatch({ type: "navigate", screen: "overview" })}>← Back to overview</button>}
-            forward={<button className="primary" disabled={!spoken && !progress.fullRecallCompleted} onClick={() => {
-              dispatch({ type: "complete" });
-              dispatch({ type: "navigate", screen: "conversation" });
-            }}>Next: Real Conversations <span aria-hidden="true">→</span></button>}
+            forward={<button className="primary" onClick={() => dispatch({ type: "navigate", screen: "conversation" })}>Next: Real Conversations <span aria-hidden="true">→</span></button>}
           />
         </section>
       )}
