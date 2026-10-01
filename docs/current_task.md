@@ -1,5 +1,17 @@
 # Current Task
 
+## Proposed next increment — Chapter 3 Pass 2 Reinforce (2026-10-01)
+
+Pass 1 실제 학습과 피드백 반영이 끝난 뒤, 사용자가 Chapter 3 Pass 2 설계 작업을 승인했다.
+현재 설계안은 [pass2_reinforce_plan.md](./pass2_reinforce_plan.md)에 기록한다.
+
+- 상태: 권장 완료 조건과 Increment 1 범위 승인, 구현 진행
+- 권장 첫 구현: 기존 진행 데이터 migration + 명시적 Pass 2 진입 + My Story 세로 흐름
+- Pass 2 완료 조건은 설계안의 권장 다섯 Core 항목으로 확정하고, 첫 구현은 Increment 1 범위로 제한
+- Chapter 4, 새 Source 콘텐츠, 자동 채점, Smart Review 정책 확정은 범위 밖
+
+---
+
 ## Active increment — Chapter 3 pilot (2026-09-23)
 
 Phase 1 구현·피드백 반영·merge 후 사용자가 다음 단계의 자율 구현을 승인했다.
