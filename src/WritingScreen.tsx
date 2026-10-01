@@ -23,7 +23,7 @@ export function QuestionPicker({ selectedId, onSelect }: { selectedId: string; o
   </div>;
 }
 
-export function WritingScreen({ progress, onChange, onOverview, onNext }: { progress: WritingProgress; onChange: (next: WritingProgress) => void; onOverview: () => void; onNext: () => void }) {
+export function WritingScreen({ pass = 1, progress, onChange, onOverview, onNext }: { pass?: 1 | 2; progress: WritingProgress; onChange: (next: WritingProgress) => void; onOverview: () => void; onNext: () => void }) {
   const key = writingDraftKey(progress), draft = progress.drafts[key] ?? '';
   const template = writingTemplates.find(item => item.id === progress.selectedTemplateId) ?? writingTemplates[0];
   const currentCompleted = progress.completedDrafts[key] === draft && hasOwnDraft(draft);
@@ -32,7 +32,7 @@ export function WritingScreen({ progress, onChange, onOverview, onNext }: { prog
   const modeLabel = (mode: WritingMode) => ({ free: 'Free', guided: 'Guided', template: 'Template' })[mode];
   const openNextMode = () => nextMode && onChange({ ...progress, mode: nextMode });
   return <section className="writing-screen" aria-labelledby="writing-title">
-    <header className="writing-heading"><p className="eyebrow">CHAPTER 3 · REQUIRED</p><h1 id="writing-title" tabIndex={-1}>Weekly Writing</h1><p>Choose one mode. Write your own story with the chapter’s expressions.</p></header>
+    <header className="writing-heading"><p className="eyebrow">CHAPTER 3 · {pass === 2 ? 'PASS 2 · CORE' : 'REQUIRED'}</p><h1 id="writing-title" tabIndex={-1}>Weekly Writing</h1><p>{pass === 2 ? 'Write a new Pass 2 draft with the chapter’s expressions. Free Writing is the default; source-guided help stays available.' : 'Choose one mode. Write your own story with the chapter’s expressions.'}</p></header>
     <div className="writing-card">
       <div className="writing-tabs" role="group" aria-label="Writing mode">{modes.map(mode => <button type="button" key={mode} aria-pressed={progress.mode === mode} onClick={() => onChange({ ...progress, mode })}>{modeLabel(mode)}{isWritingModeComplete(progress, mode) ? ' ✓' : ''}</button>)}</div>
       {progress.mode === 'guided' && <QuestionPicker selectedId={progress.selectedQuestionId} onSelect={selectedQuestionId => onChange({ ...progress, selectedQuestionId })} />}
@@ -40,12 +40,12 @@ export function WritingScreen({ progress, onChange, onOverview, onNext }: { prog
       <WritingEditor value={draft} onChange={text => onChange(editWritingDraft(progress, text))} />
       <ActionFooter
         back={<button className="secondary" onClick={onOverview}>← Back to overview</button>}
-        middle={progress.completed && nextMode && <button className="secondary" onClick={onNext}>Continue to Chapter Review</button>}
+        middle={pass === 1 && progress.completed && nextMode && <button className="secondary" onClick={onNext}>Continue to Chapter Review</button>}
         forward={currentCompleted
-          ? <button className="primary" onClick={nextMode ? openNextMode : onNext}>Next: {nextMode ? modeLabel(nextMode) : 'Chapter Review'} <span aria-hidden="true">→</span></button>
+          ? <button className="primary" onClick={pass === 2 ? onNext : nextMode ? openNextMode : onNext}>Next: {pass === 2 ? 'Chapter progress' : nextMode ? modeLabel(nextMode) : 'Chapter Review'} <span aria-hidden="true">→</span></button>
           : <button className="primary" disabled={!hasOwnDraft(draft)} onClick={() => onChange(completeWriting(progress))}>Mark complete</button>}
       />
-      <p className="writing-status" role="status">{currentCompleted ? `${modeLabel(progress.mode)} draft complete. You can continue to ${nextMode ? modeLabel(nextMode) : 'Chapter Review'}.` : progress.completed ? 'Weekly Writing is complete in another draft. Finish this draft if you want to practice this mode.' : 'One finished draft completes Weekly Writing.'} No corrections or automatic grading yet.</p>
+      <p className="writing-status" role="status">{currentCompleted ? `${modeLabel(progress.mode)} draft complete. You can continue to ${pass === 2 ? 'Chapter progress' : nextMode ? modeLabel(nextMode) : 'Chapter Review'}.` : progress.completed ? 'Weekly Writing is complete in another draft. Finish this draft if you want to practice this mode.' : `One finished ${pass === 2 ? 'new Pass 2 ' : ''}draft completes Weekly Writing.`} No corrections or automatic grading yet.</p>
     </div>
   </section>;
 }

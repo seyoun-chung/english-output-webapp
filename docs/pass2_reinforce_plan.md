@@ -3,13 +3,13 @@
 ## 문서 상태
 
 - 작성일: 2026-10-01
-- 상태: **권장안 승인 / Increment 1 구현 진행**
+- 상태: **권장안 승인 / Increment 1~3 구현·검증 완료(로컬, Git 반영 전)**
 - 대상: Chapter 3 — Personality Traits
 - 전제: Pass 1 실제 학습과 사용자 피드백 반영이 완료된 현재 앱
 - Source of Truth: `AGENTS.md` → PRD → `docs/codex_handoff.md` → Chapter 3 Source
 
 이 문서는 Pass 2 구현 범위와 제품 결정을 기록한 설계안이다.
-사용자는 권장 완료 조건과 Increment 1 구현을 승인했다. commit, push, PR, merge는
+사용자는 권장 완료 조건과 Increment 1~3 구현을 승인했다. commit, push, PR, merge는
 각 Git 작업에 대한 별도 승인 범위를 따른다.
 
 ---
@@ -302,7 +302,7 @@ Chapter Review를 완료 조건에서 제외하고 Recommended로 둘 수 있다
 
 ## 11. 승인된 구현 기준
 
-다음 권장 묶음을 기준으로 Increment 1을 구현한다.
+다음 권장 묶음을 기준으로 Increment 1~3을 구현했다.
 
 - Chapter 3만 대상으로 Pass 2를 구현한다.
 - Pass 2는 사용자가 명시적으로 시작하며 Pass 1 기록을 보존한다.
@@ -310,4 +310,5 @@ Chapter Review를 완료 조건에서 제외하고 Recommended로 둘 수 있다
 - Pass 2 자기평가는 새로 시작하고 Pass 1 평가는 이력으로만 사용한다.
 - Grammar Focus와 What About You는 Pass 2 완료를 막지 않는다.
 - 권장 완료 조건의 다섯 Core 항목을 사용한다.
-- 첫 구현 범위는 `진행 모델 migration + Pass 2 진입 + My Story 세로 흐름`으로 제한한다.
+- Increment 1은 진행 모델 migration·Pass 2 진입·My Story, Increment 2는 Conversation·Variation, Increment 3은 Chapter Review·Writing·완료 상태로 나누어 구현했다.
+- Increment 3 Review는 이 Pilot에서만 Source 기반 12문항(Recall 6 + Output 6) 고정 세트를 사용하며, 전역 Review 문제 수·간격·Smart Review 정책은 계속 Open 상태다.

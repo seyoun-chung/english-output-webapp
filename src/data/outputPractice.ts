@@ -28,6 +28,13 @@ export const variationExercises: ExerciseItem[] = [
   { id: 'output-variation-6', korean: '사람들이 새치기 할 때 진짜 못참겠어.', english: ['I can’t stand it when people cut in line.'], hint1: ['I can’t…'], hint2: ['I can’t stand it when people ______ in line.'], source: conversationSource },
 ];
 export const outputExercises = [...exactExercises, ...variationExercises];
+// Increment 3 pilot set: an even split of already verified recall and output
+// items. This is a fixed Chapter 3 set, not a global review scheduling rule.
+export const pass2ReviewExercises: ExerciseItem[] = [
+  ...storyExercises.slice(0, 3),
+  ...conversationExercises.slice(0, 3),
+  ...variationExercises,
+];
 export const allReviewExercises = [...storyExercises, ...conversationExercises, ...outputExercises];
 export type ExerciseGroup = 'story' | 'conversation' | 'output';
 export const exerciseGroup = (id: string): ExerciseGroup => id.startsWith('story-') ? 'story' : id.startsWith('conversation-') ? 'conversation' : 'output';
