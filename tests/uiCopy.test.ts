@@ -207,6 +207,14 @@ describe("approved UI copy and preserved Korean exceptions", () => {
     expect(html).toContain("Review chunks (2)");
   });
 
+  it("renders persisted Full Recall completion immediately as done", () => {
+    const html = renderScreen("full", { fullRecallCompleted: true });
+    expect(html).toContain(">Done ✓</button>");
+    expect(html).not.toContain(">Done speaking</button>");
+    expect(html).toContain("My Story complete");
+    expect(html).toContain("Next: Real Conversations");
+  });
+
   it.each([
     ["read", "Read"],
     ["recall", "Chunk Recall"],
