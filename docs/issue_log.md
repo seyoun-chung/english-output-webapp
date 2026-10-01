@@ -32,6 +32,13 @@
 - **액션 아이템:** Home에서 필수 4/4 직후 `Finish chapter`를 제공한다. 완료 후에는 `Chapter 3 complete` 상태를 Home과 Chapter progress에 유지하고, Chapter 4는 이 시범판에서 아직 제공되지 않음을 알린다. 실제 Chapter 4 이동은 구현 범위 결정 전까지 추가하지 않는다.
 - **해결 여부:** `수정됨·추가 검증 필요` — 자동 테스트 247개·빌드가 통과했다. Aside의 새 테스트 탭에서 실제 버튼으로 필수 4영역을 완료하고 `Finish chapter → Chapter Review → Home`을 이동했을 때 완료 표시가 유지되는 것을 PC 레이아웃에서 확인했다. 좁은 모바일 너비의 일반 화면은 확인했지만, **완료 상태의 모바일 실기기 레이아웃은 아직 재확인하지 않았다.** 구현 브랜치는 `codex/fix-ios-recording`이다.
 
+## 2026-10-01 · My Story의 Done speaking 직후 완료 상태가 저장되지 않음
+
+- **문제 정의:** Full Recall에서 `Done speaking`을 누르면 화면에는 완료 요약이 나타나지만, Home이나 Chapter progress로 바로 이동했을 때 My Story가 완료로 집계되지 않았다. `Next: Real Conversations`을 눌러야만 필수 진행률에 반영됐다.
+- **확인된 원인:** `Done speaking`은 컴포넌트 내부의 임시 `spoken` 상태만 변경했고, 영구 진행 상태인 `fullRecallCompleted`는 `Next: Real Conversations` 버튼에서 갱신하고 있었다.
+- **액션 아이템:** `Done speaking`이 즉시 `complete` 액션을 실행하도록 변경하고, `Next: Real Conversations`은 화면 이동만 담당하게 분리한다. 완료 직후 Home·Chapter progress 및 새로고침 상태를 회귀 검증한다.
+- **해결 여부:** `해결 확인` — 전체 자동 검증 248개와 production build가 통과했다. Aside에서 `Next: Real Conversations`을 누르지 않고 `Done speaking`만 눌러 즉시 저장, Home의 My Story 완료·필수 4/4 반영, 새로고침 복원, Full Recall 재진입, 약한 Chunk 재연습 후 완료 유지까지 확인했다. 콘솔 오류·경고는 없었고, Codex 내장 브라우저의 390×844 및 320×740 viewport에서도 완료 버튼과 요약·다음 동작이 문서 가로 넘침 없이 표시됐다.
+
 ## 새 문제 기록 양식
 
 ```text
