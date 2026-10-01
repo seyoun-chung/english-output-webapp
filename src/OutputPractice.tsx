@@ -24,13 +24,13 @@ export function OutputPractice({ pass = 1, progress, onChange, onOverview, onNex
       <button className="secondary exercise-retry" onClick={() => onChange(restartPractice(progress))}>Practice again</button>
       <ActionFooter
         back={<button className="secondary" onClick={onOverview}>← Back to overview</button>}
-        middle={pass === 2 && progress.mode === 'variation' ? <button className="secondary" onClick={() => chooseMode('exact')}>Exact recall</button> : pass === 1 && coreComplete && nextMode ? <button className="secondary" onClick={onNext}>Continue to Weekly Writing</button> : undefined}
+        middle={pass === 2 && progress.mode === 'variation' ? <button className="secondary" onClick={() => chooseMode('no-hint')}>No hint · Optional</button> : pass === 1 && coreComplete && nextMode ? <button className="secondary" onClick={onNext}>Continue to Weekly Writing</button> : undefined}
         forward={pass === 2
           ? progress.mode === 'exact'
             ? <button className="primary" onClick={() => chooseMode('variation')}>Next: Variation <span aria-hidden="true">→</span></button>
             : progress.mode === 'variation'
-              ? <button className="primary" onClick={() => chooseMode('no-hint')}>No hint · Optional <span aria-hidden="true">→</span></button>
-              : undefined
+              ? <button className="primary" onClick={onNext}>Next: Chapter Review <span aria-hidden="true">→</span></button>
+              : variationComplete ? <button className="primary" onClick={onNext}>Next: Chapter Review <span aria-hidden="true">→</span></button> : <button className="primary" onClick={() => chooseMode('variation')}>Complete Variation <span aria-hidden="true">→</span></button>
           : <button className="primary" onClick={nextMode ? () => chooseMode(nextMode) : coreComplete ? onNext : () => chooseMode('exact')}>Next: {nextMode ? modeLabels[nextMode] : coreComplete ? 'Weekly Writing' : modeLabels.exact} <span aria-hidden="true">→</span></button>}
       />
     </section> : <ExerciseCard
