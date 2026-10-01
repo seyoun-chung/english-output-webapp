@@ -9,6 +9,7 @@ import { ActionFooter } from "./ActionFooter";
 import { RecallRatingButtons } from "./RecallRatingButtons";
 
 type Props = {
+  pass: 1 | 2;
   progress: ConversationProgress;
   dispatch: (action: ConversationAction) => void;
   onOverview: () => void;
@@ -180,12 +181,12 @@ function FullDialogue({ progress, dispatch, onOverview, onNext }: Props) {
   );
 }
 
-export function ConversationScreen({ progress, dispatch, onOverview, onNext }: Props) {
+export function ConversationScreen({ pass, progress, dispatch, onOverview, onNext }: Props) {
   const roleActive = progress.view === "role" || progress.view === "role-summary";
   return (
     <div className="conversation-screen">
       <div className="page-heading">
-        <span className="eyebrow">CHAPTER 3 · REQUIRED</span>
+        <span className="eyebrow">CHAPTER 3 · {pass === 2 ? "PASS 2 · CORE" : "REQUIRED"}</span>
         <h1 tabIndex={-1}>Real Conversations</h1>
         <p>{progress.view === "read" ? "Read both sides. Then take a role." : progress.view === "full" ? "Full Dialogue · Follow the Korean dialogue. Recall both roles in English." : `${conversationViewLabel(progress)} · Read your partner’s line. Say your part in English.`}</p>
       </div>
@@ -218,7 +219,7 @@ export function ConversationScreen({ progress, dispatch, onOverview, onNext }: P
       )}
       {progress.view === "role" && <RolePractice key={`${progress.role}-${progress.positions[progress.role]}`} progress={progress} dispatch={dispatch} onOverview={onOverview} />}
       {progress.view === "role-summary" && <RoleSummary progress={progress} dispatch={dispatch} onOverview={onOverview} />}
-      {progress.view === "full" && <FullDialogue progress={progress} dispatch={dispatch} onOverview={onOverview} onNext={onNext} />}
+      {progress.view === "full" && <FullDialogue pass={pass} progress={progress} dispatch={dispatch} onOverview={onOverview} onNext={onNext} />}
     </div>
   );
 }
