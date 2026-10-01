@@ -1,4 +1,4 @@
-import type { Progress } from "./progress";
+import type { PassProgress } from "./progress";
 import { isConversationComplete } from "./conversationProgress";
 import { isOutputComplete } from "./exerciseProgress";
 
@@ -9,7 +9,7 @@ export type CoreCompletion = {
 };
 
 // Pass 1 requires the four core areas. Recommended sections never block it.
-export function coreCompletion(p: Progress): CoreCompletion[] {
+export function coreCompletion(p: PassProgress): CoreCompletion[] {
   return [
     { id: "myStory", label: "My Story", completed: p.fullRecallCompleted },
     { id: "conversation", label: "Real Conversations", completed: isConversationComplete(p.conversation) },
@@ -18,4 +18,4 @@ export function coreCompletion(p: Progress): CoreCompletion[] {
   ];
 }
 
-export const isPassReady = (p: Progress) => coreCompletion(p).every((section) => section.completed);
+export const isPassReady = (p: PassProgress) => coreCompletion(p).every((section) => section.completed);
