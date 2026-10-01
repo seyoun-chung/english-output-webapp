@@ -1,6 +1,17 @@
 # Local verification
 
-## Latest result — Pass 2 Increment 2 (2026-10-01)
+## Latest result — Pass 2 Increment 3 (2026-10-01)
+
+- `npm run verify` 통과: repository safety check, 16 test files / 264 tests, TypeScript와 production build.
+- 고정형 Chapter Review가 Source 기반 12문항(Recall 6 + Output 6)이고, Pass 2 완료가 승인된 다섯 Core 항목을 모두 요구하는 것을 자동 테스트로 확인했다.
+- Pass 1/Pass 2 Writing·평가·완료 상태 분리, version 3 복원, 완료 전·후 새로고침 복원, Pass 1 snapshot 보존을 확인했다.
+- 격리된 내장 브라우저 세션에서 Pass 1 완료 → 명시적 Pass 2 시작 → Full Recall → A/B/Full Dialogue → Variation 6 → Review 12 → 새 Writing → `Finish Pass 2`를 실제 버튼으로 실행했다.
+- 390×844 및 320×740에서 Overview, Review 완료, Writing, Pass 2 완료 요약을 시각 점검했다. 320×740의 문서 `scrollWidth`와 `clientWidth`가 같아 가로 Overflow가 없었다.
+- 320px Writing에서 발견한 하단 Back/Next 겹침을 수정한 뒤 두 버튼이 세로로 분리되고 다음 CTA가 접근 가능한 것을 재확인했다.
+- 실제 이어폰 환경에서 External Microphone의 Windows 음소거 해제 후 입력 표시, 녹음, 목소리 재생, 삭제를 사용자가 확인했다. 권한 요청 타임아웃 회귀 테스트를 포함한 최신 전체 자동 검증은 265개 테스트와 production build를 통과했다.
+- 실제 모바일 기기 터치감과 이번 변경과 무관한 마이크 권한·녹음·재생은 viewport simulation으로 증명하지 않았다.
+
+## Previous result — Pass 2 Increment 2 (2026-10-01)
 
 - `npm test` 통과: 16 test files / 257 tests. TypeScript와 production build 통과.
 - Pass 2에서 Real Conversations와 Output Practice만 추가로 열리고 Increment 3 화면은 차단되는 것을 자동 테스트로 확인.

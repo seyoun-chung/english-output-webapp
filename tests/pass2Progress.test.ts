@@ -2,10 +2,11 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import App from "../src/App";
-import { exactExercises, variationExercises } from "../src/data/outputPractice";
-import { ratePractice } from "../src/exerciseProgress";
+import { exactExercises, exerciseGroup, pass2ReviewExercises, variationExercises } from "../src/data/outputPractice";
+import { ratePractice, rateReview, startReview } from "../src/exerciseProgress";
 import { completeWriting, editWritingDraft } from "../src/writingProgress";
 import { activePassProgress, initialPassProgress, initialProgress, parseProgress, updateProgress, type PassProgress, type Progress } from "../src/progress";
+import { completionForPass, isPassReady } from "../src/chapterCompletion";
 
 afterEach(() => vi.unstubAllGlobals());
 
@@ -23,6 +24,19 @@ function completedPass1Chapter(): Progress {
   const progress = initialProgress();
   progress.passes[1] = readyPass1();
   return updateProgress(progress, { type: "finishPass" });
+}
+
+function readyPass2(): PassProgress {
+  const pass = initialPassProgress(2);
+  pass.fullRecallCompleted = true;
+  pass.conversation.fullRecallCompleted = true;
+  for (const id of Object.keys(pass.conversation.ratings)) pass.conversation.ratings[Number(id)] = "effort";
+  for (const item of variationExercises) pass.output.ratings[item.id] = "review";
+  let review = startReview(pass.review, pass2ReviewExercises.map(item => item.id));
+  for (const _item of pass2ReviewExercises) review = rateReview(review, "effort");
+  pass.review = review;
+  pass.writing = completeWriting(editWritingDraft(pass.writing, "My new Pass 2 story."));
+  return pass;
 }
 
 function render(progress: Progress) {
@@ -79,14 +93,18 @@ describe("version 3 migration and pass isolation", () => {
     expect(pass1.passes[2]?.fullRecallCompleted).toBe(true);
   });
 
-  it("opens Increment 2 screens while keeping later screens unavailable", () => {
+  it("opens all Increment 3 core screens while keeping later optional screens unavailable", () => {
     let progress = updateProgress(completedPass1Chapter(), { type: "startPass2" });
     for (const screen of ["read", "recall", "full", "conversation", "output"] as const) {
       progress = updateProgress(progress, { type: "navigate", screen });
       expect(activePassProgress(progress).currentScreen).toBe(screen);
     }
-    for (const screen of ["grammar", "about", "writing", "review", "complete"] as const) {
-      expect(activePassProgress(updateProgress(progress, { type: "navigate", screen })).currentScreen).toBe("output");
+    for (const screen of ["writing", "review", "complete"] as const) {
+      progress = updateProgress(progress, { type: "navigate", screen });
+      expect(activePassProgress(progress).currentScreen).toBe(screen);
+    }
+    for (const screen of ["grammar", "about"] as const) {
+      expect(activePassProgress(updateProgress(progress, { type: "navigate", screen })).currentScreen).toBe("complete");
     }
   });
 
@@ -107,7 +125,7 @@ describe("version 3 migration and pass isolation", () => {
   });
 });
 
-describe("Pass 2 Increment 2 UI", () => {
+describe("Pass 2 Increment 3 UI", () => {
   it("offers an explicit Pass 2 entry only after Pass 1 completion", () => {
     expect(render(initialProgress())).not.toContain("Start Pass 2");
     const html = render(completedPass1Chapter());
@@ -116,7 +134,7 @@ describe("Pass 2 Increment 2 UI", () => {
     expect(html).toContain("Your Pass 1 progress is saved.");
   });
 
-  it("shows My Story, Real Conversations, and Output Variation as active core flows", () => {
+  it("shows five active core flows and keeps later optional areas non-blocking", () => {
     const progress = updateProgress(completedPass1Chapter(), { type: "startPass2" });
     const html = render(progress);
     expect(html).toContain("PASS 2 · REINFORCE");
@@ -124,12 +142,16 @@ describe("Pass 2 Increment 2 UI", () => {
     expect(html).toContain("Start with Full Recall");
     expect(html).toContain("Start Full Recall");
     expect(html).toContain("Review Pass 1");
-    expect(html).toContain("Next increment");
+    expect(html).toContain("5 Core areas");
+    expect(html).toContain("6 Recall + 6 Output");
+    expect(html).toContain("Complete one new draft");
     expect(html).toContain("Play A · Play B · Full Dialogue");
     expect(html).toContain("Start with 6 source variations");
     expect(html).toMatch(/<button class="section-row available">[^]*?Real Conversations/);
     expect(html).toMatch(/<button class="section-row available">[^]*?Output Practice/);
-    expect(html).toMatch(/<button class="section-row" disabled="">[^]*?Weekly Writing[^]*?Coming later/);
+    expect(html).toMatch(/<button class="section-row available">[^]*?Weekly Writing/);
+    expect(html).toMatch(/<button class="section-row available">[^]*?Chapter Review/);
+    expect(html).toMatch(/<button class="section-row" disabled="">[^]*?Grammar Focus[^]*?Next pass/);
   });
 
   it("moves from Pass 2 Full Recall to Real Conversations", () => {
@@ -148,14 +170,60 @@ describe("Pass 2 Increment 2 UI", () => {
     expect(reflection).toContain("Next: Real Conversations");
   });
 
-  it("opens Pass 2 Output Practice in Variation and keeps later sections out of the handoff", () => {
+  it("opens Pass 2 Output Practice in Variation and hands off to Chapter Review", () => {
     let progress = updateProgress(completedPass1Chapter(), { type: "startPass2" });
     progress = updateProgress(progress, { type: "navigate", screen: "output" });
+    const before = render(progress);
+    expect(before).toContain("6 source variations in the core set");
+    expect(before).toContain(variationExercises[0].korean);
+    let output = activePassProgress(progress).output;
+    for (const _item of variationExercises) output = ratePractice(output, "effort");
+    progress = updateProgress(progress, { type: "output", value: output });
     const html = render(progress);
     expect(html).toContain("CHAPTER 3 · PASS 2 · CORE");
-    expect(html).toContain("6 source variations in the core set");
+    expect(html).toContain("Variation completed ✓");
     expect(html).toContain('class="primary" aria-pressed="true">Variation</button>');
-    expect(html).toContain(variationExercises[0].korean);
-    expect(html).not.toContain("Continue to Weekly Writing");
+    expect(html).toContain("Next: Chapter Review");
+  });
+
+  it("uses a fixed source-locked 6 Recall + 6 Output review set", () => {
+    expect(pass2ReviewExercises).toHaveLength(12);
+    expect(pass2ReviewExercises.filter(item => exerciseGroup(item.id) === "output")).toHaveLength(6);
+    expect(pass2ReviewExercises.filter(item => exerciseGroup(item.id) !== "output")).toHaveLength(6);
+    expect(new Set(pass2ReviewExercises.map(item => item.id)).size).toBe(12);
+    expect(pass2ReviewExercises.every(item => item.source.file && item.english.length > 0)).toBe(true);
+    let progress = updateProgress(completedPass1Chapter(), { type: "startPass2" });
+    progress = updateProgress(progress, { type: "navigate", screen: "review" });
+    const html = render(progress);
+    expect(html).toContain("Balanced Chapter Review");
+    expect(html).toContain("12 items");
+    expect(html).toContain("6 Recall + 6 Output");
+  });
+
+  it("requires all five core areas, finishes explicitly, restores after reload, and preserves Pass 1", () => {
+    let chapter = updateProgress(completedPass1Chapter(), { type: "startPass2" });
+    const pass1Snapshot = JSON.stringify(chapter.passes[1]);
+    chapter = { ...chapter, passes: { ...chapter.passes, 2: readyPass2() } };
+    expect(completionForPass(activePassProgress(chapter)).map(item => item.id)).toEqual(["myStory", "conversation", "output", "review", "writing"]);
+    expect(isPassReady(activePassProgress(chapter))).toBe(true);
+    expect(activePassProgress(chapter).completedAt).toBeNull();
+    const completed = updateProgress(chapter, { type: "finishPass" });
+    expect(activePassProgress(completed).currentScreen).toBe("complete");
+    expect(Number.isFinite(Date.parse(activePassProgress(completed).completedAt!))).toBe(true);
+    expect(JSON.stringify(completed.passes[1])).toBe(pass1Snapshot);
+    expect(parseProgress(JSON.stringify(completed))).toEqual(completed);
+    expect(render(completed)).toContain("Chapter 3 · Pass 2 complete");
+  });
+
+  it.each(["myStory", "conversation", "output", "review", "writing"] as const)("does not finish Pass 2 without %s", section => {
+    const pass = readyPass2();
+    if (section === "myStory") pass.fullRecallCompleted = false;
+    if (section === "conversation") pass.conversation.ratings[1] = null;
+    if (section === "output") delete pass.output.ratings[variationExercises[0].id];
+    if (section === "review") pass.review.completed = false;
+    if (section === "writing") pass.writing.completed = false;
+    const chapter = { ...completedPass1Chapter(), activePass: 2 as const, passes: { 1: completedPass1Chapter().passes[1], 2: pass } };
+    expect(isPassReady(pass)).toBe(false);
+    expect(updateProgress(chapter, { type: "finishPass" })).toBe(chapter);
   });
 });

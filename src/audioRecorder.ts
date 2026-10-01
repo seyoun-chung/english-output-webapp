@@ -10,6 +10,8 @@ export const emptyRecording = (): RecordingState => ({
   error: null,
 });
 
+export const MICROPHONE_PERMISSION_TIMEOUT_MS = 15_000;
+
 // Browser APIs are injected so lifecycle and permission races can be tested
 // without opening a microphone or persisting audio anywhere.
 export type RecordingEnvironment = {
@@ -63,6 +65,9 @@ function recordingError(error: unknown): string {
   if (name === "NotReadableError" || name === "AbortError") {
     return "마이크를 사용할 수 없어요. 다른 앱의 사용 여부와 기기 설정을 확인한 뒤 다시 시도해주세요.";
   }
+  if (name === "PermissionTimeoutError") {
+    return "마이크 권한 요청이 완료되지 않았어요. 주소창의 사이트 마이크 권한을 확인하거나 Chrome 또는 Edge에서 localhost 주소를 열어주세요. 녹음 없이도 학습할 수 있어요.";
+  }
   return "녹음을 완료하지 못했어요. 다시 시도하거나 녹음 없이 진행해주세요.";
 }
 
@@ -76,6 +81,12 @@ export function createAudioRecorder(
   let parts: Blob[] = [];
   let generation = 0;
   let disposed = false;
+  let permissionTimer: ReturnType<typeof setTimeout> | null = null;
+
+  const clearPermissionTimer = () => {
+    if (permissionTimer !== null) clearTimeout(permissionTimer);
+    permissionTimer = null;
+  };
 
   const publish = (next: RecordingState) => {
     state = next;
@@ -104,6 +115,7 @@ export function createAudioRecorder(
   };
   const release = () => {
     generation++;
+    clearPermissionTimer();
     detachRecorder();
     releaseStream();
     parts = [];
@@ -134,8 +146,19 @@ export function createAudioRecorder(
       }
       const request = generation;
       publish({ status: "requesting", url: null, error: null });
+      const streamRequest = environment.requestStream();
       try {
-        const acquired = await environment.requestStream();
+        const acquired = await Promise.race([
+          streamRequest,
+          new Promise<never>((_, reject) => {
+            permissionTimer = setTimeout(() => {
+              const error = new Error("Microphone permission request timed out");
+              error.name = "PermissionTimeoutError";
+              reject(error);
+            }, MICROPHONE_PERMISSION_TIMEOUT_MS);
+          }),
+        ]);
+        clearPermissionTimer();
         // Permission may be granted after navigation, cancellation, or unmount.
         if (disposed || request !== generation) {
           stopTracks(acquired);
@@ -176,6 +199,14 @@ export function createAudioRecorder(
         active.start();
         publish({ status: "recording", url: null, error: null });
       } catch (error) {
+        clearPermissionTimer();
+        const name = error && typeof error === "object" && "name" in error ? error.name : "";
+        if (name === "PermissionTimeoutError") {
+          // A browser permission dialog may resolve after our UI timeout. If it
+          // does, immediately release the late stream instead of capturing in
+          // the background.
+          void streamRequest.then(stopTracks).catch(() => undefined);
+        }
         if (!disposed && request === generation) fail(recordingError(error));
       }
     },
