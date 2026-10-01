@@ -4,8 +4,8 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import App from "../src/App";
 import { VoicePractice } from "../src/VoicePractice";
 import * as audio from "../src/audioRecorder";
-import { initialProgress, updateProgress } from "../src/progress";
-import type { Progress, Screen } from "../src/progress";
+import { activePassProgress, initialPassProgress, initialProgress, updateProgress } from "../src/progress";
+import type { PassProgress, Screen } from "../src/progress";
 import { exactExercises } from "../src/data/outputPractice";
 import { completeWriting, editWritingDraft } from "../src/writingProgress";
 
@@ -14,14 +14,15 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-function renderScreen(screen: Screen, overrides: Partial<Progress> = {}) {
-  const progress = { ...initialProgress(), ...overrides, currentScreen: screen };
+function renderScreen(screen: Screen, overrides: Partial<PassProgress> = {}) {
+  const progress = initialProgress();
+  progress.passes[1] = { ...initialPassProgress(1), ...overrides, currentScreen: screen };
   vi.stubGlobal("localStorage", { getItem: () => JSON.stringify(progress) });
   return renderToStaticMarkup(createElement(App));
 }
 
-function readyProgress(): Progress {
-  const progress = initialProgress();
+function readyProgress(): PassProgress {
+  const progress = initialPassProgress(1);
   progress.fullRecallCompleted = true;
   progress.conversation.fullRecallCompleted = true;
   for (const id of Object.keys(progress.conversation.ratings)) progress.conversation.ratings[Number(id)] = "effort";
@@ -66,9 +67,10 @@ describe("approved UI copy and preserved Korean exceptions", () => {
     expect(html).not.toContain("Core sections practiced");
   });
 
-  it("shows core progress without a pass count on Home", () => {
+  it("shows core progress with the active pass on Home", () => {
     const html = renderScreen("overview");
-    expect(html).not.toMatch(/Pass\s*1|1회독|현재\s*\d+회독/i);
+    expect(html).toContain("PASS 1");
+    expect(html).not.toMatch(/1회독|현재\s*\d+회독/i);
     expect(html).toContain("0 / 4");
     expect(html).toContain("Required");
     expect(html).toContain("Optional");
@@ -85,25 +87,29 @@ describe("approved UI copy and preserved Korean exceptions", () => {
   });
 
   it("keeps the completed chapter clear after visiting Review and returning Home", () => {
-    const finished = updateProgress(readyProgress(), { type: "finishPass" });
+    const chapter = initialProgress();
+    chapter.passes[1] = readyProgress();
+    const finished = updateProgress(chapter, { type: "finishPass" });
     const reviewed = updateProgress(finished, { type: "navigate", screen: "review" });
     const returned = updateProgress(reviewed, { type: "navigate", screen: "overview" });
-    const home = renderScreen("overview", returned);
+    const home = renderScreen("overview", activePassProgress(returned));
     expect(home).toContain("Chapter 3 complete ✓");
-    expect(home).toContain("Chapter 4 isn&#x27;t available in this pilot yet.");
-    expect(home).toContain("Chapter Review");
+    expect(home).toContain("Pass 1 is saved.");
+    expect(home).toContain("Start Pass 2");
+    expect(home).toContain("Review Pass 1");
     expect(home).not.toContain("Finish chapter");
-    const progress = renderScreen("complete", returned);
-    expect(progress).toContain("Chapter 3 complete");
+    const progress = renderScreen("complete", activePassProgress(returned));
+    expect(progress).toContain("Chapter 3 · Pass 1 complete");
     expect(progress).toContain("Completed ✓");
     expect(progress).not.toContain("Finish chapter");
   });
 
   it.each(["read", "recall", "full", "conversation", "output", "grammar", "about", "writing", "review", "complete"] as const)(
-    "does not show a learning-pass count on %s",
+    "keeps the active learning pass visible on %s",
     (screen) => {
       const html = renderScreen(screen);
-      expect(html).not.toMatch(/Pass\s*1|1회독|현재\s*\d+회독/i);
+      expect(html).toContain("PASS 1");
+      expect(html).not.toMatch(/1회독|현재\s*\d+회독/i);
     },
   );
 
@@ -134,7 +140,7 @@ describe("approved UI copy and preserved Korean exceptions", () => {
   });
 
   it("marks the current Real Conversations substep in the shared navigation", () => {
-    const progress = initialProgress();
+    const progress = initialPassProgress(1);
     const html = renderScreen("conversation", { conversation: { ...progress.conversation, view: "role", role: "B" } });
     const navigation = html.match(/<nav class="chapter-navigation"[\s\S]*?<\/nav>/)?.[0] ?? "";
     expect(navigation).toContain('aria-current="page">Play B</button>');
@@ -158,7 +164,7 @@ describe("approved UI copy and preserved Korean exceptions", () => {
   });
 
   it("keeps Full Dialogue completion actions together inside its summary card", () => {
-    const progress = initialProgress();
+    const progress = initialPassProgress(1);
     const html = renderScreen("conversation", { conversation: { ...progress.conversation, view: "full", fullRecallCompleted: true } });
     const summary = html.match(/<section class="panel conversation-panel conversation-summary"[\s\S]*?<\/section>/)?.[0] ?? "";
     expect(summary).toMatch(/Back to overview[\s\S]*?Play A[\s\S]*?Next: Output Practice/);

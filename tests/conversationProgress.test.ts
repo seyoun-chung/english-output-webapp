@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { initialConversationProgress, updateConversationProgress, parseConversationProgress, isRoleComplete, isConversationComplete, type ConversationAction } from "../src/conversationProgress";
-import { initialProgress, parseProgress, updateProgress, STORAGE_KEY } from "../src/progress";
+import { activePassProgress, initialPassProgress, initialProgress, parseProgress, updateProgress, STORAGE_KEY } from "../src/progress";
 
 describe("Real Conversations progress", () => {
   it("rates each role independently and completes only after both roles and Full Dialogue", () => {
@@ -87,61 +87,76 @@ describe("versioned combined storage", () => {
     lastStudiedAt: "2026-09-22T12:00:00.000Z",
   };
   it("migrates a real version 1 shape without dropping any My Story fields", () => {
-    const p = parseProgress(JSON.stringify(legacy));
-    expect(p).toEqual({ ...initialProgress(), ...legacy, version: 2, lastSection: "myStory", conversation: initialConversationProgress() });
+    const progress = parseProgress(JSON.stringify(legacy));
+    const pass = progress.passes[1];
+    expect(progress.version).toBe(3);
+    expect(progress.activePass).toBe(1);
+    expect(pass.queue).toEqual(legacy.queue);
+    expect(pass.queueIndex).toBe(legacy.queueIndex);
+    expect(pass.chunkRatings).toEqual(legacy.chunkRatings);
+    expect(pass.hintUsage).toEqual(legacy.hintUsage);
+    expect(pass.fullRecallCompleted).toBe(true);
+    expect(pass.readMode).toBe("together");
+    expect(pass.resumeScreen).toBe("recall");
+    expect(pass.lastStudiedAt).toBe(legacy.lastStudiedAt);
+    expect(pass.conversation).toEqual(initialConversationProgress());
+    expect(progress.passes[2]).toBeNull();
     expect(STORAGE_KEY).toBe("english-output-webapp:progress");
-    expect(updateProgress(p, { type: "resume" }).currentScreen).toBe("recall");
+    expect(activePassProgress(updateProgress(progress, { type: "resume" })).currentScreen).toBe("recall");
   });
 
   it("round-trips both sections in one structure and resumes the last section", () => {
-    let p = parseProgress(JSON.stringify(legacy));
-    p = updateProgress(p, { type: "conversation", action: { type: "role", role: "B" } });
-    p = updateProgress(p, { type: "conversation", action: { type: "rate", rating: "effort" } });
-    p = updateProgress(p, { type: "navigate", screen: "overview" });
-    expect(parseProgress(JSON.stringify(p))).toEqual(p);
-    expect(updateProgress(parseProgress(JSON.stringify(p)), { type: "resume" }).currentScreen).toBe("conversation");
-    expect(p.resumeScreen).toBe("recall");
-    expect(p.queue).toEqual(legacy.queue);
-    expect(p.chunkRatings).toEqual(legacy.chunkRatings);
-    p = updateProgress(p, { type: "navigate", screen: "read" });
-    expect(p.lastSection).toBe("myStory");
-    expect(p.conversation.ratings[2]).toBe("effort");
+    let progress = parseProgress(JSON.stringify(legacy));
+    progress = updateProgress(progress, { type: "conversation", action: { type: "role", role: "B" } });
+    progress = updateProgress(progress, { type: "conversation", action: { type: "rate", rating: "effort" } });
+    progress = updateProgress(progress, { type: "navigate", screen: "overview" });
+    expect(parseProgress(JSON.stringify(progress))).toEqual(progress);
+    expect(activePassProgress(updateProgress(parseProgress(JSON.stringify(progress)), { type: "resume" })).currentScreen).toBe("conversation");
+    expect(activePassProgress(progress).resumeScreen).toBe("recall");
+    expect(activePassProgress(progress).queue).toEqual(legacy.queue);
+    expect(activePassProgress(progress).chunkRatings).toEqual(legacy.chunkRatings);
+    progress = updateProgress(progress, { type: "navigate", screen: "read" });
+    expect(activePassProgress(progress).lastSection).toBe("myStory");
+    expect(activePassProgress(progress).conversation.ratings[2]).toBe("effort");
   });
 
   it("navigation to conversation preserves story resume location", () => {
-    const p = updateProgress(parseProgress(JSON.stringify(legacy)), { type: "navigate", screen: "conversation" });
-    expect(p.lastSection).toBe("conversation");
-    expect(p.resumeScreen).toBe("recall");
-    expect(parseProgress(JSON.stringify(p))).toEqual(p);
+    const progress = updateProgress(parseProgress(JSON.stringify(legacy)), { type: "navigate", screen: "conversation" });
+    expect(activePassProgress(progress).lastSection).toBe("conversation");
+    expect(activePassProgress(progress).resumeScreen).toBe("recall");
+    expect(parseProgress(JSON.stringify(progress))).toEqual(progress);
   });
 
   it("keeps valid story data when conversation storage is damaged", () => {
-    const p = parseProgress(JSON.stringify({ ...legacy, version: 2, conversation: { role: "bad" }, lastSection: "conversation" }));
-    expect(p.chunkRatings).toEqual(legacy.chunkRatings);
-    expect(p.queue).toEqual([2, 4]);
-    expect(p.conversation).toEqual(initialConversationProgress());
-    expect(p.lastSection).toBe("myStory");
+    const pass = parseProgress(JSON.stringify({ ...legacy, version: 2, conversation: { role: "bad" }, lastSection: "conversation" })).passes[1];
+    expect(pass.chunkRatings).toEqual(legacy.chunkRatings);
+    expect(pass.queue).toEqual([2, 4]);
+    expect(pass.conversation).toEqual(initialConversationProgress());
+    expect(pass.lastSection).toBe("myStory");
   });
 
   it("keeps valid conversation data when story storage is damaged", () => {
     let conversation = updateConversationProgress(initialConversationProgress(), { type: "role", role: "B" });
     conversation = updateConversationProgress(conversation, { type: "rate", rating: "review" });
-    const p = parseProgress(JSON.stringify({ ...initialProgress(), queue: [], conversation, lastSection: "conversation" }));
-    expect(p.conversation).toEqual(conversation);
-    expect(p.chunkRatings).toEqual(initialProgress().chunkRatings);
-    expect(updateProgress(p, { type: "resume" }).currentScreen).toBe("conversation");
+    const legacyPass = initialPassProgress(1);
+    const { completedAt: _completedAt, ...fields } = legacyPass;
+    const progress = parseProgress(JSON.stringify({ version: 2, chapterId: 3, ...fields, queue: [], conversation, lastSection: "conversation", pass1CompletedAt: null }));
+    expect(progress.passes[1].conversation).toEqual(conversation);
+    expect(progress.passes[1].chunkRatings).toEqual(initialPassProgress(1).chunkRatings);
+    expect(activePassProgress(updateProgress(progress, { type: "resume" })).currentScreen).toBe("conversation");
   });
 
   it("does not retain injected recording/transcript fields in parsed storage", () => {
-    const p = initialProgress();
-    expect(parseProgress(JSON.stringify({ ...p, audio: "private", transcript: "private", conversation: { ...p.conversation, audio: "private" } }))).toEqual(p);
+    const progress = initialProgress();
+    const injected = { ...progress, audio: "private", transcript: "private", passes: { ...progress.passes, 1: { ...progress.passes[1], conversation: { ...progress.passes[1].conversation, audio: "private" } } } };
+    expect(parseProgress(JSON.stringify(injected))).toEqual(progress);
   });
 
   it("does not let stale My Story controls alter state on a conversation screen", () => {
-    const p = updateProgress(initialProgress(), { type: "navigate", screen: "conversation" });
-    expect(updateProgress(p, { type: "rate", rating: "review" })).toBe(p);
-    expect(updateProgress(p, { type: "hint", level: 2 })).toBe(p);
-    expect(updateProgress(p, { type: "previous" })).toBe(p);
-    expect(updateProgress(p, { type: "complete" })).toBe(p);
+    const progress = updateProgress(initialProgress(), { type: "navigate", screen: "conversation" });
+    expect(updateProgress(progress, { type: "rate", rating: "review" })).toBe(progress);
+    expect(updateProgress(progress, { type: "hint", level: 2 })).toBe(progress);
+    expect(updateProgress(progress, { type: "previous" })).toBe(progress);
+    expect(updateProgress(progress, { type: "complete" })).toBe(progress);
   });
 });
