@@ -1,5 +1,29 @@
 # Current Task
 
+## Proposed next increment — Chapter 3 Pass 2 Reinforce (2026-10-01)
+
+Pass 1 실제 학습과 피드백 반영이 끝난 뒤, 사용자가 Chapter 3 Pass 2 설계 작업을 승인했다.
+현재 설계안은 [pass2_reinforce_plan.md](./pass2_reinforce_plan.md)에 기록한다.
+
+- 상태: Increment 1 로컬 구현·자동 검증 완료, 사용자 확인 및 Git 반영 대기
+- 권장 첫 구현: 기존 진행 데이터 migration + 명시적 Pass 2 진입 + My Story 세로 흐름
+- Pass 2 완료 조건은 설계안의 권장 다섯 Core 항목으로 확정하고, 첫 구현은 Increment 1 범위로 제한
+- Chapter 4, 새 Source 콘텐츠, 자동 채점, Smart Review 정책 확정은 범위 밖
+
+### Increment 1 구현 결과 — 2026-10-01
+
+- localStorage 진행 형식을 version 3으로 확장하고 Pass 1 / Pass 2 기록을 분리했다.
+- version 1·2 저장 기록을 version 3으로 이전하며 기존 Pass 1 진행과 Writing을 보존한다.
+- 완료된 Pass 1에서만 사용자가 `Start Pass 2`를 눌러 명시적으로 진입한다.
+- Pass 2 Overview는 My Story Full Recall을 기본 경로로 제공한다.
+- Read와 Chunk Recall은 보조 경로로 유지한다.
+- Increment 2 이후 영역은 `Coming later`로 비활성화하여 현재 범위를 넘지 않는다.
+- `npm run verify`: safety 검사 통과, 16개 테스트 파일의 255개 테스트 통과, production build 통과.
+- Aside 실제 흐름과 390×844 / 320×740 viewport에서 진입·완료·새로고침 복원·가로 Overflow 없음 확인.
+- commit과 push는 진행하지 않았다.
+
+---
+
 ## Active increment — Chapter 3 pilot (2026-09-23)
 
 Phase 1 구현·피드백 반영·merge 후 사용자가 다음 단계의 자율 구현을 승인했다.

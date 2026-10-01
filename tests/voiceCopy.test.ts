@@ -5,7 +5,7 @@ import { RecordingNotice } from "../src/VoicePractice";
 import { emptyRecording } from "../src/audioRecorder";
 import type { RecordingState } from "../src/audioRecorder";
 import App from "../src/App";
-import { initialProgress } from "../src/progress";
+import { initialPassProgress, initialProgress } from "../src/progress";
 
 afterEach(() => vi.unstubAllGlobals());
 
@@ -72,7 +72,8 @@ describe("concise recording guidance", () => {
   });
 
   it("uses Chunk consistently and removes the sidebar storage explanation", () => {
-    const progress = { ...initialProgress(), currentScreen: "read" };
+    const progress = initialProgress();
+    progress.passes[1] = { ...initialPassProgress(1), currentScreen: "read" };
     vi.stubGlobal("localStorage", { getItem: () => JSON.stringify(progress) });
     const html = renderToStaticMarkup(createElement(App));
     expect(html).toContain("6 chunks");
@@ -83,9 +84,10 @@ describe("concise recording guidance", () => {
   });
 
   it("shows Self check without the redundant classification explanation", () => {
-    const progress = { ...initialProgress(), currentScreen: "full", fullRecallCompleted: true };
-    progress.chunkRatings[1] = "immediate";
-    progress.chunkRatings[2] = "effort";
+    const progress = initialProgress();
+    progress.passes[1] = { ...initialPassProgress(1), currentScreen: "full", fullRecallCompleted: true };
+    progress.passes[1].chunkRatings[1] = "immediate";
+    progress.passes[1].chunkRatings[2] = "effort";
     vi.stubGlobal("localStorage", { getItem: () => JSON.stringify(progress) });
     const html = renderToStaticMarkup(createElement(App));
     expect(html).toContain("Self check");
