@@ -39,6 +39,13 @@
 - **액션 아이템:** `Done speaking`이 즉시 `complete` 액션을 실행하도록 변경하고, `Next: Real Conversations`은 화면 이동만 담당하게 분리한다. 완료 직후 Home·Chapter progress 및 새로고침 상태를 회귀 검증한다.
 - **해결 여부:** `해결 확인` — 전체 자동 검증 248개와 production build가 통과했다. Aside에서 `Next: Real Conversations`을 누르지 않고 `Done speaking`만 눌러 즉시 저장, Home의 My Story 완료·필수 4/4 반영, 새로고침 복원, Full Recall 재진입, 약한 Chunk 재연습 후 완료 유지까지 확인했다. 콘솔 오류·경고는 없었고, Codex 내장 브라우저의 390×844 및 320×740 viewport에서도 완료 버튼과 요약·다음 동작이 문서 가로 넘침 없이 표시됐다.
 
+## 2026-10-01 · Output Practice 직접 렌더링 시 Pass 1 완료 동작 누락
+
+- **문제 정의:** Pass 2 표시 분기를 추가한 뒤, 기존 테스트에서 `OutputPractice`를 `pass` 속성 없이 직접 렌더링하면 Pass 1의 Weekly Writing 이동 버튼이 사라졌다.
+- **확인된 원인:** 새 `pass` 속성을 필수 분기값으로 사용했지만 기존 직접 렌더링 호출은 이 값을 전달하지 않아 Pass 1과 Pass 2 어느 분기에도 들어가지 않았다.
+- **액션 아이템:** `pass`가 생략되면 기존 동작인 Pass 1을 기본값으로 사용하고, Pass 2는 앱에서 명시적으로 전달한다.
+- **해결 여부:** `해결 확인` — 관련 회귀 테스트를 포함한 257개 테스트와 production build가 통과했다. Aside의 보존된 Pass 1 완료 상태에서 Output Practice를 다시 열어 `Continue to Weekly Writing`과 `Next: Variation`이 함께 표시되는 것을 확인했고, Pass 1 기록은 변경하지 않았다.
+
 ## 새 문제 기록 양식
 
 ```text

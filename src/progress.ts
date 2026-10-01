@@ -105,7 +105,7 @@ function parsePassProgress(raw: unknown, pass: PassNumber, legacyVersion?: 1 | 2
   };
   const recovered = { ...initial, ...sections, lastSection };
   const availableScreens = pass === 2
-    ? ["overview", "read", "recall", "full"]
+    ? ["overview", "read", "recall", "full", "conversation", "output"]
     : ["overview", "read", "recall", "full", ...Object.keys(parsed), "complete"];
   if (
     typeof raw.currentScreen !== "string" || !availableScreens.includes(raw.currentScreen) ||
@@ -211,7 +211,7 @@ function updatePassProgress(progress: PassProgress, action: PassAction): PassPro
       break;
     }
     case "navigate":
-      if (progress.pass === 2 && !["overview", "read", "recall", "full"].includes(action.screen)) return progress;
+      if (progress.pass === 2 && !["overview", "read", "recall", "full", "conversation", "output"].includes(action.screen)) return progress;
       next = {
         ...progress,
         currentScreen: action.screen,

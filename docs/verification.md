@@ -1,6 +1,16 @@
 # Local verification
 
-## Latest result — Pass 2 Increment 1 (2026-10-01)
+## Latest result — Pass 2 Increment 2 (2026-10-01)
+
+- `npm test` 통과: 16 test files / 257 tests. TypeScript와 production build 통과.
+- Pass 2에서 Real Conversations와 Output Practice만 추가로 열리고 Increment 3 화면은 차단되는 것을 자동 테스트로 확인.
+- Pass 2 Conversation 평가와 Variation 평가가 Pass 1 기록을 변경하지 않으며 새로고침 후 복원되는 것을 확인.
+- Aside에서 Pass 2 Overview → Real Conversations → 평가 → 새로고침 → Output Variation → 6개 완료 흐름을 실행했다. Variation 완료 후 Weekly Writing으로 이동하지 않고 Exact Recall / No Hint 보조 경로만 제공한다.
+- Headless Chrome 390×844에서 Overview와 Real Conversations, 320×740에서 Output Variation을 확인했다. 문서 가로 Overflow는 모두 0이고 주요 CTA는 44px 이상이었다.
+- QA 중 만든 Pass 2 브라우저 기록은 제거했고 기존 Pass 1 완료 기록이 유지됨을 확인했다.
+- 실제 모바일 기기 터치감과 마이크 권한·녹음·재생은 viewport emulation으로 증명하지 않았다.
+
+## Previous result — Pass 2 Increment 1 (2026-10-01)
 
 - `npm run verify` 통과: repository safety check, 16 test files / 255 tests, TypeScript와 production build.
 - version 1·2 → version 3 migration, Pass 1 보존, Pass 2 분리 저장, 새로고침 복원을 자동 테스트로 확인.

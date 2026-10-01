@@ -5,9 +5,9 @@
 Pass 1 실제 학습과 피드백 반영이 끝난 뒤, 사용자가 Chapter 3 Pass 2 설계 작업을 승인했다.
 현재 설계안은 [pass2_reinforce_plan.md](./pass2_reinforce_plan.md)에 기록한다.
 
-- 상태: Increment 1 로컬 구현·자동 검증 완료, 사용자 확인 및 Git 반영 대기
-- 권장 첫 구현: 기존 진행 데이터 migration + 명시적 Pass 2 진입 + My Story 세로 흐름
-- Pass 2 완료 조건은 설계안의 권장 다섯 Core 항목으로 확정하고, 첫 구현은 Increment 1 범위로 제한
+- 상태: Increment 1 main 반영 완료, Increment 2 구현·검증 완료
+- 현재 구현: Real Conversations + Output Variation
+- Pass 2 완료 조건은 설계안의 권장 다섯 Core 항목으로 확정하고, 다음 구현은 Increment 3 범위로 제한
 - Chapter 4, 새 Source 콘텐츠, 자동 채점, Smart Review 정책 확정은 범위 밖
 
 ### Increment 1 구현 결과 — 2026-10-01
@@ -20,7 +20,19 @@ Pass 1 실제 학습과 피드백 반영이 끝난 뒤, 사용자가 Chapter 3 P
 - Increment 2 이후 영역은 `Coming later`로 비활성화하여 현재 범위를 넘지 않는다.
 - `npm run verify`: safety 검사 통과, 16개 테스트 파일의 255개 테스트 통과, production build 통과.
 - Aside 실제 흐름과 390×844 / 320×740 viewport에서 진입·완료·새로고침 복원·가로 Overflow 없음 확인.
-- commit과 push는 진행하지 않았다.
+- PR #9로 main에 merge했다. merge commit은 `d95f14c`다.
+
+### Increment 2 구현 결과 — 2026-10-01
+
+- Pass 2 Overview와 공통 Chapter navigation에서 Real Conversations와 Output Practice를 활성화했다.
+- Pass 2 Conversation은 A 역할, B 역할, Full Dialogue를 별도 Pass 2 기록으로 저장한다.
+- Pass 2 Output Practice는 Source에 검증된 Supplement Variation 6개를 기본 모드로 연다.
+- Exact Recall과 No Hint는 선택형 보조 경로로 유지하며 Weekly Writing으로 미리 이동하지 않는다.
+- Pass 1과 Pass 2의 Conversation·Output 평가가 서로 바뀌지 않고 새로고침 후 복원되는 것을 확인했다.
+- Increment 3 영역인 Chapter Review, Weekly Writing, Pass 2 완료 상태는 계속 비활성화했다.
+- `npm test`: 16개 테스트 파일의 257개 테스트 통과. TypeScript와 production build 통과.
+- Aside에서 Overview → Conversation 평가·새로고침 → Variation 6개 완료 흐름을 확인했다.
+- Headless Chrome 390×844 / 320×740에서 Overview, Conversation, Output Variation의 가로 Overflow 없음과 주요 CTA 44px 이상을 확인했다.
 
 ---
 
