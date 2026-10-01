@@ -33,6 +33,37 @@ An agent can verify the following with the available browser tools and report ac
 
 No STT, automatic grading, audio upload, cloud progress sync, account, or analytics is introduced. Progress remains local to the browser; audio stays temporary in memory unless the user explicitly downloads it with browser controls.
 
+### Browser verification order
+
+Do not hand the whole acceptance list to the user before attempting it. Use this order:
+
+1. Run the applicable automated checks, normally `npm run verify` after a code change.
+2. Confirm that the local app is reachable. Start the existing development command when browser verification is in scope and no server is running.
+3. Prefer Aside for an extended browser QA session. If Aside is installed or available but closed, attempt to launch and connect it before declaring it unavailable.
+4. If Aside cannot be launched, connected, or used for a particular check, continue with computer use or the Codex built-in browser. A tool failure is not by itself a user-only test.
+5. Inspect the relevant flow at desktop and narrow mobile viewport sizes. Exercise controls and state transitions instead of relying only on source or text assertions.
+6. Reproduce each failure and identify the observed condition. When the active request authorizes fixes, make only in-scope fixes and rerun the failed check plus relevant regression checks. For a verification-only request, do not edit files; report the failure and evidence.
+7. Retry with another available automated method where useful. Leave only checks that genuinely require the user's device, senses, account decision, or hardware interaction.
+
+Do not claim a real-device result from viewport emulation. Do not claim real microphone, speaker, touch comfort, one-handed reach, or OS/browser permission behavior from mocked media devices or desktop automation.
+
+### Result format
+
+Report what the agent completed and what remains as separate checkbox groups. Keep the evidence concise and use the actual observed result.
+
+```text
+Codex 확인 완료
+- [x] 항목 — 확인 방법과 실제 결과
+
+미해결 또는 실패
+- [ ] 항목 — 관찰된 문제, 시도한 조치, 남은 이유
+
+사용자 실제 기기 확인 필요
+- [ ] 항목 — 사용자가 수행할 짧은 동작과 기대 결과
+```
+
+Omit empty groups. Never mark an unexecuted check as passed. The user checklist must contain only the checks that remain after available automated inspection and permitted remediation have been exhausted.
+
 ## Small parallel-work agreement
 
 Use one task worktree only when isolation is useful. Assign disjoint file ownership before agents edit (for example: source/UI, progress/tests, verification scripts). Shared interfaces and file changes must be communicated; do not overwrite another agent's work. The integrating agent reviews all diffs, runs the single verification command, and checks the actual browser flow. Extra orchestration frameworks, services, and agent infrastructure are unnecessary for this feature.
