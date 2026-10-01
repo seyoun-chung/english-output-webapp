@@ -7,7 +7,7 @@ import { RecallRatingButtons } from '../src/RecallRatingButtons';
 import { ExerciseCard } from '../src/ExerciseCard';
 import { exactExercises } from '../src/data/outputPractice';
 import { coreCompletion, isPassReady } from '../src/chapterCompletion';
-import { initialProgress } from '../src/progress';
+import { initialPassProgress, initialProgress } from '../src/progress';
 import App from '../src/App';
 import { ConversationScreen } from '../src/ConversationScreen';
 import { initialConversationProgress } from '../src/conversationProgress';
@@ -74,7 +74,8 @@ describe('shared self-check controls', () => {
 
 describe('local navigation labels', () => {
   it('keeps Read story on the right without a competing back arrow', () => {
-    const progress = { ...initialProgress(), currentScreen: 'recall' as const };
+    const progress = initialProgress();
+    progress.passes[1] = { ...initialPassProgress(1), currentScreen: 'recall' as const };
     vi.stubGlobal('localStorage', { getItem: () => JSON.stringify(progress) });
     const html = markup(createElement(App));
     expect(html).toContain('data-layout="back-middle"');
@@ -96,7 +97,7 @@ describe('local navigation labels', () => {
 
 describe('core completion boundary', () => {
   it('never treats optional sections or extra practice modes as Pass 1 requirements', () => {
-    const progress = initialProgress();
+    const progress = initialPassProgress(1);
     const ids = coreCompletion(progress).map(section => section.id);
     expect(ids).toEqual(['myStory', 'conversation', 'output', 'writing']);
     progress.grammar.studied = true;

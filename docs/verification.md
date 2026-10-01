@@ -1,5 +1,13 @@
 # Local verification
 
+## Latest result — Pass 2 Increment 1 (2026-10-01)
+
+- `npm run verify` 통과: repository safety check, 16 test files / 255 tests, TypeScript와 production build.
+- version 1·2 → version 3 migration, Pass 1 보존, Pass 2 분리 저장, 새로고침 복원을 자동 테스트로 확인.
+- Aside에서 실제 Pass 1 완료 → Pass 2 시작 → Full Recall 완료 → 새로고침 → Pass 1 복귀 흐름을 확인.
+- Headless Chrome 390×844와 320×740에서 Pass 2 Overview와 Full Recall을 확인. 두 viewport 모두 문서 너비와 viewport 너비가 같아 가로 Overflow가 없었고 주요 버튼 높이는 44px 이상이었다.
+- 실제 모바일 기기 터치감과 마이크 권한·녹음·재생은 viewport emulation으로 증명하지 않았으며 사용자 실제 기기 확인 항목으로 남긴다.
+
 Run from the project directory after installing the existing dependencies:
 
 ```sh

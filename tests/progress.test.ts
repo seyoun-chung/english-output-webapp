@@ -2,140 +2,114 @@ import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { chunks } from "../src/data/chapter3";
 import {
+  activePassProgress,
   initialProgress,
   parseProgress,
   updateProgress,
   weakIds,
+  type Progress,
 } from "../src/progress";
+
+const current = (progress: Progress) => activePassProgress(progress);
 
 describe("My Story progress", () => {
   it("starts at Overview and resumes into Read", () => {
     const initial = initialProgress();
-    expect(initial.currentScreen).toBe("overview");
-    expect(updateProgress(initial, { type: "resume" }).currentScreen).toBe(
-      "read",
-    );
-    expect(Object.values(initial.chunkRatings)).toEqual(Array(6).fill(null));
+    expect(current(initial).currentScreen).toBe("overview");
+    expect(current(updateProgress(initial, { type: "resume" })).currentScreen).toBe("read");
+    expect(Object.values(current(initial).chunkRatings)).toEqual(Array(6).fill(null));
   });
 
   it("advances all six chunks, saves ratings and enters Full Recall", () => {
-    let p = updateProgress(initialProgress(), { type: "practice" });
+    let progress = updateProgress(initialProgress(), { type: "practice" });
     for (let id = 1; id <= 6; id++) {
-      expect(p.queue[p.queueIndex]).toBe(id);
-      p = updateProgress(p, {
-        type: "rate",
-        rating: id % 2 ? "immediate" : "review",
-      });
+      expect(current(progress).queue[current(progress).queueIndex]).toBe(id);
+      progress = updateProgress(progress, { type: "rate", rating: id % 2 ? "immediate" : "review" });
     }
-    expect(p.currentScreen).toBe("full");
-    expect(p.fullRecallCompleted).toBe(false);
-    expect(weakIds(p)).toEqual([2, 4, 6]);
-    expect(updateProgress(p, { type: "complete" }).fullRecallCompleted).toBe(
-      true,
-    );
-    expect(p.lastStudiedAt).not.toBeNull();
+    expect(current(progress).currentScreen).toBe("full");
+    expect(current(progress).fullRecallCompleted).toBe(false);
+    expect(weakIds(current(progress))).toEqual([2, 4, 6]);
+    expect(current(updateProgress(progress, { type: "complete" })).fullRecallCompleted).toBe(true);
+    expect(current(progress).lastStudiedAt).not.toBeNull();
   });
 
   it("includes effort and review, excludes immediate and unrated, and keeps the queue stable", () => {
-    let p = initialProgress();
-    p.chunkRatings = {
-      1: "effort",
-      2: "review",
-      3: "immediate",
-      4: "review",
-      5: null,
-      6: null,
-    };
-    p = updateProgress(p, { type: "practice", weakOnly: true });
-    expect(p.queue).toEqual([1, 2, 4]);
-    p = updateProgress(p, { type: "rate", rating: "immediate" });
-    expect(weakIds(p)).toEqual([2, 4]);
-    expect(p.queue[p.queueIndex]).toBe(2);
-    p = updateProgress(p, { type: "rate", rating: "effort" });
-    expect(weakIds(p)).toEqual([2, 4]);
-    expect(p.queue[p.queueIndex]).toBe(4);
-    p = updateProgress(p, { type: "rate", rating: "immediate" });
-    expect(p.currentScreen).toBe("full");
-    expect(weakIds(p)).toEqual([2]);
-    p = parseProgress(JSON.stringify(p));
-    p = updateProgress(p, { type: "practice", weakOnly: true });
-    expect(p.queue).toEqual([2]);
-    p = updateProgress(p, { type: "rate", rating: "immediate" });
-    expect(weakIds(p)).toEqual([]);
-    expect(updateProgress(p, { type: "practice", weakOnly: true })).toBe(p);
+    let progress = initialProgress();
+    progress.passes[1].chunkRatings = { 1: "effort", 2: "review", 3: "immediate", 4: "review", 5: null, 6: null };
+    progress = updateProgress(progress, { type: "practice", weakOnly: true });
+    expect(current(progress).queue).toEqual([1, 2, 4]);
+    progress = updateProgress(progress, { type: "rate", rating: "immediate" });
+    expect(weakIds(current(progress))).toEqual([2, 4]);
+    expect(current(progress).queue[current(progress).queueIndex]).toBe(2);
+    progress = updateProgress(progress, { type: "rate", rating: "effort" });
+    expect(current(progress).queue[current(progress).queueIndex]).toBe(4);
+    progress = updateProgress(progress, { type: "rate", rating: "immediate" });
+    expect(current(progress).currentScreen).toBe("full");
+    expect(weakIds(current(progress))).toEqual([2]);
+    progress = parseProgress(JSON.stringify(progress));
+    progress = updateProgress(progress, { type: "practice", weakOnly: true });
+    expect(current(progress).queue).toEqual([2]);
+    progress = updateProgress(progress, { type: "rate", rating: "immediate" });
+    expect(weakIds(current(progress))).toEqual([]);
+    expect(updateProgress(progress, { type: "practice", weakOnly: true })).toBe(progress);
   });
 
   it("includes all six chunks when none of their ratings is immediate", () => {
-    let p = updateProgress(initialProgress(), { type: "practice" });
-    for (let id = 1; id <= 6; id++) {
-      p = updateProgress(p, { type: "rate", rating: id % 2 ? "effort" : "review" });
-    }
-    expect(weakIds(p)).toEqual([1, 2, 3, 4, 5, 6]);
-    expect(updateProgress(p, { type: "practice", weakOnly: true }).queue).toEqual([1, 2, 3, 4, 5, 6]);
+    let progress = updateProgress(initialProgress(), { type: "practice" });
+    for (let id = 1; id <= 6; id++) progress = updateProgress(progress, { type: "rate", rating: id % 2 ? "effort" : "review" });
+    expect(weakIds(current(progress))).toEqual([1, 2, 3, 4, 5, 6]);
+    expect(current(updateProgress(progress, { type: "practice", weakOnly: true })).queue).toEqual([1, 2, 3, 4, 5, 6]);
   });
 
   it("persists position, language, maximum hint usage, ratings and completion together", () => {
-    let p = updateProgress(initialProgress(), {
-      type: "readMode",
-      mode: "together",
-    });
-    p = updateProgress(p, { type: "practice" });
-    p = updateProgress(p, { type: "hint", level: 2 });
-    p = updateProgress(p, { type: "hint", level: 1 });
-    p = updateProgress(p, { type: "rate", rating: "effort" });
-    expect(p.hintUsage[1]).toBe(2);
-    expect(parseProgress(JSON.stringify(p))).toEqual(p);
-    p = updateProgress(p, { type: "navigate", screen: "overview" });
-    p = parseProgress(JSON.stringify(p));
-    p = updateProgress(p, { type: "resume" });
-    expect(p.currentScreen).toBe("recall");
-    expect(p.queueIndex).toBe(1);
-    expect(p.readMode).toBe("together");
+    let progress = updateProgress(initialProgress(), { type: "readMode", mode: "together" });
+    progress = updateProgress(progress, { type: "practice" });
+    progress = updateProgress(progress, { type: "hint", level: 2 });
+    progress = updateProgress(progress, { type: "hint", level: 1 });
+    progress = updateProgress(progress, { type: "rate", rating: "effort" });
+    expect(current(progress).hintUsage[1]).toBe(2);
+    expect(parseProgress(JSON.stringify(progress))).toEqual(progress);
+    progress = updateProgress(progress, { type: "navigate", screen: "overview" });
+    progress = parseProgress(JSON.stringify(progress));
+    progress = updateProgress(progress, { type: "resume" });
+    expect(current(progress).currentScreen).toBe("recall");
+    expect(current(progress).queueIndex).toBe(1);
+    expect(current(progress).readMode).toBe("together");
   });
 
   it("allows backward movement without erasing ratings or restarting the course", () => {
-    let p = updateProgress(initialProgress(), { type: "practice" });
-    p = updateProgress(p, { type: "rate", rating: "review" });
-    p = updateProgress(p, { type: "previous" });
-    expect(p.queueIndex).toBe(0);
-    expect(p.chunkRatings[1]).toBe("review");
-    expect(updateProgress(p, { type: "previous" }).queueIndex).toBe(0);
+    let progress = updateProgress(initialProgress(), { type: "practice" });
+    progress = updateProgress(progress, { type: "rate", rating: "review" });
+    progress = updateProgress(progress, { type: "previous" });
+    expect(current(progress).queueIndex).toBe(0);
+    expect(current(progress).chunkRatings[1]).toBe("review");
+    expect(current(updateProgress(progress, { type: "previous" })).queueIndex).toBe(0);
   });
 
+  const invalidPass = (overrides: Record<string, unknown>) => {
+    const initial = initialProgress();
+    return JSON.stringify({ ...initial, passes: { ...initial.passes, 1: { ...initial.passes[1], ...overrides } } });
+  };
   it.each([
-    null,
-    "not-json",
-    "null",
-    "{}",
+    null, "not-json", "null", "{}",
     JSON.stringify({ ...initialProgress(), version: 99 }),
-    JSON.stringify({ ...initialProgress(), queue: [] }),
-    JSON.stringify({ ...initialProgress(), queue: [1, 1] }),
-    JSON.stringify({ ...initialProgress(), queue: [99] }),
-    JSON.stringify({ ...initialProgress(), queueIndex: 9 }),
-    JSON.stringify({ ...initialProgress(), currentScreen: "payments" }),
-    JSON.stringify({ ...initialProgress(), currentScreen: ["read"] }),
-    JSON.stringify({ ...initialProgress(), chunkRatings: { 1: "wrong" } }),
-    JSON.stringify({ ...initialProgress(), hintUsage: {} }),
-    JSON.stringify({ ...initialProgress(), lastStudiedAt: "invalid" }),
-  ])(
-    "recovers safely from missing, invalid or unsupported storage: %s",
-    (raw) => {
-      expect(parseProgress(raw)).toEqual(initialProgress());
-    },
-  );
+    invalidPass({ queue: [] }), invalidPass({ queue: [1, 1] }), invalidPass({ queue: [99] }),
+    invalidPass({ queueIndex: 9 }), invalidPass({ currentScreen: "payments" }), invalidPass({ currentScreen: ["read"] }),
+    invalidPass({ chunkRatings: { 1: "wrong" } }), invalidPass({ hintUsage: {} }), invalidPass({ lastStudiedAt: "invalid" }),
+  ])("recovers safely from missing, invalid or unsupported storage: %s", (raw) => {
+    const parsed = parseProgress(raw);
+    if (raw && raw.includes('"version":3') && !raw.includes('"version":99')) {
+      expect(parsed.passes[1]).toEqual(initialProgress().passes[1]);
+    } else {
+      expect(parsed).toEqual(initialProgress());
+    }
+  });
 });
 
 describe("Source locked content", () => {
-  const task = readFileSync(
-    new URL("../docs/current_task.md", import.meta.url),
-    "utf8",
-  ).replace(/\r\n/g, "\n");
+  const task = readFileSync(new URL("../docs/current_task.md", import.meta.url), "utf8").replace(/\r\n/g, "\n");
   it("uses exactly the six Korean and English chunks approved in current_task.md", () => {
-    const approved = [
-      ...task.matchAll(
-        /### Chunk (\d)\s+Korean:\s+```text\n([\s\S]*?)\n```\s+Target:\s+```text\n([\s\S]*?)\n```/g,
-      ),
-    ];
+    const approved = [...task.matchAll(/### Chunk (\d)\s+Korean:\s+```text\n([\s\S]*?)\n```\s+Target:\s+```text\n([\s\S]*?)\n```/g)];
     expect(approved).toHaveLength(6);
     expect(chunks).toHaveLength(6);
     for (const [index, match] of approved.entries()) {
@@ -150,13 +124,8 @@ describe("Source locked content", () => {
       expect(chunk.hint1).toHaveLength(chunk.english.length);
       expect(chunk.hint2).toHaveLength(chunk.english.length);
       chunk.english.forEach((line, index) => {
-        expect(line.startsWith(chunk.hint1[index].replace(/…$/, ""))).toBe(
-          true,
-        );
-        const pattern = chunk.hint2[index]
-          .split("______")
-          .map((part) => part.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
-          .join("[A-Za-z’]+");
+        expect(line.startsWith(chunk.hint1[index].replace(/…$/, ""))).toBe(true);
+        const pattern = chunk.hint2[index].split("______").map((part) => part.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("[A-Za-z’]+");
         expect(line).toMatch(new RegExp(`^${pattern}$`));
         expect(chunk.hint2[index]).toContain("______");
       });
