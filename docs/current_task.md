@@ -5,9 +5,9 @@
 Pass 1 실제 학습과 피드백 반영이 끝난 뒤, 사용자가 Chapter 3 Pass 2 설계 작업을 승인했다.
 현재 설계안은 [pass2_reinforce_plan.md](./pass2_reinforce_plan.md)에 기록한다.
 
-- 상태: Increment 1 main 반영 완료, Increment 2 구현·검증 완료
-- 현재 구현: Real Conversations + Output Variation
-- Pass 2 완료 조건은 설계안의 권장 다섯 Core 항목으로 확정하고, 다음 구현은 Increment 3 범위로 제한
+- 상태: Increment 1·2 main 반영 완료, Increment 3 구현·검증 완료(로컬 변경, commit·push 전)
+- 현재 구현: Pass 2 시작부터 다섯 Core 항목 완료와 명시적 `Finish Pass 2`까지 연결
+- Pass 2 완료 조건은 설계안의 권장 다섯 Core 항목으로 적용
 - Chapter 4, 새 Source 콘텐츠, 자동 채점, Smart Review 정책 확정은 범위 밖
 
 ### Increment 1 구현 결과 — 2026-10-01
@@ -33,6 +33,16 @@ Pass 1 실제 학습과 피드백 반영이 끝난 뒤, 사용자가 Chapter 3 P
 - `npm test`: 16개 테스트 파일의 257개 테스트 통과. TypeScript와 production build 통과.
 - Aside에서 Overview → Conversation 평가·새로고침 → Variation 6개 완료 흐름을 확인했다.
 - Headless Chrome 390×844 / 320×740에서 Overview, Conversation, Output Variation의 가로 Overflow 없음과 주요 CTA 44px 이상을 확인했다.
+
+### Increment 3 구현 결과 — 2026-10-01
+
+- Chapter Review는 Chapter 3 Source 항목만 사용한 고정형 12문항(Recall 6 + Output 6)으로 구성했다. 이는 이 Pilot 세트의 구성이고 전역 Review 문제 수·간격 정책을 확정하지 않는다.
+- Pass 2 Weekly Writing은 Pass 1 글을 덮어쓰지 않는 새 회독 기록을 사용하며, Free Writing을 기본으로 Guided·Template 보조 경로를 유지한다.
+- My Story Full Recall, A/B/Full Dialogue, Variation 6개, Chapter Review 1세트, 새 Writing 1개를 모두 마친 뒤에만 `Finish Pass 2`가 완료 시각을 저장한다.
+- Grammar Focus, What About You, Pronunciation, Exact Recall, No Hint는 Pass 2 완료를 막지 않는다.
+- 격리된 브라우저 세션에서 Pass 1 전체 완료부터 Pass 2 완료까지 실제 버튼으로 진행했고, 완료 전·후 새로고침 복원과 Pass 1 데이터 보존을 확인했다.
+- 390×844 및 320×740에서 Overview, Review, Writing, 완료 요약을 확인했다. 320px Writing 하단 버튼 겹침을 발견해 공용 ActionFooter의 모바일 grid 우선순위를 수정하고 재검증했다.
+- `npm run verify`: safety 검사, 16개 테스트 파일의 264개 테스트, TypeScript와 production build 통과.
 
 ---
 

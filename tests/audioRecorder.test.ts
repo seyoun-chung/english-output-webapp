@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { createAudioRecorder, emptyRecording, preferredRecordingMimeType } from "../src/audioRecorder";
+import { createAudioRecorder, emptyRecording, MICROPHONE_PERMISSION_TIMEOUT_MS, preferredRecordingMimeType } from "../src/audioRecorder";
 import type { RecordingEnvironment } from "../src/audioRecorder";
 
 class FakeRecorder {
@@ -131,6 +131,30 @@ describe("optional, memory-only voice recording", () => {
     reject(new DOMException("denied", "NotAllowedError"));
     await pending;
     expect(changes).not.toHaveBeenCalled();
+  });
+
+  it("times out an unanswered permission request and releases a late grant", async () => {
+    vi.useFakeTimers();
+    try {
+      const { controller, environment, stream, tracks } = setup();
+      let grant!: (stream: MediaStream) => void;
+      environment.requestStream.mockImplementation(
+        () => new Promise((resolve) => { grant = resolve; }),
+      );
+      const pending = controller.start();
+
+      await vi.advanceTimersByTimeAsync(MICROPHONE_PERMISSION_TIMEOUT_MS);
+      await pending;
+      expect(controller.getState().status).toBe("error");
+      expect(controller.getState().error).toContain("사이트 마이크 권한");
+
+      grant(stream);
+      await Promise.resolve();
+      tracks.forEach((track) => expect(track.stop).toHaveBeenCalledOnce());
+      controller.dispose();
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it("discards queued data and stop events after leaving the screen", async () => {

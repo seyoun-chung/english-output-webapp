@@ -46,6 +46,20 @@
 - **액션 아이템:** `pass`가 생략되면 기존 동작인 Pass 1을 기본값으로 사용하고, Pass 2는 앱에서 명시적으로 전달한다.
 - **해결 여부:** `해결 확인` — 관련 회귀 테스트를 포함한 257개 테스트와 production build가 통과했다. Aside의 보존된 Pass 1 완료 상태에서 Output Practice를 다시 열어 `Continue to Weekly Writing`과 `Next: Variation`이 함께 표시되는 것을 확인했고, Pass 1 기록은 변경하지 않았다.
 
+## 2026-10-01 · 320px Weekly Writing 하단 버튼 겹침
+
+- **문제 정의:** 320×740 viewport의 Pass 2 Weekly Writing 완료 상태에서 `Back to overview`와 `Next: Chapter progress` 버튼이 같은 행에 겹쳐 보였다.
+- **확인된 원인:** 모바일 ActionFooter는 한 열로 전환됐지만, 2개 액션의 데스크톱 grid-column 지정이 더 높은 CSS specificity로 남아 암시적 3열을 다시 만들었다.
+- **액션 아이템:** 모바일 규칙의 selector specificity를 높여 Back/Middle/Forward 영역 모두 1열에 배치하고, Writing·Review·완료 요약의 하단 액션을 390×844와 320×740에서 재확인한다.
+- **해결 여부:** `수정됨·추가 검증 필요` — 내장 브라우저 320×740에서 Writing의 Back/Next가 겹치지 않고 세로로 분리된 것을 재확인했다. Review와 Pass 2 완료 요약도 같은 폭에서 세로 CTA와 가로 Overflow 없음이 확인됐고, 264개 자동 테스트와 production build가 통과했다. 실제 모바일 기기의 터치감은 아직 재시험하지 않았다.
+
+## 2026-10-01 · 내장 브라우저의 마이크 권한 요청이 끝나지 않음
+
+- **문제 정의:** Windows에서 마이크 사용을 허용했지만 Codex 내장 브라우저에서 `Record`를 누르면 `Waiting for permission…` 상태가 끝나지 않았다.
+- **확인된 사실과 원인:** Windows 마이크 개인정보 설정은 `Allow`이고 Internal/External Microphone 장치는 모두 `OK`였다. localhost는 보안 컨텍스트이고 녹음 API도 존재했다. 기존 내장 브라우저 탭에서는 `getUserMedia` 요청이 허용·거부 어느 쪽으로도 완료되지 않았지만, 새 내장 브라우저 탭에서는 같은 앱과 진행 상태로 권한 요청이 완료됐다. 따라서 마이크 장치나 녹음 생성 로직의 고장이 아니라 기존 탭의 권한 요청 상태가 멈춘 사례로 확인했다.
+- **액션 아이템:** 응답 없는 권한 요청을 15초 후 종료하고 사이트 마이크 권한 또는 일반 Chrome/Edge 사용을 안내한다. 늦게 권한이 승인되어 스트림이 도착하더라도 즉시 트랙을 종료해 백그라운드 녹음을 방지한다.
+- **해결 여부:** `해결 확인` — 새 내장 브라우저 탭에서 실제 `Record → Stop recording → Your recording 생성 → 재생`을 실행했고 재생 컨트롤이 `일시중지`로 바뀌는 것을 확인했다. 응답 없는 권한 요청의 타임아웃과 늦은 권한 승인 시 스트림 해제도 자동 테스트로 추가했다. 이후 사용자가 External Microphone의 Windows 음소거를 해제한 실제 이어폰 환경에서 입력 표시 움직임, 녹음, 목소리 재생, 녹음 삭제를 모두 확인했다.
+
 ## 새 문제 기록 양식
 
 ```text

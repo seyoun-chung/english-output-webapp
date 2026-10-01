@@ -612,9 +612,9 @@ progress::-moz-progress-bar {
 .action-footer-back > button:hover { background: #f0f5ff; border-color: #bbcff6; text-decoration: none; }
 @media (max-width: 900px) {
   .action-footer { grid-template-columns: minmax(0, 1fr); gap: 10px; }
-  .action-footer[data-actions] .action-footer-back,
-  .action-footer[data-actions] .action-footer-middle,
-  .action-footer[data-actions] .action-footer-forward { grid-column: 1; }
+  .action-footer[data-actions][data-layout] .action-footer-back,
+  .action-footer[data-actions][data-layout] .action-footer-middle,
+  .action-footer[data-actions][data-layout] .action-footer-forward { grid-column: 1; }
   .action-footer-back, .action-footer-middle, .action-footer-forward { justify-content: stretch; }
   .action-footer button { flex: 1 1 auto; }
 }
