@@ -29,6 +29,20 @@ Chapter 3 Pass 3 병합 후 사용자가 중단 없이 전체 Chapter 개발을 
 - 숨김 브라우저에서 Library 열기, Chapter 3 재개, 390×844 가로 Overflow 없음과 44px CTA, 깨끗한 세션 console warning/error 없음 확인
 - 다음 increment: 화면 컴포넌트에 선택 Chapter Source를 주입하고 Chapter 1 Source 데이터를 추가
 
+### Chapter 1 Source rollout
+
+- 상태: 구현·자동 검증·브라우저 검증 완료, Git 반영 전
+- main textbook pp.6–7, 11–12, 16–17, 23–24와 Week 1 My Story / Real Conversations 노트에서 Source를 확인
+- Chapter 1 My Story 6 chunks, Conversation 8 turns, Exact 6, Source Variation 6,
+  Grammar, What About You 11 questions, Beginner Template 8개를 등록
+- Chapter 1도 기존 공통 Pass 1–3 엔진과 독립된 version 5 진행 기록을 사용
+- 모든 학습 화면이 선택 Chapter의 Source 묶음과 metadata를 읽도록 변경하고 Chapter 3 기본 동작을 보존
+- `npm run verify`: 21개 테스트 파일, 292개 테스트와 production build 통과
+- 숨김 브라우저에서 Chapter 1 선택, Read/Recall/Hint/Answer, Conversation, Output,
+  Grammar, What About You, Writing Template, Chapter 3 전환을 확인
+- 390×844 Writing 화면에서 가로 Overflow 없음, 하단 CTA 44px 이상, 깨끗한 최종 세션 console warning/error 없음
+- 다음 increment: 같은 Source 검증 방식으로 Chapter 2 콘텐츠 적용
+
 ## Active — Chapter 3 Pass 3 Complete (2026-10-02)
 
 사용자가 빠른 전체 개발을 위해 Chapter 3 Pass 3을 한 번의 구현 단위로 완료하고,

@@ -1,7 +1,6 @@
 import { useEffect, useReducer, useRef, useState } from "react";
 import type { Dispatch } from "react";
-import { chunks } from "./data/chapter3";
-import { chapter3, chapterCatalog, chapterCode, chapterLabel, chapterName, type ChapterId } from "./data/chapters";
+import { chapterCatalog, chapterCode, chapterLabel, chapterName, type ChapterId, type ChapterMetadata } from "./data/chapters";
 import { chapterContentById } from "./data/chapterContent";
 import { VoicePractice } from "./VoicePractice";
 import { ConversationScreen, conversationViewLabel } from "./ConversationScreen";
@@ -10,7 +9,6 @@ import { ratingLabels } from "./learningLabels";
 import { OutputPractice } from "./OutputPractice";
 import { ReviewScreen } from "./ReviewScreen";
 import { buildReviewItems, isVariationComplete } from "./exerciseProgress";
-import { pass2ReviewExercises } from "./data/outputPractice";
 import type { PracticeMode } from "./exerciseProgress";
 import { WritingScreen } from "./WritingScreen";
 import type { WritingMode } from "./writingProgress";
@@ -21,11 +19,13 @@ import { RecallRatingButtons } from "./RecallRatingButtons";
 import { completionForPass, coreCompletion, isPassReady } from "./chapterCompletion";
 import {
   activePassProgress,
+  initialProgress,
   STORAGE_KEY,
   weakIds,
 } from "./progress";
 import type { Action, PassProgress, Rating, ReadMode, Screen } from "./progress";
 import { initialAppProgress, parseAppProgress, updateAppProgress, type AppProgress } from "./appProgress";
+import { ChapterContentProvider, useChapterContent } from "./ChapterContentContext";
 
 const storySteps: { screen: Screen; title: string; description: string }[] = [
   {
@@ -69,10 +69,6 @@ const chapterSections = [
   { screen: "review", title: "Chapter Review", kind: "Practice" },
 ] as const;
 type ScreenProps = { progress: PassProgress; dispatch: Dispatch<Action> };
-const currentChapterName = chapterName(chapter3);
-const currentChapterCode = chapterCode(chapter3);
-const currentChapterLabel = chapterLabel(chapter3);
-
 function ChapterLibrary({ progress, onOpen }: { progress: AppProgress; onOpen: (chapterId: ChapterId) => void }) {
   return (
     <div className="library-shell">
@@ -114,8 +110,9 @@ function ChapterLibrary({ progress, onOpen }: { progress: AppProgress; onOpen: (
   );
 }
 
-function breadcrumbParts(progress: PassProgress): string[] {
-  const chapter = progress.pass > 1 ? `${currentChapterName} · Pass ${progress.pass}` : currentChapterName;
+function breadcrumbParts(progress: PassProgress, metadata: ChapterMetadata): string[] {
+  const name = chapterName(metadata);
+  const chapter = progress.pass > 1 ? `${name} · Pass ${progress.pass}` : name;
   switch (progress.currentScreen) {
     case "overview": return [chapter, "Overview"];
     case "read": return [chapter, "My Story", "Read"];
@@ -155,6 +152,9 @@ function HomeIcon() {
 }
 
 function ChapterNavigation({ progress, dispatch }: ScreenProps) {
+  const { metadata } = useChapterContent();
+  const currentChapterName = chapterName(metadata);
+  const currentChapterCode = chapterCode(metadata);
   const isStory = progress.currentScreen === "read" || progress.currentScreen === "recall" || progress.currentScreen === "full";
   const isConversation = progress.currentScreen === "conversation";
   type Group = "story" | "conversation" | "output" | "writing";
@@ -266,20 +266,25 @@ function ChapterNavigation({ progress, dispatch }: ScreenProps) {
 }
 
 function SourceNote() {
+  const { metadata } = useChapterContent();
   return (
     <p className="source-note">
-      출처 · 메인 교재 {currentChapterName}, My Story · 한국어 p.{chapter3.pages.myStoryKorean} / 영어 p.{chapter3.pages.myStoryEnglish}
+      출처 · 메인 교재 {chapterName(metadata)}, My Story · 한국어 p.{metadata.pages.myStoryKorean} / 영어 p.{metadata.pages.myStoryEnglish}
     </p>
   );
 }
 
 function Pass2Overview({ progress, dispatch }: ScreenProps) {
+  const content = useChapterContent();
+  const { metadata } = content;
+  const currentChapterName = chapterName(metadata);
+  const currentChapterCode = chapterCode(metadata);
   const storyComplete = progress.fullRecallCompleted;
-  const conversationComplete = isConversationComplete(progress.conversation);
-  const outputComplete = isVariationComplete(progress.output);
+  const conversationComplete = isConversationComplete(progress.conversation, content.conversations);
+  const outputComplete = isVariationComplete(progress.output, content.exercises);
   const reviewComplete = progress.review.completed;
   const writingComplete = progress.writing.completed;
-  const complete = isPassReady(progress) && progress.completedAt !== null;
+  const complete = isPassReady(progress, content) && progress.completedAt !== null;
   const coreCompleted = [storyComplete, conversationComplete, outputComplete, reviewComplete, writingComplete].filter(Boolean).length;
   const next = !storyComplete ? {
     eyebrow: "PASS 2 · REINFORCE", title: "Full Recall first",
@@ -315,7 +320,7 @@ function Pass2Overview({ progress, dispatch }: ScreenProps) {
       <section className="chapter-hero">
         <div className="hero-copy">
           <span className="eyebrow">{currentChapterCode} · PASS 2 · REINFORCE</span>
-          <h1 tabIndex={-1}>{chapter3.title}<span className="blue-period">.</span></h1>
+          <h1 tabIndex={-1}>{metadata.title}<span className="blue-period">.</span></h1>
           <p>전체 이야기를 다시 꺼내고, 대화와 Source Variation으로 이어가세요.<br />필요할 때 보조 경로로 돌아갈 수 있어요.</p>
         </div>
         <div className="chapter-art" aria-hidden="true">
@@ -372,9 +377,13 @@ function Pass2Overview({ progress, dispatch }: ScreenProps) {
 }
 
 function Pass3Overview({ progress, dispatch }: ScreenProps) {
-  const items = completionForPass(progress);
+  const content = useChapterContent();
+  const { metadata } = content;
+  const currentChapterName = chapterName(metadata);
+  const currentChapterCode = chapterCode(metadata);
+  const items = completionForPass(progress, content);
   const completed = items.filter(item => item.completed).length;
-  const finished = isPassReady(progress) && progress.completedAt !== null;
+  const finished = isPassReady(progress, content) && progress.completedAt !== null;
   const next = items.find(item => !item.completed);
   const open = (id: typeof items[number]["id"]) => id === "myStory"
     ? dispatch({ type: "navigate", screen: "full" })
@@ -383,7 +392,7 @@ function Pass3Overview({ progress, dispatch }: ScreenProps) {
       : dispatch({ type: "navigate", screen: id });
   return <>
     <section className="chapter-hero">
-      <div className="hero-copy"><span className="eyebrow">{currentChapterCode} · PASS 3 · COMPLETE</span><h1 tabIndex={-1}>{chapter3.title}<span className="blue-period">.</span></h1><p>도움 장치를 줄이고 {currentChapterName} 전체를 내 영어로 완성하세요.</p></div>
+      <div className="hero-copy"><span className="eyebrow">{currentChapterCode} · PASS 3 · COMPLETE</span><h1 tabIndex={-1}>{metadata.title}<span className="blue-period">.</span></h1><p>도움 장치를 줄이고 {currentChapterName} 전체를 내 영어로 완성하세요.</p></div>
       <div className="chapter-art" aria-hidden="true"><div className="art-orbit" /><div className="art-number">03</div><div className="art-label">COMPLETE</div><div className="art-star">✳</div></div>
     </section>
     <div className="overview-grid">
@@ -399,12 +408,16 @@ function Pass3Overview({ progress, dispatch }: ScreenProps) {
 }
 
 function Overview({ progress, dispatch, hasPass2 }: ScreenProps & { hasPass2: boolean }) {
+  const content = useChapterContent();
+  const { metadata } = content;
+  const currentChapterName = chapterName(metadata);
+  const currentChapterCode = chapterCode(metadata);
   if (progress.pass === 3) return <Pass3Overview progress={progress} dispatch={dispatch} />;
   if (progress.pass === 2) return <Pass2Overview progress={progress} dispatch={dispatch} />;
   const resumeLabel = progress.lastSection === "myStory" ? "My Story" : chapterSections.find((section) => section.screen === progress.lastSection)?.title ?? "My Story";
-  const core = coreCompletion(progress);
+  const core = coreCompletion(progress, content);
   const coreCompleted = core.filter((section) => section.completed).length;
-  const ready = isPassReady(progress);
+  const ready = isPassReady(progress, content);
   const complete = ready && progress.completedAt !== null;
   return (
     <>
@@ -414,17 +427,17 @@ function Overview({ progress, dispatch, hasPass2 }: ScreenProps & { hasPass2: bo
             {currentChapterCode}
           </span>
           <h1 tabIndex={-1}>
-            {chapter3.title}<span className="blue-period">.</span>
+            {metadata.title}<span className="blue-period">.</span>
           </h1>
           <p>
-            나의 성격을 이야기하는 영어.
+            {metadata.title}.
             <br />
             읽고, 기억하고, 내 목소리로 꺼내보세요.
           </p>
         </div>
         <div className="chapter-art" aria-hidden="true">
           <div className="art-orbit" />
-          <div className="art-number">03</div>
+          <div className="art-number">{String(metadata.id).padStart(2, "0")}</div>
           <div className="art-label">A LITTLE AT A TIME</div>
           <div className="art-star">✳</div>
         </div>
@@ -473,7 +486,7 @@ function Overview({ progress, dispatch, hasPass2 }: ScreenProps & { hasPass2: bo
               <span className="section-number">0{i + 2}</span>
               <span className="section-info">
                 <strong>{title}</strong>
-                <small>{screen === "grammar" ? "Optional · 5 example pairs" : kind}</small>
+                <small>{screen === "grammar" ? `Optional · ${content.grammar.subtitle}` : kind}</small>
               </span>
               <span className="section-link-arrow" aria-hidden="true">{core.find((item) => item.id === screen)?.completed || (screen === "grammar" && progress.grammar.studied) || (screen === "about" && progress.about.completedQuestionIds.length > 0) ? "✓" : "↗"}</span>
             </button>
@@ -540,6 +553,8 @@ function ScreenHeading({
 }
 
 function Reader({ progress, dispatch }: ScreenProps) {
+  const { metadata, chunks } = useChapterContent();
+  const currentChapterLabel = chapterLabel(metadata);
   const modes: { id: ReadMode; label: string }[] = [
     { id: "korean", label: "Korean" },
     { id: "english", label: "English" },
@@ -554,7 +569,7 @@ function Reader({ progress, dispatch }: ScreenProps) {
       />
       <section className="panel reader-panel">
         <div className="reader-toolbar">
-          <h2>{chapter3.title}</h2>
+          <h2>{metadata.title}</h2>
           <div className="segmented" role="group" aria-label="본문 언어 선택">
             {modes.map((mode) => (
               <button
@@ -597,12 +612,14 @@ function Reader({ progress, dispatch }: ScreenProps) {
 }
 
 function Recall({ progress, dispatch }: ScreenProps) {
+  const { metadata, chunks } = useChapterContent();
+  const currentChapterLabel = chapterLabel(metadata);
   const chunk = chunks.find(
     (c) => c.id === progress.queue[progress.queueIndex],
   )!;
   const [hint, setHint] = useState<0 | 1 | 2>(0);
   const [answer, setAnswer] = useState(false);
-  const isWeakPractice = progress.queue.length !== 6;
+  const isWeakPractice = progress.queue.length !== chunks.length;
   const revealHint = (level: 1 | 2) => {
     setHint(level);
     dispatch({ type: "hint", level });
@@ -707,8 +724,11 @@ function Recall({ progress, dispatch }: ScreenProps) {
 }
 
 function FullRecall({ progress, dispatch }: ScreenProps) {
+  const content = useChapterContent();
+  const { metadata, chunks } = content;
+  const currentChapterLabel = chapterLabel(metadata);
   const [showAnswer, setShowAnswer] = useState(false);
-  const weak = weakIds(progress);
+  const weak = weakIds(progress, content);
   const remembered = chunks.filter(
     (c) => progress.chunkRatings[c.id] === "immediate",
   );
@@ -818,8 +838,11 @@ function FullRecall({ progress, dispatch }: ScreenProps) {
 }
 
 function ChapterCompletion({ progress, dispatch, hasPass2, hasPass3 }: ScreenProps & { hasPass2: boolean; hasPass3: boolean }) {
-  const items = completionForPass(progress);
-  const ready = isPassReady(progress);
+  const content = useChapterContent();
+  const currentChapterName = chapterName(content.metadata);
+  const currentChapterLabel = chapterLabel(content.metadata);
+  const items = completionForPass(progress, content);
+  const ready = isPassReady(progress, content);
   const complete = ready && progress.completedAt !== null;
   const pass2 = progress.pass === 2;
   const pass3 = progress.pass === 3;
@@ -865,9 +888,15 @@ export default function App() {
       return initialAppProgress();
     }
   });
-  const chapterProgress = appProgress.chapters[appProgress.activeChapterId] ?? initialAppProgress().chapters[3]!;
+  const activeContent = chapterContentById[appProgress.activeChapterId] ?? chapterContentById[3]!;
+  const chapterProgress = appProgress.chapters[appProgress.activeChapterId] ?? initialProgress(activeContent);
+  const currentChapterName = chapterName(activeContent.metadata);
+  const currentChapterCode = chapterCode(activeContent.metadata);
   const dispatch: Dispatch<Action> = (action) => appDispatch({ type: "chapter", action });
   const main = useRef<HTMLElement>(null);
+  useEffect(() => {
+    document.title = appProgress.view === "library" ? "Chapter Library · English Output" : `${currentChapterName} · English Output`;
+  }, [appProgress.view, currentChapterName]);
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(appProgress));
@@ -887,11 +916,12 @@ export default function App() {
   }, [appProgress.view, progress.currentScreen, chunkId, conversationPosition, outputPosition, reviewPosition]);
   const rated = Object.values(progress.chunkRatings).filter(Boolean).length;
   const sectionTitle = chapterSections.find((section) => section.screen === progress.currentScreen)?.title;
-  const locationParts = breadcrumbParts(progress);
+  const locationParts = breadcrumbParts(progress, activeContent.metadata);
   if (appProgress.view === "library") {
     return <ChapterLibrary progress={appProgress} onOpen={(chapterId) => appDispatch({ type: "selectChapter", chapterId })} />;
   }
   return (
+    <ChapterContentProvider content={activeContent}>
     <div className="app-shell">
       <a className="skip-link" href="#main-content">
         본문으로 건너뛰기
@@ -917,7 +947,7 @@ export default function App() {
           <div className="sidebar-heading">
             <span className="eyebrow">MY LEARNING</span>
             <h2>{currentChapterName}</h2>
-            <p>{chapter3.title}</p>
+            <p>{activeContent.metadata.title}</p>
             {progress.pass === 2 && <span className="badge">Pass 2 · Reinforce</span>}
             {progress.pass === 3 && <span className="badge">Pass 3 · Complete</span>}
           </div>
@@ -926,9 +956,9 @@ export default function App() {
             <span>Chunks self-checked</span>
             <strong>
               {rated}
-              <small> / 6 chunks</small>
+              <small> / {activeContent.chunks.length} chunks</small>
             </strong>
-            <progress max={6} value={rated} aria-label="평가한 Chunk 수" />
+            <progress max={activeContent.chunks.length} value={rated} aria-label="평가한 Chunk 수" />
             <p>
               {progress.fullRecallCompleted
                 ? "Full Recall complete ✓"
@@ -969,7 +999,7 @@ export default function App() {
           )}
           {progress.currentScreen === "conversation" && <ConversationScreen pass={progress.pass} progress={progress.conversation} dispatch={(action) => dispatch({ type: "conversation", action })} onOverview={() => dispatch({ type: "navigate", screen: "overview" })} onNext={() => dispatch({ type: "navigate", screen: "output" })} />}
           {progress.currentScreen === "output" && <OutputPractice pass={progress.pass} progress={progress.output} onChange={(value) => dispatch({ type: "output", value })} onOverview={() => dispatch({ type: "navigate", screen: "overview" })} onNext={() => dispatch({ type: "navigate", screen: progress.pass === 3 ? "grammar" : progress.pass === 2 ? "review" : "writing" })} />}
-          {progress.currentScreen === "review" && <ReviewScreen pass={progress.pass} progress={progress.review} onChange={(value) => dispatch({ type: "review", value })} eligibleItems={progress.pass > 1 ? pass2ReviewExercises : buildReviewItems({ chunkRatings: progress.chunkRatings, conversationRatings: progress.conversation.ratings, outputRatings: progress.output.ratings })} onOverview={() => dispatch({ type: "navigate", screen: "overview" })} onNext={() => dispatch({ type: "navigate", screen: progress.pass === 2 ? "writing" : "complete" })} />}
+          {progress.currentScreen === "review" && <ReviewScreen pass={progress.pass} progress={progress.review} onChange={(value) => dispatch({ type: "review", value })} eligibleItems={progress.pass > 1 ? activeContent.pass2ReviewExercises : buildReviewItems({ chunkRatings: progress.chunkRatings, conversationRatings: progress.conversation.ratings, outputRatings: progress.output.ratings }, activeContent.exercises.review)} onOverview={() => dispatch({ type: "navigate", screen: "overview" })} onNext={() => dispatch({ type: "navigate", screen: progress.pass === 2 ? "writing" : "complete" })} />}
           {progress.currentScreen === "writing" && <WritingScreen pass={progress.pass} progress={progress.writing} onChange={(value) => dispatch({ type: "writing", value })} onOverview={() => dispatch({ type: "navigate", screen: "overview" })} onNext={() => dispatch({ type: "navigate", screen: progress.pass === 3 ? "review" : progress.pass === 2 ? "complete" : "review" })} />}
           {progress.currentScreen === "about" && <AboutScreen pass={progress.pass} progress={progress.about} onChange={(value) => dispatch({ type: "about", value })} onOverview={() => dispatch({ type: "navigate", screen: "overview" })} onNext={() => dispatch({ type: "navigate", screen: "writing" })} />}
           {progress.currentScreen === "grammar" && <GrammarScreen pass={progress.pass} progress={progress.grammar} onChange={(value) => dispatch({ type: "grammar", value })} onOverview={() => dispatch({ type: "navigate", screen: "overview" })} onNext={() => dispatch({ type: "navigate", screen: "about" })} />}
@@ -981,5 +1011,6 @@ export default function App() {
         </main>
       </div>
     </div>
+    </ChapterContentProvider>
   );
 }

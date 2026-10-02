@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { conversationTurns, previousPartnerTurn, roleTurnIds } from "./data/conversations";
+import { previousPartnerTurn, roleTurnIds } from "./data/conversations";
 import type { ConversationRole, ConversationTurn } from "./data/conversations";
 import { isConversationComplete, isRoleComplete } from "./conversationProgress";
 import type { ConversationAction, ConversationProgress } from "./conversationProgress";
@@ -7,7 +7,8 @@ import type { ReadMode } from "./progress";
 import { VoicePractice } from "./VoicePractice";
 import { ActionFooter } from "./ActionFooter";
 import { RecallRatingButtons } from "./RecallRatingButtons";
-import { chapter3, chapterLabel, chapterName } from "./data/chapters";
+import { chapterLabel, chapterName } from "./data/chapters";
+import { useChapterContent } from "./ChapterContentContext";
 
 type Props = {
   pass: 1 | 2 | 3;
@@ -24,13 +25,15 @@ export function conversationViewLabel(progress: ConversationProgress) {
 }
 
 function SourceNote() {
-  return <p className="source-note">Source · {chapterName(chapter3)}, Real Conversations · Korean p.{chapter3.pages.conversationKorean} / English p.{chapter3.pages.conversationEnglish}</p>;
+  const { metadata } = useChapterContent();
+  return <p className="source-note">Source · {chapterName(metadata)}, Real Conversations · Korean p.{metadata.pages.conversationKorean} / English p.{metadata.pages.conversationEnglish}</p>;
 }
 
 function Dialogue({ mode }: { mode: ReadMode }) {
+  const { conversations } = useChapterContent();
   return (
     <ol className={`dialogue-list ${mode === "together" ? "dialogue-bilingual" : ""}`}>
-      {conversationTurns.map((turn) => (
+      {conversations.map((turn) => (
         <li className={`dialogue-turn speaker-${turn.role.toLowerCase()}`} key={turn.id}>
           <span className="speaker-badge" aria-label={`Speaker ${turn.role}`}>{turn.role}</span>
           <div className="dialogue-lines">
@@ -44,13 +47,14 @@ function Dialogue({ mode }: { mode: ReadMode }) {
 }
 
 function CompletionStatus({ progress }: { progress: ConversationProgress }) {
+  const { conversations } = useChapterContent();
   return (
     <ul className="conversation-checklist" aria-label="Conversation progress">
       {(["A", "B"] as const).map((role) => (
         <li key={role}>
           <span>Play {role}</span>
-          <span className={isRoleComplete(progress, role) ? "is-complete" : "muted"}>
-            {isRoleComplete(progress, role) ? "Completed ✓" : `${roleTurnIds(role).filter((id) => progress.ratings[id]).length} / ${roleTurnIds(role).length} rated`}
+          <span className={isRoleComplete(progress, role, conversations) ? "is-complete" : "muted"}>
+            {isRoleComplete(progress, role, conversations) ? "Completed ✓" : `${roleTurnIds(role, conversations).filter((id) => progress.ratings[id]).length} / ${roleTurnIds(role, conversations).length} rated`}
           </span>
         </li>
       ))}
@@ -65,12 +69,13 @@ function CompletionStatus({ progress }: { progress: ConversationProgress }) {
 }
 
 function RolePractice({ progress, dispatch, onOverview }: Pick<Props, "progress" | "dispatch" | "onOverview">) {
+  const { conversations } = useChapterContent();
   const [answer, setAnswer] = useState(false);
   const [hint, setHint] = useState<0 | 1 | 2>(0);
-  const ids = roleTurnIds(progress.role);
+  const ids = roleTurnIds(progress.role, conversations);
   const index = progress.positions[progress.role];
-  const turn = conversationTurns.find((item) => item.id === ids[index])!;
-  const partner = previousPartnerTurn(turn.id);
+  const turn = conversations.find((item) => item.id === ids[index])!;
+  const partner = previousPartnerTurn(turn.id, conversations);
   const revealHint = (level: 1 | 2) => {
     setHint(level);
     dispatch({ type: "hint", level });
@@ -130,7 +135,8 @@ function TurnAnswer({ turn }: { turn: ConversationTurn }) {
 }
 
 function RoleSummary({ progress, dispatch, onOverview }: Pick<Props, "progress" | "dispatch" | "onOverview">) {
-  const ids = roleTurnIds(progress.role);
+  const { conversations } = useChapterContent();
+  const ids = roleTurnIds(progress.role, conversations);
   const easy = ids.filter((id) => progress.ratings[id] === "immediate").length;
   const review = ids.filter((id) => ["effort", "review"].includes(progress.ratings[id] ?? "")).length;
   return (
@@ -150,6 +156,7 @@ function RoleSummary({ progress, dispatch, onOverview }: Pick<Props, "progress" 
 }
 
 function FullDialogue({ progress, dispatch, onOverview, onNext }: Props) {
+  const { conversations } = useChapterContent();
   const [answer, setAnswer] = useState(false);
   return (
     <>
@@ -167,12 +174,12 @@ function FullDialogue({ progress, dispatch, onOverview, onNext }: Props) {
       </section>
       {progress.fullRecallCompleted && (
         <section className="panel conversation-panel conversation-summary">
-          <div className="section-heading"><h2>{isConversationComplete(progress) ? "Real Conversations complete" : "Your progress"}</h2><span className="badge">Self check</span></div>
+          <div className="section-heading"><h2>{isConversationComplete(progress, conversations) ? "Real Conversations complete" : "Your progress"}</h2><span className="badge">Self check</span></div>
           <CompletionStatus progress={progress} />
           <ActionFooter
             back={<button className="secondary" onClick={onOverview}>← Back to overview</button>}
-            middle={<button className="secondary" onClick={() => dispatch({ type: "role", role: !isRoleComplete(progress, "A") ? "A" : "B", restart: true })}>
-              {!isRoleComplete(progress, "A") ? "Play A" : !isRoleComplete(progress, "B") ? "Play B" : "Practice again"}
+            middle={<button className="secondary" onClick={() => dispatch({ type: "role", role: !isRoleComplete(progress, "A", conversations) ? "A" : "B", restart: true })}>
+              {!isRoleComplete(progress, "A", conversations) ? "Play A" : !isRoleComplete(progress, "B", conversations) ? "Play B" : "Practice again"}
             </button>}
             forward={<button className="primary" onClick={onNext}>Next: Output Practice <span aria-hidden="true">→</span></button>}
           />
@@ -183,11 +190,12 @@ function FullDialogue({ progress, dispatch, onOverview, onNext }: Props) {
 }
 
 export function ConversationScreen({ pass, progress, dispatch, onOverview, onNext }: Props) {
+  const { metadata, conversations } = useChapterContent();
   const roleActive = progress.view === "role" || progress.view === "role-summary";
   return (
     <div className="conversation-screen">
       <div className="page-heading">
-        <span className="eyebrow">{chapterLabel(chapter3)} · {pass > 1 ? `PASS ${pass} · CORE` : "REQUIRED"}</span>
+        <span className="eyebrow">{chapterLabel(metadata)} · {pass > 1 ? `PASS ${pass} · CORE` : "REQUIRED"}</span>
         <h1 tabIndex={-1}>Real Conversations</h1>
         <p>{progress.view === "read" ? "Read both sides. Then take a role." : progress.view === "full" ? "Full Dialogue · Follow the Korean dialogue. Recall both roles in English." : `${conversationViewLabel(progress)} · Read your partner’s line. Say your part in English.`}</p>
       </div>
@@ -195,7 +203,7 @@ export function ConversationScreen({ pass, progress, dispatch, onOverview, onNex
         <button aria-pressed={progress.view === "read"} onClick={() => dispatch({ type: "view", view: "read" })}>Read</button>
         {(["A", "B"] as ConversationRole[]).map((role) => (
           <button key={role} aria-pressed={roleActive && progress.role === role} onClick={() => dispatch({ type: "role", role })}>
-            Play {role}{isRoleComplete(progress, role) && <span aria-label="completed"> ✓</span>}
+            Play {role}{isRoleComplete(progress, role, conversations) && <span aria-label="completed"> ✓</span>}
           </button>
         ))}
         <button aria-pressed={progress.view === "full"} onClick={() => dispatch({ type: "view", view: "full" })}>Full Dialogue{progress.fullRecallCompleted && <span aria-label="completed"> ✓</span>}</button>
@@ -203,7 +211,7 @@ export function ConversationScreen({ pass, progress, dispatch, onOverview, onNex
       {progress.view === "read" && (
         <section className="panel conversation-panel">
           <div className="reader-toolbar">
-            <h2>{chapter3.title} <span className="conversation-turn-count">{conversationTurns.length} turns</span></h2>
+            <h2>{metadata.title} <span className="conversation-turn-count">{conversations.length} turns</span></h2>
             <div className="segmented" role="group" aria-label="Dialogue language">
               {([{ mode: "korean", label: "Korean" }, { mode: "english", label: "English" }, { mode: "together", label: "Both" }] as const).map(({ mode, label }) => (
                 <button key={mode} aria-pressed={progress.readMode === mode} onClick={() => dispatch({ type: "readMode", mode })}>{label}</button>
