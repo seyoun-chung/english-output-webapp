@@ -7,6 +7,7 @@ import type { ReadMode } from "./progress";
 import { VoicePractice } from "./VoicePractice";
 import { ActionFooter } from "./ActionFooter";
 import { RecallRatingButtons } from "./RecallRatingButtons";
+import { chapter3, chapterLabel, chapterName } from "./data/chapters";
 
 type Props = {
   pass: 1 | 2 | 3;
@@ -23,7 +24,7 @@ export function conversationViewLabel(progress: ConversationProgress) {
 }
 
 function SourceNote() {
-  return <p className="source-note">Source · Chapter 3, Real Conversations · Korean p.56 / English p.57</p>;
+  return <p className="source-note">Source · {chapterName(chapter3)}, Real Conversations · Korean p.{chapter3.pages.conversationKorean} / English p.{chapter3.pages.conversationEnglish}</p>;
 }
 
 function Dialogue({ mode }: { mode: ReadMode }) {
@@ -186,7 +187,7 @@ export function ConversationScreen({ pass, progress, dispatch, onOverview, onNex
   return (
     <div className="conversation-screen">
       <div className="page-heading">
-        <span className="eyebrow">CHAPTER 3 · {pass > 1 ? `PASS ${pass} · CORE` : "REQUIRED"}</span>
+        <span className="eyebrow">{chapterLabel(chapter3)} · {pass > 1 ? `PASS ${pass} · CORE` : "REQUIRED"}</span>
         <h1 tabIndex={-1}>Real Conversations</h1>
         <p>{progress.view === "read" ? "Read both sides. Then take a role." : progress.view === "full" ? "Full Dialogue · Follow the Korean dialogue. Recall both roles in English." : `${conversationViewLabel(progress)} · Read your partner’s line. Say your part in English.`}</p>
       </div>
@@ -202,7 +203,7 @@ export function ConversationScreen({ pass, progress, dispatch, onOverview, onNex
       {progress.view === "read" && (
         <section className="panel conversation-panel">
           <div className="reader-toolbar">
-            <h2>Personality Traits <span className="conversation-turn-count">7 turns</span></h2>
+            <h2>{chapter3.title} <span className="conversation-turn-count">{conversationTurns.length} turns</span></h2>
             <div className="segmented" role="group" aria-label="Dialogue language">
               {([{ mode: "korean", label: "Korean" }, { mode: "english", label: "English" }, { mode: "together", label: "Both" }] as const).map(({ mode, label }) => (
                 <button key={mode} aria-pressed={progress.readMode === mode} onClick={() => dispatch({ type: "readMode", mode })}>{label}</button>

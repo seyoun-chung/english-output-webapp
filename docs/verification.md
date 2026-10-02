@@ -1,5 +1,14 @@
 # Local verification
 
+## Latest result — Common Chapter metadata foundation (2026-10-02)
+
+- `npm run verify` 통과: repository safety check, 18개 테스트 파일 / 281개 테스트,
+  TypeScript와 production build.
+- main textbook 목차의 Chapter 1–12 제목과 섹션 페이지가 빠짐없이 catalog에 있고
+  ID·주차·제목이 중복되지 않는 것을 자동 검사했다.
+- Chapter 3 UI의 제목·번호·Source 페이지가 catalog를 사용하면서 기존 표시와 학습 흐름을
+  바꾸지 않는 것을 기존 전체 회귀 테스트와 숨김 브라우저 smoke로 확인했다.
+
 ## Latest result — Chapter 3 Pass 3 Complete (2026-10-02)
 
 - `npm run verify` 통과: repository safety check, 17개 테스트 파일 / 278개 테스트,
