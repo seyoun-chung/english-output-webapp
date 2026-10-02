@@ -6,12 +6,16 @@ Chapter 3 Pass 3 병합 후 사용자가 중단 없이 전체 Chapter 개발을 
 
 ### Foundation increment
 
-- 상태: 구현·자동 검증·브라우저 smoke 확인 완료, Git 반영 전
+- 상태: catalog 기반 UI 메타데이터는 main 반영 완료. 공통 학습 엔진 1차 구현·자동 검증·브라우저 smoke 확인 완료, Git 반영 전
 - 메인 교재 목차를 Source로 Chapter 1–12 제목과 주요 섹션 시작 페이지 catalog 작성
 - Chapter 3 화면의 Chapter 번호, 제목, Source 페이지 표시를 catalog에서 읽도록 변경
 - 학습 문장이나 완료 정책은 변경하지 않아 Chapter 3 회귀 동작을 보존
-- `npm run verify`: 18개 테스트 파일, 281개 테스트와 production build 통과
-- 다음 increment: 저장 상태를 Chapter별로 분리하고 Chapter 선택/재개가 가능한 공통 shell 구현
+- 진행 상태·Conversation·Output·Review·Writing 파서를 Chapter별 Source 묶음으로 초기화할 수 있게 분리
+- Chapter 3은 기본 Source 묶음으로 유지하여 기존 호출과 version 1–4 기록을 그대로 보존
+- 대체 Chapter Source 묶음으로 초기화·복원 격리·Recall 갱신을 자동 검사
+- `npm run verify`: 19개 테스트 파일, 284개 테스트와 production build 통과
+- 숨김 브라우저에서 기존 Chapter 3 Pass 1 Overview가 정상 렌더링됨을 확인
+- 다음 increment: 저장 상태를 Chapter별로 분리하고 Chapter 선택/재개가 가능한 version 5 공통 shell 구현
 - 그다음: 각 Chapter의 Source-locked 학습 데이터를 원본 PDF에서 검증하여 순차 적용
 
 ## Active — Chapter 3 Pass 3 Complete (2026-10-02)

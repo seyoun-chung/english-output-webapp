@@ -1,5 +1,14 @@
 # Local verification
 
+## Latest result — Common learning engine boundary (2026-10-02)
+
+- `npm run verify` 통과: repository safety check, 19개 테스트 파일 / 284개 테스트,
+  TypeScript와 production build.
+- 대체 Chapter Source 묶음으로 Chunk·Conversation·Writing 초기값이 구성되고,
+  다른 Chapter의 저장 기록을 가져오지 않으며 Recall 갱신이 해당 Chapter ID에만 적용됨을 자동 검사했다.
+- 기존 호출은 Chapter 3을 기본값으로 유지해 version 1–4 migration과 기존 281개 회귀 검사가 모두 통과했다.
+- 숨김 내장 브라우저에서 Chapter 3 Pass 1 Overview, 기존 섹션 목록과 진행 표시가 정상 렌더링됐다.
+
 ## Latest result — Common Chapter metadata foundation (2026-10-02)
 
 - `npm run verify` 통과: repository safety check, 18개 테스트 파일 / 281개 테스트,
