@@ -1,52 +1,54 @@
 import { ExerciseCard } from './ExerciseCard';
-import { exerciseGroup, type ExerciseGroup, type ExerciseItem } from './data/outputPractice';
-import { rateReview, startReview, type ReviewProgress } from './exerciseProgress';
+import type { ExerciseItem } from './data/outputPractice';
+import type { Rating } from './progress';
+import { difficultReviewItems, hasCompletedReview, rateReview, startReview, type ReviewProgress } from './exerciseProgress';
 import { ActionFooter } from './ActionFooter';
-import { chapterLabel, chapterName } from './data/chapters';
+import { chapterLabel } from './data/chapters';
 import { useChapterContent } from './ChapterContentContext';
 import './exercises.css';
-const groups: Record<ExerciseGroup, string> = { story: 'My Story', conversation: 'Real Conversations', output: 'Output Practice' };
-export function ReviewScreen({ pass = 1, progress, onChange, onOverview, onNext, eligibleItems }: { pass?: 1 | 2 | 3; progress: ReviewProgress; onChange: (next: ReviewProgress) => void; onOverview: () => void; onNext: () => void; eligibleItems: ExerciseItem[] }) {
+
+export function ReviewScreen({ pass = 1, progress, onChange, onOverview, onNext, eligibleItems, learnedRatings = {} }: {
+  pass?: 1 | 2 | 3; progress: ReviewProgress; onChange: (next: ReviewProgress) => void;
+  onOverview: () => void; onNext: () => void; eligibleItems: ExerciseItem[]; learnedRatings?: Record<string, Rating>;
+}) {
   const { metadata, exercises } = useChapterContent();
-  const byId = new Map(eligibleItems.map(item => [item.id, item]));
-  const selected = eligibleItems.filter(item => progress.selectedGroups.includes(exerciseGroup(item.id)));
-  const validQueue = progress.queue.length > 0 && progress.queue.every(id => byId.has(id));
+  // Preserve access to legacy fixed sessions and their actual self-ratings.
+  const byId = new Map(exercises.review.map(item => [item.id, item]));
+  const pool = exercises.review.filter(item => eligibleItems.some(learned => learned.id === item.id)
+    || progress.latestRatings?.[item.id] || progress.ratings[item.id]);
+  const difficult = difficultReviewItems(pool, learnedRatings, progress);
+  const validQueue = progress.queue.length > 0 && progress.queue.every(id => pool.some(item => item.id === id));
   const item = validQueue ? byId.get(progress.queue[progress.index]) : undefined;
-  const reset = () => onChange({ ...progress, queue: [], index: 0, ratings: {}, completed: false });
-  const startFixedReview = () => onChange(startReview(progress, eligibleItems.map(reviewItem => reviewItem.id), exercises));
-  const fixed = pass > 1;
-  return <div className="exercise-screen"><header className="page-heading"><p className="eyebrow">{chapterLabel(metadata)} · {fixed ? `PASS ${pass} · CORE` : 'REVIEW'}</p><h1 tabIndex={-1}>Chapter Review</h1><p>{fixed ? `Recall and Output are balanced in this ${chapterName(metadata)} set.` : 'Review the items you’ve already practiced.'}</p></header>
-    {!validQueue ? <section className="panel exercise-summary">
-      <h2>{fixed ? 'Balanced Chapter Review' : 'Choose your review'}</h2>
-      {fixed
-        ? <><p><strong>{eligibleItems.length} items</strong> · 6 Recall + 6 Output</p><p className="muted">This fixed set uses only {chapterName(metadata)} textbook and supplement content. Go at your own pace.</p></>
-        : eligibleItems.length ? <><div className="review-groups">{(Object.keys(groups) as ExerciseGroup[]).map(group => <label key={group}><input type="checkbox" checked={progress.selectedGroups.includes(group)} onChange={event => onChange({ ...progress, selectedGroups: event.target.checked ? [...progress.selectedGroups, group] : progress.selectedGroups.filter(g => g !== group) })} />{groups[group]}<span>{eligibleItems.filter(item => exerciseGroup(item.id) === group).length}</span></label>)}</div><p>{selected.length} items · Go at your own pace.</p></> : <p>No practiced items yet. Add a self-check in My Story, Real Conversations, or Output Practice first.</p>}
-      <ActionFooter
-        back={<button className="secondary" onClick={onOverview}>← Back to overview</button>}
-        forward={fixed
-          ? <button className="primary" disabled={!eligibleItems.length} onClick={startFixedReview}>Start review <span aria-hidden="true">→</span></button>
-          : <button className="primary" disabled={!selected.length} onClick={() => onChange(startReview(progress, selected.map(item => item.id), exercises))}>Start review <span aria-hidden="true">→</span></button>}
-      />
-    </section> : progress.completed ? <section className="panel exercise-summary">
-      <p className="eyebrow">SESSION COMPLETE</p><h2>Review complete</h2>
-      <p>{Object.values(progress.ratings).filter(value => value === 'immediate').length} recalled easily · {Object.values(progress.ratings).filter(value => value !== 'immediate').length} to review</p>
-      <p className="muted">This session’s self-checks are kept separate from your study record.</p>
-      <ActionFooter
-        back={<button className="secondary" onClick={onOverview}>← Back to overview</button>}
-        middle={<button className="secondary" onClick={reset}>{fixed ? 'Practice again' : 'Choose another set'}</button>}
-        forward={<button className="primary" onClick={onNext}>Next: {pass === 2 ? 'Weekly Writing' : 'Chapter progress'} <span aria-hidden="true">→</span></button>}
-      />
-    </section> : item && <ExerciseCard
-      key={`review-${item.id}`}
-      item={item}
-      position={progress.index + 1}
-      total={progress.queue.length}
+  const start = (items: ExerciseItem[]) => onChange(startReview(progress, items.map(item => item.id), exercises));
+  const choose = () => onChange({ ...progress, latestRatings: { ...progress.ratings, ...progress.latestRatings },
+    hasCompletedSet: hasCompletedReview(progress), queue: [], index: 0, ratings: {}, completed: false });
+  return <div className="exercise-screen">
+    <header className="page-heading">
+      <p className="eyebrow">{chapterLabel(metadata)} · PASS {pass} · REVIEW</p>
+      <h1 tabIndex={-1}>Chapter Review</h1>
+      <p>이 Chapter의 이번 회독에서 학습한 문제를 전체 또는 어려운 문제만 복습해요.</p>
+    </header>
+    <p role="status">전체 복습 대상 {pool.length}개 · 남은 어려운 문제 {difficult.length}개</p>
+    {pool.length > 0 && difficult.length === 0 && <p className="is-complete">어려운 문제 모두 클리어 ✓</p>}
+    {!validQueue || progress.completed ? <section className="panel exercise-summary">
+      {progress.completed ? <>
+        <p className="eyebrow">SESSION COMPLETE</p><h2>Review complete</h2>
+        <p>이번 세트 {progress.queue.length}개 자기평가 완료</p>
+        <p>{Object.values(progress.ratings).filter(value => value === 'immediate').length} recalled easily · {Object.values(progress.ratings).filter(value => value !== 'immediate').length} to review</p>
+      </> : <h2>Choose your review</h2>}
+      <p>모든 문제에 자기평가를 남기면 한 세트 완료예요. 어려운 문제를 모두 클리어하는 연습은 원하는 만큼 할 수 있어요.</p>
+      {!pool.length && <p>No practiced items yet. Add a self-check in My Story, Real Conversations, or Output Practice first.</p>}
+      <div className="exercise-tabs">
+        <button className="secondary" disabled={!pool.length} onClick={() => start(pool)}>{progress.completed ? 'Practice again · 전체 다시 연습' : '전체 복습 시작'} ({pool.length})</button>
+        <button className="primary" disabled={!difficult.length} onClick={() => start(difficult)}>어려운 문제만 복습 ({difficult.length})</button>
+      </div>
+      <p className="muted">최초 학습 평가는 보존됩니다. 복습의 최신 평가가 어려운 문제 목록에 반영되며, ‘바로 나왔어요’로 평가하면 목록에서 빠져요.</p>
+      <ActionFooter back={<button className="secondary" onClick={onOverview}>← Back to overview</button>}
+        forward={hasCompletedReview(progress) ? <button className="primary" onClick={onNext}>Next: {pass === 2 ? 'Weekly Writing' : 'Chapter progress'} <span aria-hidden="true">→</span></button> : undefined} />
+    </section> : item && <ExerciseCard key={item.id} item={item} position={progress.index + 1} total={progress.queue.length}
       onRate={value => onChange(rateReview(progress, value))}
-      footer={<ActionFooter
-        back={<button className="secondary" onClick={onOverview}>← Back to overview</button>}
+      footer={<ActionFooter back={<button className="secondary" onClick={onOverview}>← Back to overview</button>}
         middle={progress.index > 0 && <button className="secondary" onClick={() => onChange({ ...progress, index: progress.index - 1 })}>Previous</button>}
-        forward={<button className="secondary" onClick={reset}>{fixed ? 'Restart set' : 'Choose another set'}</button>}
-      />}
-    />}
+        forward={<button className="secondary" onClick={choose}>복습 선택으로</button>} />} />}
   </div>;
 }
