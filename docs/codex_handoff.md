@@ -2,6 +2,9 @@
 
 ## Latest state — 2026-10-02
 
+- 공통화 foundation에서 Chapter 1–12의 제목과 main textbook 섹션 페이지를 `src/data/chapters.ts`로 분리했다.
+- 현재 화면은 계속 Chapter 3만 제공하지만 Chapter 표시와 provenance가 catalog 기반으로 바뀌었다.
+- 다음 구현은 Chapter별 저장 container와 Chapter 선택 shell이다. 아직 다른 Chapter를 사용 가능하다고 표시하지 않는다.
 - Chapter 3 Pass 1, Pass 2, Pass 3의 처음부터 명시적 완료까지 구현됐다.
 - localStorage schema는 version 4이며 version 1–3을 안전하게 이전한다.
 - Pass 3은 Full Recall, A/B/Full Dialogue, No Hint, Grammar, What About You,
