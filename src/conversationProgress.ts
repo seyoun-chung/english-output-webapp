@@ -1,4 +1,4 @@
-import { conversationTurns, roleTurnIds, type ConversationRole } from "./data/conversations";
+import { conversationTurns, roleTurnIds, type ConversationRole, type ConversationTurn } from "./data/conversations";
 import type { Rating, ReadMode } from "./progress";
 
 export type ConversationProgress = {
@@ -19,21 +19,30 @@ export type ConversationAction =
   | { type: "previous" }
   | { type: "complete" };
 
-export function initialConversationProgress(): ConversationProgress {
+export function initialConversationProgress(turns: ConversationTurn[] = conversationTurns): ConversationProgress {
   return {
     view: "read", readMode: "korean", role: "A", positions: { A: 0, B: 0 },
-    ratings: Object.fromEntries(conversationTurns.map(({ id }) => [id, null])),
-    hintUsage: Object.fromEntries(conversationTurns.map(({ id }) => [id, 0])),
+    ratings: Object.fromEntries(turns.map(({ id }) => [id, null])),
+    hintUsage: Object.fromEntries(turns.map(({ id }) => [id, 0])),
     fullRecallCompleted: false,
   };
 }
-export const isRoleComplete = (p: ConversationProgress, role: ConversationRole) =>
-  roleTurnIds(role).every((id) => p.ratings[id] != null);
-export const isConversationComplete = (p: ConversationProgress) =>
-  isRoleComplete(p, "A") && isRoleComplete(p, "B") && p.fullRecallCompleted;
+export const isRoleComplete = (
+  p: ConversationProgress,
+  role: ConversationRole,
+  turns: ConversationTurn[] = conversationTurns,
+) => roleTurnIds(role, turns).every((id) => p.ratings[id] != null);
+export const isConversationComplete = (
+  p: ConversationProgress,
+  turns: ConversationTurn[] = conversationTurns,
+) => isRoleComplete(p, "A", turns) && isRoleComplete(p, "B", turns) && p.fullRecallCompleted;
 
-export function updateConversationProgress(p: ConversationProgress, action: ConversationAction): ConversationProgress {
-  const ids = roleTurnIds(p.role);
+export function updateConversationProgress(
+  p: ConversationProgress,
+  action: ConversationAction,
+  turns: ConversationTurn[] = conversationTurns,
+): ConversationProgress {
+  const ids = roleTurnIds(p.role, turns);
   const position = p.positions[p.role];
   const id = ids[position];
   switch (action.type) {
@@ -59,7 +68,10 @@ export function updateConversationProgress(p: ConversationProgress, action: Conv
 }
 
 const record = (v: unknown): v is Record<string, unknown> => typeof v === "object" && v !== null && !Array.isArray(v);
-export function parseConversationProgress(value: unknown): ConversationProgress | null {
+export function parseConversationProgress(
+  value: unknown,
+  turns: ConversationTurn[] = conversationTurns,
+): ConversationProgress | null {
   if (!record(value) || !["read", "role", "role-summary", "full"].includes(value.view as string)
     || !["korean", "english", "together"].includes(value.readMode as string)
     || (value.role !== "A" && value.role !== "B")
@@ -67,18 +79,18 @@ export function parseConversationProgress(value: unknown): ConversationProgress 
     || typeof value.fullRecallCompleted !== "boolean") return null;
   const { positions, ratings, hintUsage } = value;
   if (!( ["A", "B"] as const).every((role) => typeof positions[role] === "number"
-    && Number.isInteger(positions[role]) && positions[role] >= 0 && positions[role] < roleTurnIds(role).length)
-    || !conversationTurns.every(({ id }) => [null, "immediate", "effort", "review"].includes(ratings[id] as Rating | null)
+    && Number.isInteger(positions[role]) && positions[role] >= 0 && positions[role] < roleTurnIds(role, turns).length)
+    || !turns.every(({ id }) => [null, "immediate", "effort", "review"].includes(ratings[id] as Rating | null)
       && [0, 1, 2].includes(hintUsage[id] as number))) return null;
   const result: ConversationProgress = {
     view: value.view as ConversationProgress["view"], readMode: value.readMode as ReadMode,
     role: value.role, positions: { A: positions.A as number, B: positions.B as number },
-    ratings: Object.fromEntries(conversationTurns.map(({ id }) => [id, ratings[id] as Rating | null])),
-    hintUsage: Object.fromEntries(conversationTurns.map(({ id }) => [id, hintUsage[id] as 0 | 1 | 2])),
+    ratings: Object.fromEntries(turns.map(({ id }) => [id, ratings[id] as Rating | null])),
+    hintUsage: Object.fromEntries(turns.map(({ id }) => [id, hintUsage[id] as 0 | 1 | 2])),
     fullRecallCompleted: value.fullRecallCompleted,
   };
   // A summary cannot legitimately precede the final rated turn.
-  if (result.view === "role-summary" && (!isRoleComplete(result, result.role)
-    || result.positions[result.role] !== roleTurnIds(result.role).length - 1)) result.view = "role";
+  if (result.view === "role-summary" && (!isRoleComplete(result, result.role, turns)
+    || result.positions[result.role] !== roleTurnIds(result.role, turns).length - 1)) result.view = "role";
   return result;
 }
