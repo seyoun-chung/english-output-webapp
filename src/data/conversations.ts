@@ -14,7 +14,12 @@ export type ConversationTurn = {
   english: string[];
   hint1: string[];
   hint2: string[];
-  source: typeof conversationSource;
+  source: {
+    file: string;
+    koreanPage: number;
+    englishPage: number;
+    section: string;
+  };
 };
 
 // Visually checked against the main textbook, pp. 56–57.
@@ -78,10 +83,15 @@ export const conversationTurns: ConversationTurn[] = [
   },
 ];
 
-export const roleTurnIds = (role: ConversationRole) =>
-  conversationTurns.filter((turn) => turn.role === role).map((turn) => turn.id);
+export const roleTurnIds = (
+  role: ConversationRole,
+  turns: ConversationTurn[] = conversationTurns,
+) => turns.filter((turn) => turn.role === role).map((turn) => turn.id);
 
-export const previousPartnerTurn = (id: number) => {
-  const index = conversationTurns.findIndex((turn) => turn.id === id);
-  return index > 0 ? conversationTurns[index - 1] : undefined;
+export const previousPartnerTurn = (
+  id: number,
+  turns: ConversationTurn[] = conversationTurns,
+) => {
+  const index = turns.findIndex((turn) => turn.id === id);
+  return index > 0 ? turns[index - 1] : undefined;
 };
