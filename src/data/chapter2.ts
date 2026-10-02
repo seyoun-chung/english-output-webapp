@@ -58,8 +58,8 @@ const questions = [
   "When was the last time you read a book? What was it about?",
   "Who do you spend most of your time with? Tell us about them.",
   "You unexpectedly get a day off from work and the weather is perfect. How would you spend the day?",
-].map((english, index) => ({ id: `ch2-question-${index + 1}`, english }));
-const templates = ["In my free time, I like to ___", "Lately, I’ve been spending a lot of time ___", "The other day, I ___", "After work, I usually ___", "At night, I usually ___", "I’ve always wanted to try ___"].map((english, index) => ({ id: `ch2-template-${index + 1}`, english }));
+].map((english, index) => ({ id: `ch2-question-${index + 1}`, english, section: "Let’s Have a Talk", sourcePage: 45 }));
+const templates = ["In my free time, I like to ___", "Lately, I’ve been spending a lot of time ___", "The other day, I ___", "After work, I usually ___", "At night, I usually ___", "I’ve always wanted to try ___"].map((english, index) => ({ id: `ch2-template-${index + 1}`, english, section: "Beginner Template", sourcePage: 44 }));
 
 export const chapter2Content: ChapterContent = {
   id: 2, metadata, chunks: chapter2Chunks, conversations: chapter2ConversationTurns,
