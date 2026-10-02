@@ -18,6 +18,17 @@ Chapter 3 Pass 3 병합 후 사용자가 중단 없이 전체 Chapter 개발을 
 - 다음 increment: 저장 상태를 Chapter별로 분리하고 Chapter 선택/재개가 가능한 version 5 공통 shell 구현
 - 그다음: 각 Chapter의 Source-locked 학습 데이터를 원본 PDF에서 검증하여 순차 적용
 
+### Version 5 storage + Chapter Library increment
+
+- 상태: 구현·자동 검증·브라우저 검증 완료, Git 반영 전
+- 기존 version 1–4 Chapter 3 기록을 version 5의 Chapter별 container로 자동 이전
+- Chapter별 진행 기록과 현재 Chapter를 분리 저장하며, 사용할 수 없는 Chapter 선택은 상태를 바꾸지 않음
+- Chapter Library에 12개 목차를 표시하고 Source 묶음이 등록된 Chapter만 시작/재개 가능
+- 현재는 Chapter 3만 활성화하며 다른 Chapter는 `Source setup in progress`로 명확히 표시
+- `npm run verify`: 20개 테스트 파일, 288개 테스트와 production build 통과
+- 숨김 브라우저에서 Library 열기, Chapter 3 재개, 390×844 가로 Overflow 없음과 44px CTA, 깨끗한 세션 console warning/error 없음 확인
+- 다음 increment: 화면 컴포넌트에 선택 Chapter Source를 주입하고 Chapter 1 Source 데이터를 추가
+
 ## Active — Chapter 3 Pass 3 Complete (2026-10-02)
 
 사용자가 빠른 전체 개발을 위해 Chapter 3 Pass 3을 한 번의 구현 단위로 완료하고,

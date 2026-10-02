@@ -1,5 +1,16 @@
 # Local verification
 
+## Latest result — Version 5 storage and Chapter Library (2026-10-02)
+
+- `npm run verify` 통과: repository safety check, 20개 테스트 파일 / 288개 테스트,
+  TypeScript와 production build.
+- version 1–4 Chapter 3 기록의 version 5 이전, Chapter별 action 분리,
+  사용할 수 없는 Chapter 선택 차단과 Library 전환을 자동 검사했다.
+- 숨김 내장 브라우저에서 12개 Chapter 카드, Chapter 3만 활성화된 상태, Chapter 3 재개를 확인했다.
+- 390×844 viewport에서 문서 가로 Overflow가 없고 활성 CTA 높이는 44px였다.
+  Chapter 3로 재개한 화면도 가로 Overflow가 없고 `All chapters` 버튼은 52.8px 높이였다.
+- 깨끗한 새 브라우저 세션의 console warning/error는 없었다.
+
 ## Latest result — Common learning engine boundary (2026-10-02)
 
 - `npm run verify` 통과: repository safety check, 19개 테스트 파일 / 284개 테스트,

@@ -1,7 +1,8 @@
 import { useEffect, useReducer, useRef, useState } from "react";
 import type { Dispatch } from "react";
 import { chunks } from "./data/chapter3";
-import { chapter3, chapterCode, chapterLabel, chapterName } from "./data/chapters";
+import { chapter3, chapterCatalog, chapterCode, chapterLabel, chapterName, type ChapterId } from "./data/chapters";
+import { chapterContentById } from "./data/chapterContent";
 import { VoicePractice } from "./VoicePractice";
 import { ConversationScreen, conversationViewLabel } from "./ConversationScreen";
 import { isConversationComplete } from "./conversationProgress";
@@ -20,13 +21,11 @@ import { RecallRatingButtons } from "./RecallRatingButtons";
 import { completionForPass, coreCompletion, isPassReady } from "./chapterCompletion";
 import {
   activePassProgress,
-  initialProgress,
-  parseProgress,
   STORAGE_KEY,
-  updateProgress,
   weakIds,
 } from "./progress";
 import type { Action, PassProgress, Rating, ReadMode, Screen } from "./progress";
+import { initialAppProgress, parseAppProgress, updateAppProgress, type AppProgress } from "./appProgress";
 
 const storySteps: { screen: Screen; title: string; description: string }[] = [
   {
@@ -73,6 +72,47 @@ type ScreenProps = { progress: PassProgress; dispatch: Dispatch<Action> };
 const currentChapterName = chapterName(chapter3);
 const currentChapterCode = chapterCode(chapter3);
 const currentChapterLabel = chapterLabel(chapter3);
+
+function ChapterLibrary({ progress, onOpen }: { progress: AppProgress; onOpen: (chapterId: ChapterId) => void }) {
+  return (
+    <div className="library-shell">
+      <header className="topbar">
+        <span className="brand" aria-label="English Output">
+          <span className="brand-icon"><BookIcon /></span>
+          English Output
+          <span className="brand-caption">배운 영어를, 내 영어로.</span>
+        </span>
+        <span className="topbar-label">CHAPTER LIBRARY</span>
+      </header>
+      <main className="chapter-library" id="main-content">
+        <header className="library-heading">
+          <p className="eyebrow">MY TEXTBOOK</p>
+          <h1 tabIndex={-1}>Choose a chapter</h1>
+          <p>Source가 검증된 Chapter부터 학습할 수 있어요. 각 Chapter의 진행 기록은 따로 보관됩니다.</p>
+        </header>
+        <div className="chapter-grid">
+          {chapterCatalog.map((chapter) => {
+            const available = chapterContentById[chapter.id] !== undefined;
+            const saved = progress.chapters[chapter.id];
+            const pass = saved?.activePass ?? 1;
+            return (
+              <article className={`chapter-card ${available ? "is-available" : "is-locked"}`} key={chapter.id}>
+                <div><span className="eyebrow">{chapterCode(chapter)} · WEEK {chapter.week}</span><h2>{chapter.title}</h2></div>
+                {available ? (
+                  <button className="primary" onClick={() => onOpen(chapter.id)}>
+                    {saved ? `Continue Pass ${pass}` : "Start Pass 1"} <span aria-hidden="true">→</span>
+                  </button>
+                ) : (
+                  <span className="badge">Source setup in progress</span>
+                )}
+              </article>
+            );
+          })}
+        </div>
+      </main>
+    </div>
+  );
+}
 
 function breadcrumbParts(progress: PassProgress): string[] {
   const chapter = progress.pass > 1 ? `${currentChapterName} · Pass ${progress.pass}` : currentChapterName;
@@ -815,22 +855,27 @@ function ChapterCompletion({ progress, dispatch, hasPass2, hasPass3 }: ScreenPro
 
 export default function App() {
   const [storageError, setStorageError] = useState(false);
-  const [chapterProgress, dispatch] = useReducer(updateProgress, undefined, () => {
+  const [appProgress, appDispatch] = useReducer(
+    (state: AppProgress, action: Parameters<typeof updateAppProgress>[1]) => updateAppProgress(state, action),
+    undefined,
+    () => {
     try {
-      return parseProgress(localStorage.getItem(STORAGE_KEY));
+      return parseAppProgress(localStorage.getItem(STORAGE_KEY));
     } catch {
-      return initialProgress();
+      return initialAppProgress();
     }
   });
+  const chapterProgress = appProgress.chapters[appProgress.activeChapterId] ?? initialAppProgress().chapters[3]!;
+  const dispatch: Dispatch<Action> = (action) => appDispatch({ type: "chapter", action });
   const main = useRef<HTMLElement>(null);
   useEffect(() => {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(chapterProgress));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(appProgress));
       setStorageError(false);
     } catch {
       setStorageError(true);
     }
-  }, [chapterProgress]);
+  }, [appProgress]);
   const progress = activePassProgress(chapterProgress);
   const chunkId = progress.queue[progress.queueIndex];
   const conversationPosition = `${progress.conversation.view}-${progress.conversation.role}-${progress.conversation.positions[progress.conversation.role]}`;
@@ -839,10 +884,13 @@ export default function App() {
   useEffect(() => {
     main.current?.querySelector<HTMLHeadingElement>("h1")?.focus();
     window.scrollTo(0, 0);
-  }, [progress.currentScreen, chunkId, conversationPosition, outputPosition, reviewPosition]);
+  }, [appProgress.view, progress.currentScreen, chunkId, conversationPosition, outputPosition, reviewPosition]);
   const rated = Object.values(progress.chunkRatings).filter(Boolean).length;
   const sectionTitle = chapterSections.find((section) => section.screen === progress.currentScreen)?.title;
   const locationParts = breadcrumbParts(progress);
+  if (appProgress.view === "library") {
+    return <ChapterLibrary progress={appProgress} onOpen={(chapterId) => appDispatch({ type: "selectChapter", chapterId })} />;
+  }
   return (
     <div className="app-shell">
       <a className="skip-link" href="#main-content">
@@ -862,6 +910,7 @@ export default function App() {
         <span className="topbar-label">
           {currentChapterCode} <span>· PASS {progress.pass}</span>
         </span>
+        <button className="topbar-library" onClick={() => appDispatch({ type: "showLibrary" })}>All chapters</button>
       </header>
       <div className="workspace">
         <aside className="sidebar">
