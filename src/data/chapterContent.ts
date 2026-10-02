@@ -21,6 +21,7 @@ import { chapter6Content } from "./chapter6";
 import { chapter7Content } from "./chapter7";
 import { chapter8Content } from "./chapter8";
 import { chapter9Content } from "./chapter9";
+import { chapter10Content } from "./chapter10";
 
 export type ChapterContent = {
   id: ChapterId;
@@ -89,6 +90,7 @@ export const chapterContentById: Partial<Record<ChapterId, ChapterContent>> = {
   7: chapter7Content,
   8: chapter8Content,
   9: chapter9Content,
+  10: chapter10Content,
 };
 
 export function requireChapterContent(chapterId: ChapterId): ChapterContent {
