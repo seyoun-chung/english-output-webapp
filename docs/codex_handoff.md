@@ -2,7 +2,12 @@
 
 ## Latest state — 2026-10-02
 
-- Chapter 4 `How Was Your Day?` Source 묶음이 구현·검증됐고 현재 작업 브랜치에서 Git 반영 전이다.
+- Chapter 5 `Catching up With Friends` Source 묶음이 구현·검증됐고 현재 작업 브랜치에서 Git 반영 전이다.
+- Chapter 5는 My Story 6, Conversation 9, Exact 6, Source Variation 6,
+  What About You / Let’s Have a Talk 12, Beginner Template 8 및 main textbook Grammar를 포함한다.
+- 최신 검증은 24개 테스트 파일 / 301개 테스트, production build와 브라우저 주요 화면,
+  390×844·320×740 반응형 점검이다. 다음 Source 적용 단위는 Chapter 6이다.
+- Chapter 4 `How Was Your Day?` Source 묶음은 PR #19, merge commit `15a8baf`로 main에 반영됐다.
 - Chapter 4는 My Story 6, Conversation 10, Exact 6, Source Variation 6,
   What About You / Let’s Have a Talk 13, Beginner Template 6 및 main textbook Grammar를 포함한다.
 - 최신 검증은 23개 테스트 파일 / 298개 테스트, production build와 숨김 브라우저 주요 화면,
