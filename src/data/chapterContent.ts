@@ -14,6 +14,7 @@ import { writingQuestions, writingTemplates } from "./writing";
 import type { ExerciseCatalog } from "../exerciseProgress";
 import type { WritingSource } from "../writingProgress";
 import { chapter1Content } from "./chapter1";
+import { chapter2Content } from "./chapter2";
 
 export type ChapterContent = {
   id: ChapterId;
@@ -74,6 +75,7 @@ export const chapter3Content: ChapterContent = {
 
 export const chapterContentById: Partial<Record<ChapterId, ChapterContent>> = {
   1: chapter1Content,
+  2: chapter2Content,
   3: chapter3Content,
 };
 
