@@ -1,5 +1,14 @@
 # Local verification
 
+## Latest result — Chapter 2 Source rollout (2026-10-02)
+
+- `npm run verify` 통과: repository safety check, 22개 테스트 파일 / 295개 테스트,
+  TypeScript와 production build.
+- Chapter 2 Source 묶음의 개수, provenance 파일과 독립 진행 초기화를 자동 검사했다.
+- 숨김 내장 브라우저에서 Library의 Chapter 2 활성화, Overview, My Story Read의 6개 Source chunk와
+  pp.28–29 provenance, Grammar의 `I do` / `I have done` Source와 pp.33–34 provenance를 확인했다.
+- 깨끗한 최종 세션에서 console warning/error가 없었고, 390×844 Grammar 화면의 가로 Overflow가 없으며 Back CTA는 46px였다.
+
 ## Latest result — Chapter 1 Source rollout (2026-10-02)
 
 - `npm run verify` 통과: repository safety check, 21개 테스트 파일 / 292개 테스트,
