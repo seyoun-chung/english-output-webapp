@@ -24,8 +24,8 @@ const chapter1Content: ChapterContent = {
   },
   pass2ReviewExercises: [],
   writing: {
-    questions: [{ id: "ch1-question-1", english: "Source question" }],
-    templates: [{ id: "ch1-template-1", english: "Source template" }],
+    questions: [{ id: "ch1-question-1", english: "Source question", section: "What About You?", sourcePage: 1 }],
+    templates: [{ id: "ch1-template-1", english: "Source template", section: "Beginner Template", sourcePage: 2 }],
   },
 };
 

@@ -4,7 +4,7 @@ export type WritingMode = 'free' | 'guided' | 'template';
 export type WritingProgress = { mode: WritingMode; selectedQuestionId: string; selectedTemplateId: string; drafts: Record<string, string>; completed: boolean; completedDrafts: Record<string, string>; completedDraftKey: string | null; completedText: string | null };
 export type AboutProgress = { selectedQuestionId: string; answers: Record<string, string>; completedQuestionIds: string[] };
 export type GrammarProgress = { studied: boolean };
-export type WritingSourceItem = { id: string; english: string };
+export type WritingSourceItem = { id: string; english: string; section: string; sourcePage: number };
 export type WritingSource = { questions: WritingSourceItem[]; templates: WritingSourceItem[] };
 export const chapter3WritingSource: WritingSource = { questions: writingQuestions, templates: writingTemplates };
 const sourceKeys = (source: WritingSource) => {

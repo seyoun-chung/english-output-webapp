@@ -6,14 +6,27 @@ Chapter 3 Pass 3 병합 후 사용자가 중단 없이 전체 Chapter 개발을 
 
 ### Chapter 6 Source rollout
 
-- 상태: 구현·자동 검증·반응형 브라우저 검증 완료, commit·push 전
+- 상태: PR #21로 main 반영 완료. merge commit `e5da998`
 - main textbook pp.116–125, 126–127, 133–135와 Week 6 My Story / Real Conversations 노트를 Source로 확인
 - Chapter 6 My Story 6 chunks, Conversation 10 turns, Exact 6, Source Variation 6,
   Grammar, What About You / Let’s Have a Talk 13 questions, Beginner Template 6개를 등록
 - Source의 여행자 B/C 대사는 문장을 바꾸지 않고 공통 엔진의 B 역할로 그룹화
 - `npm run verify`: 25개 테스트 파일, 304개 테스트와 production build 통과
 - 브라우저에서 Library 진입, My Story, Conversation, Grammar, Writing과 320×740 반응형을 확인
-- 다음 increment: Chapter 7 Source 콘텐츠 적용
+- 다음 increment였던 Chapter 7 Source 콘텐츠 적용을 진행함
+
+### Chapter 7 Source rollout
+
+- 상태: 구현·자동 검증·반응형 브라우저 검증 완료, commit·push 전
+- main textbook pp.140–146, 148–149, 152–154와 Week 7 My Story / Real Conversations 노트를 Source로 확인
+- Chapter 7 My Story 6 chunks, Conversation 9 turns, Exact 6, Source Variation 6,
+  Grammar, What About You / Let’s Have a Talk 13 questions, Beginner Template 9개를 등록
+- 질문 선택 화면이 선택된 Source의 실제 section/page를 표시하도록 공통 출처 표시 오류를 수정
+- `npm run verify`: 26개 테스트 파일, 308개 테스트와 production build 통과
+- PDF로 My Story p.141과 Real Conversations p.149를 시각 대조하고, 브라우저에서 Library,
+  My Story Read/Recall/Hint/Answer/저장, Conversation, Grammar, What About You, Writing Template을 확인
+- 좁은 내장 브라우저에서 주요 화면의 반응형 배치와 접근 가능한 CTA를 시각 확인
+- 다음 increment: Chapter 8 Source 콘텐츠 적용
 
 ### Chapter 5 Source rollout
 
