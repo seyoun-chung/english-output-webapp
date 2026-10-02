@@ -2,6 +2,11 @@
 
 ## Latest state — 2026-10-02
 
+- Chapter 2 `Introducing Yourself` Source 묶음이 구현·검증됐다.
+- Chapter 2는 My Story 6, Conversation 9, Exact 6, Source Variation 6,
+  What About You 11, Beginner Template 6 및 main textbook Grammar를 포함한다.
+- 최신 검증은 22개 테스트 파일 / 295개 테스트, production build와 숨김 브라우저 Chapter 2 Overview·Read·Grammar다.
+- 다음 작업은 Chapter 4부터 원본 PDF 확인과 Source 묶음 등록을 이어가는 것이다. Chapter 3은 이미 완료돼 있다.
 - Chapter 1 `Work, English, and Dreams` Source 묶음과 공통 화면 주입이 구현·검증됐다.
 - Chapter 1은 My Story 6, Conversation 8, Exact 6, Source Variation 6,
   What About You 11, Beginner Template 8 및 main textbook Grammar를 포함한다.
