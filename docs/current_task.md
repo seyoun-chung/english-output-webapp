@@ -1,5 +1,24 @@
 # Current Task
 
+## Active — Pass 4+ Automatic (2026-10-02)
+
+- 상태: 구현·자동 검증·브라우저 검증 완료, commit·push 전
+- 전역 Pass 4+ 공간에 Mixed Chapters, Smart Review, All Random,
+  Multi-Chapter Writing을 구현
+- 기존 Chapter별 Pass 1–3 데이터는 version 6 migration에서 보존
+- Review 대상은 기존 Source 묶음 중 실제 자기평가 기록이 있는 항목으로 제한
+- All Random은 정답 공개 전 Chapter·Pattern·Source 단서와 Hint를 숨김
+- Smart Review는 PRD 기본 우선순위만 적용하며 숫자 Weight·복습 간격은 확정하지 않음
+- `npm run verify`: 33개 테스트 파일, 339개 테스트와 production build 통과
+- 브라우저 실제 버튼으로 Mixed 선택·2문항 완료, All Random 단서 제거,
+  Multi-Chapter Writing 저장·새로고침 복원을 확인
+- Chrome 320×740에서 주요 화면 가로 Overflow 없음과 주요 CTA 44px 이상 확인
+- Chapter 1–12 각각의 Pass 1 → Pass 2 → Pass 3 완료와 전역 Pass 4+ 진입을
+  단일 curriculum 회귀 테스트로 최종 검증
+- 남은 개발 단위 없음. Git 반영과 main 병합 승인 대기
+
+세부 범위는 [pass4_automatic_plan.md](./pass4_automatic_plan.md)를 따른다.
+
 ## Active — Common Chapter engine rollout (2026-10-02)
 
 Chapter 3 Pass 3 병합 후 사용자가 중단 없이 전체 Chapter 개발을 계속 진행하도록 승인했다.

@@ -1,5 +1,22 @@
 # Codex Handoff — Textbook Mastery Web App
 
+## Pass 4+ Automatic — 2026-10-02
+
+- Branch: `codex/pass-4-automatic`
+- Git state: implementation and verification complete; no commit or push yet.
+- App progress schema is version 6. Version 5 and legacy Chapter 3 records migrate without
+  replacing Pass 1–3 data.
+- Pass 4+ is a global space, not twelve duplicated Chapter screens.
+- Only Source-backed items with an existing learner self-rating enter global Review.
+- Modes: Mixed Chapters, Smart Review, All Random, and Multi-Chapter Writing.
+- Smart Review uses only the PRD's ordinal priorities. Numeric weights, review intervals,
+  STT, and automatic grading remain open decisions.
+- Verification: `npm run verify` passed 33 files / 339 tests and the production build.
+  Browser flows and 320×740 responsive checks passed; the known missing default favicon
+  remains the only observed 404 and does not affect learning.
+- A final curriculum regression completes Pass 1–3 for all twelve Chapters and confirms that
+  Chapters 1 and 12 can enter the same global Mixed Review. No development unit remains.
+
 ## Latest state — 2026-10-02
 
 - Chapter 12 `Beautiful Memories` Source 묶음이 구현·검증됐고 현재 작업 브랜치에서 Git 반영 전이다.
