@@ -1,9 +1,9 @@
 import type { PassProgress } from "./progress";
 import { isConversationComplete } from "./conversationProgress";
-import { isOutputComplete, isVariationComplete } from "./exerciseProgress";
+import { isNoHintComplete, isOutputComplete, isVariationComplete } from "./exerciseProgress";
 
 export type CoreCompletion = {
-  id: "myStory" | "conversation" | "output" | "review" | "writing";
+  id: "myStory" | "conversation" | "output" | "review" | "writing" | "grammar" | "about";
   label: string;
   completed: boolean;
 };
@@ -28,5 +28,17 @@ export function pass2CoreCompletion(p: PassProgress): CoreCompletion[] {
   ];
 }
 
-export const completionForPass = (p: PassProgress) => p.pass === 2 ? pass2CoreCompletion(p) : coreCompletion(p);
+export function pass3CoreCompletion(p: PassProgress): CoreCompletion[] {
+  return [
+    { id: "myStory", label: "My Story Full Recall", completed: p.fullRecallCompleted },
+    { id: "conversation", label: "Real Conversations", completed: isConversationComplete(p.conversation) },
+    { id: "output", label: "Output No Hint", completed: isNoHintComplete(p.output) },
+    { id: "grammar", label: "Grammar Focus", completed: p.grammar.studied },
+    { id: "about", label: "What About You?", completed: p.about.completedQuestionIds.length > 0 },
+    { id: "writing", label: "Weekly Writing", completed: p.writing.completed },
+    { id: "review", label: "Chapter Review", completed: p.review.completed },
+  ];
+}
+
+export const completionForPass = (p: PassProgress) => p.pass === 3 ? pass3CoreCompletion(p) : p.pass === 2 ? pass2CoreCompletion(p) : coreCompletion(p);
 export const isPassReady = (p: PassProgress) => completionForPass(p).every((section) => section.completed);

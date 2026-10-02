@@ -32,6 +32,7 @@ export function parsePracticeProgress(raw: unknown): PracticeProgress | null {
 // Variation / No hint are extra practice, and no rating or pronunciation is a failure.
 export const isOutputComplete = (p: PracticeProgress) => exactExercises.every(item => rating(p.ratings[item.id]));
 export const isVariationComplete = (p: PracticeProgress) => variationExercises.every(item => rating(p.ratings[item.id]));
+export const isNoHintComplete = (p: PracticeProgress) => p.finished['no-hint'] && outputExercises.every(item => rating(p.ratings[item.id]));
 export function ratePractice(p: PracticeProgress, value: Rating): PracticeProgress {
   const items = practiceItems(p.mode);
   const ratings = { ...p.ratings, [items[p.cursors[p.mode]].id]: value };

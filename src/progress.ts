@@ -5,7 +5,7 @@ import { initialWritingProgress, parseWritingProgress, initialAboutProgress, par
 import { isPassReady } from "./chapterCompletion";
 
 export type Rating = "immediate" | "effort" | "review";
-export type PassNumber = 1 | 2;
+export type PassNumber = 1 | 2 | 3;
 export type Section = "myStory" | "conversation" | "output" | "review" | "writing" | "about" | "grammar";
 export type Screen = "overview" | "read" | "recall" | "full" | Exclude<Section, "myStory"> | "complete";
 export type ReadMode = "korean" | "english" | "together";
@@ -33,10 +33,10 @@ export type PassProgress = {
 };
 
 export type Progress = {
-  version: 3;
+  version: 4;
   chapterId: 3;
   activePass: PassNumber;
-  passes: { 1: PassProgress; 2: PassProgress | null };
+  passes: { 1: PassProgress; 2: PassProgress | null; 3: PassProgress | null };
 };
 
 export const STORAGE_KEY = "english-output-webapp:progress";
@@ -44,10 +44,11 @@ export const STORAGE_KEY = "english-output-webapp:progress";
 export function initialPassProgress(pass: PassNumber): PassProgress {
   const output = initialPracticeProgress();
   if (pass === 2) output.mode = "variation";
+  if (pass === 3) output.mode = "no-hint";
   return {
     pass,
     currentScreen: "overview",
-    resumeScreen: pass === 2 ? "full" : "read",
+    resumeScreen: pass === 1 ? "read" : "full",
     lastSection: "myStory",
     conversation: initialConversationProgress(),
     output,
@@ -67,7 +68,7 @@ export function initialPassProgress(pass: PassNumber): PassProgress {
 }
 
 export function initialProgress(): Progress {
-  return { version: 3, chapterId: 3, activePass: 1, passes: { 1: initialPassProgress(1), 2: null } };
+  return { version: 4, chapterId: 3, activePass: 1, passes: { 1: initialPassProgress(1), 2: null, 3: null } };
 }
 
 export const activePassProgress = (progress: Progress): PassProgress =>
@@ -154,18 +155,20 @@ export function parseProgress(raw: string | null): Progress {
     if (value.version === 1 || value.version === 2) {
       if (value.pass !== 1) return initialProgress();
       return {
-        version: 3,
+        version: 4,
         chapterId: 3,
         activePass: 1,
-        passes: { 1: parsePassProgress(value, 1, value.version), 2: null },
+        passes: { 1: parsePassProgress(value, 1, value.version), 2: null, 3: null },
       };
     }
-    if (value.version !== 3 || !isRecord(value.passes)) return initialProgress();
+    if ((value.version !== 3 && value.version !== 4) || !isRecord(value.passes)) return initialProgress();
     const pass1 = parsePassProgress(value.passes[1], 1);
     const pass2 = isRecord(value.passes[2]) && value.passes[2].pass === 2
       ? parsePassProgress(value.passes[2], 2) : null;
-    const activePass = value.activePass === 2 && pass2 ? 2 : 1;
-    return { version: 3, chapterId: 3, activePass, passes: { 1: pass1, 2: pass2 } };
+    const pass3 = value.version === 4 && isRecord(value.passes[3]) && value.passes[3].pass === 3
+      ? parsePassProgress(value.passes[3], 3) : null;
+    const activePass: PassNumber = value.activePass === 3 && pass3 ? 3 : value.activePass === 2 && pass2 ? 2 : 1;
+    return { version: 4, chapterId: 3, activePass, passes: { 1: pass1, 2: pass2, 3: pass3 } };
   } catch {
     return initialProgress();
   }
@@ -176,6 +179,7 @@ export const weakIds = (progress: PassProgress) =>
 
 export type Action =
   | { type: "startPass2" }
+  | { type: "startPass3" }
   | { type: "selectPass"; pass: PassNumber }
   | { type: "output"; value: PracticeProgress }
   | { type: "review"; value: ReviewProgress }
@@ -193,7 +197,7 @@ export type Action =
   | { type: "previous" }
   | { type: "complete" };
 
-type PassAction = Exclude<Action, { type: "startPass2" } | { type: "selectPass" }>;
+type PassAction = Exclude<Action, { type: "startPass2" } | { type: "startPass3" } | { type: "selectPass" }>;
 function updatePassProgress(progress: PassProgress, action: PassAction): PassProgress {
   let next = progress;
   switch (action.type) {
@@ -270,8 +274,15 @@ export function updateProgress(progress: Progress, action: Action): Progress {
     const pass2 = progress.passes[2] ?? initialPassProgress(2);
     return { ...progress, activePass: 2, passes: { ...progress.passes, 2: pass2 } };
   }
+  if (action.type === "startPass3") {
+    const pass2 = progress.passes[2];
+    if (!pass2?.completedAt || !isPassReady(pass2)) return progress;
+    const pass3 = progress.passes[3] ?? initialPassProgress(3);
+    return { ...progress, activePass: 3, passes: { ...progress.passes, 3: pass3 } };
+  }
   if (action.type === "selectPass") {
     if (action.pass === 2 && !progress.passes[2]) return progress;
+    if (action.pass === 3 && !progress.passes[3]) return progress;
     return action.pass === progress.activePass ? progress : { ...progress, activePass: action.pass };
   }
   const current = activePassProgress(progress);

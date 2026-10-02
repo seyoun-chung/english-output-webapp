@@ -89,7 +89,7 @@ describe("versioned combined storage", () => {
   it("migrates a real version 1 shape without dropping any My Story fields", () => {
     const progress = parseProgress(JSON.stringify(legacy));
     const pass = progress.passes[1];
-    expect(progress.version).toBe(3);
+    expect(progress.version).toBe(4);
     expect(progress.activePass).toBe(1);
     expect(pass.queue).toEqual(legacy.queue);
     expect(pass.queueIndex).toBe(legacy.queueIndex);

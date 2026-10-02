@@ -58,7 +58,7 @@ describe("version 3 migration and pass isolation", () => {
 
     const migrated = parseProgress(JSON.stringify(legacy));
 
-    expect(migrated).toEqual({ version: 3, chapterId: 3, activePass: 1, passes: { 1: original, 2: null } });
+    expect(migrated).toEqual({ version: 4, chapterId: 3, activePass: 1, passes: { 1: original, 2: null, 3: null } });
   });
 
   it("requires explicit completed Pass 1 before creating Pass 2", () => {
