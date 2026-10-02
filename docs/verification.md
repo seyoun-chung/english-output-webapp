@@ -1,5 +1,19 @@
 # Local verification
 
+## Latest result — Chapter 11 Source rollout (2026-10-02)
+
+- `npm run verify` 통과: repository safety check, 30개 테스트 파일 / 324개 테스트,
+  TypeScript와 production build.
+- Chapter 11 Source 묶음의 개수, provenance 파일, 독립 진행 초기화, 질문별 출처와
+  Real Conversations p.220–221 catalog 값을 자동 검사했다.
+- 메인 교재 My Story pp.214–215, Grammar pp.218–219, Real Conversations pp.220–221,
+  What About You p.226, Beginner Template p.227, Let’s Have a Talk p.228을 PNG로 렌더링해 구현과 시각 대조했다.
+- 내장 브라우저에서 Library → Chapter 11 → My Story Recall/Hint/Answer,
+  9턴 Conversation과 p.220–221 출처, What About You와 Writing Template을 실제 버튼으로 확인했다.
+- 320px Writing Template에서 문서 가로 Overflow가 없고 Back/Mark complete CTA가
+  각각 46px/44px였으며 브라우저 console warning/error는 없었다.
+- 실제 모바일 기기의 터치감과 실제 마이크·스피커는 이번 검증에 포함하지 않았다.
+
 ## Latest result — Chapter 10 Source rollout (2026-10-02)
 
 - `npm run verify` 통과: repository safety check, 29개 테스트 파일 / 320개 테스트,
