@@ -16,12 +16,12 @@ export function WritingEditor({ value, onChange, label = 'Your draft' }: { value
 }
 
 export function QuestionPicker({ selectedId, onSelect }: { selectedId: string; onSelect: (id: string) => void }) {
-  const { metadata, writing } = useChapterContent();
+  const { writing } = useChapterContent();
   const selected = writing.questions.find(item => item.id === selectedId) ?? writing.questions[0];
   return <div className="writing-prompts">
     <p className="writing-source-prompt" lang="en">{selected.english}</p>
     <details><summary>Choose a question</summary><div className="writing-question-list">{writing.questions.map((item, index) => <button type="button" key={item.id} aria-pressed={selectedId === item.id} onClick={() => onSelect(item.id)}><span>{String(index + 1).padStart(2, '0')}</span>{item.english}</button>)}</div></details>
-    <p className="writing-source">Source · Main textbook · Let’s Have a Talk · p.{metadata.pages.whatAboutYou + 2}</p>
+    <p className="writing-source">Source · Main textbook · {selected.section} · p.{selected.sourcePage}</p>
   </div>;
 }
 
