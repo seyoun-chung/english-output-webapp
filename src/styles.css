@@ -144,6 +144,10 @@ button:disabled {
 .chapter-library { width: min(1180px, calc(100% - 48px)); margin: 0 auto; padding: 56px 0 80px; }
 .library-heading { max-width: 680px; margin-bottom: 32px; }
 .library-heading > p:last-child { color: var(--muted); }
+.automatic-library-entry { display: flex; align-items: center; justify-content: space-between; gap: 24px; margin-bottom: 24px; padding: 24px 28px; border: 1px solid #b8caef; border-radius: 14px; background: linear-gradient(135deg, #ffffff, #edf3ff); }
+.automatic-library-entry h2 { margin: 5px 0 7px; }
+.automatic-library-entry p { margin: 0; color: var(--muted); line-height: 1.65; }
+.automatic-library-entry .primary { flex: 0 0 auto; }
 .chapter-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
 .chapter-card { min-width: 0; min-height: 190px; padding: 22px; border: 1px solid var(--line); border-radius: 16px; background: white; display: flex; flex-direction: column; justify-content: space-between; gap: 20px; }
 .chapter-card h2 { margin: 7px 0 0; font-size: 20px; }
@@ -1053,6 +1057,8 @@ progress::-moz-progress-bar {
   }
 }
 @media (max-width: 700px) {
+  .automatic-library-entry { align-items: stretch; flex-direction: column; padding: 20px; }
+  .automatic-library-entry .primary { width: 100%; }
   .topbar {
     height: 70px;
     padding: 0 20px;

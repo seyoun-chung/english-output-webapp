@@ -26,6 +26,7 @@ import {
 import type { Action, PassProgress, Rating, ReadMode, Screen } from "./progress";
 import { initialAppProgress, parseAppProgress, updateAppProgress, type AppProgress } from "./appProgress";
 import { ChapterContentProvider, useChapterContent } from "./ChapterContentContext";
+import { AutomaticScreen } from "./AutomaticScreen";
 
 const storySteps: { screen: Screen; title: string; description: string }[] = [
   {
@@ -69,7 +70,7 @@ const chapterSections = [
   { screen: "review", title: "Chapter Review", kind: "Practice" },
 ] as const;
 type ScreenProps = { progress: PassProgress; dispatch: Dispatch<Action> };
-function ChapterLibrary({ progress, onOpen }: { progress: AppProgress; onOpen: (chapterId: ChapterId) => void }) {
+function ChapterLibrary({ progress, onOpen, onAutomatic }: { progress: AppProgress; onOpen: (chapterId: ChapterId) => void; onAutomatic: () => void }) {
   return (
     <div className="library-shell">
       <header className="topbar">
@@ -86,6 +87,14 @@ function ChapterLibrary({ progress, onOpen }: { progress: AppProgress; onOpen: (
           <h1 tabIndex={-1}>Choose a chapter</h1>
           <p>Source가 검증된 Chapter부터 학습할 수 있어요. 각 Chapter의 진행 기록은 따로 보관됩니다.</p>
         </header>
+        <section className="automatic-library-entry">
+          <div>
+            <p className="eyebrow">PASS 4+ · AUTOMATIC</p>
+            <h2>Mixed review across chapters</h2>
+            <p>학습한 Source 문장으로 Mixed, Smart, All Random Review와 Multi-Chapter Writing을 진행해요.</p>
+          </div>
+          <button className="primary" onClick={onAutomatic}>Open Pass 4+ <span aria-hidden="true">→</span></button>
+        </section>
         <div className="chapter-grid">
           {chapterCatalog.map((chapter) => {
             const available = chapterContentById[chapter.id] !== undefined;
@@ -895,7 +904,7 @@ export default function App() {
   const dispatch: Dispatch<Action> = (action) => appDispatch({ type: "chapter", action });
   const main = useRef<HTMLElement>(null);
   useEffect(() => {
-    document.title = appProgress.view === "library" ? "Chapter Library · English Output" : `${currentChapterName} · English Output`;
+    document.title = appProgress.view === "library" ? "Chapter Library · English Output" : appProgress.view === "automatic" ? "Pass 4+ Automatic · English Output" : `${currentChapterName} · English Output`;
   }, [appProgress.view, currentChapterName]);
   useEffect(() => {
     try {
@@ -918,8 +927,9 @@ export default function App() {
   const sectionTitle = chapterSections.find((section) => section.screen === progress.currentScreen)?.title;
   const locationParts = breadcrumbParts(progress, activeContent.metadata);
   if (appProgress.view === "library") {
-    return <ChapterLibrary progress={appProgress} onOpen={(chapterId) => appDispatch({ type: "selectChapter", chapterId })} />;
+    return <ChapterLibrary progress={appProgress} onOpen={(chapterId) => appDispatch({ type: "selectChapter", chapterId })} onAutomatic={() => appDispatch({ type: "showAutomatic" })} />;
   }
+  if (appProgress.view === "automatic") return <AutomaticScreen progress={appProgress} dispatch={appDispatch} />;
   return (
     <ChapterContentProvider content={activeContent}>
     <div className="app-shell">

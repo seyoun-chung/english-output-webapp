@@ -1,5 +1,27 @@
 # Local verification
 
+## Latest result — Pass 4+ Automatic (2026-10-02)
+
+Codex 확인 완료:
+
+- [x] version 5 → version 6 migration과 Pass 1–3 기록 보존 — 자동 테스트 통과
+- [x] 자기평가한 Source 항목만 전역 Review 대상 — 자동 테스트와 브라우저 수량 확인
+- [x] Mixed Chapters 두 Chapter 선택, Recall, 평가, 완료 — 내장 브라우저 실제 버튼 확인
+- [x] Smart Review 우선순위와 평가 history 저장 — 자동 테스트 통과
+- [x] All Random의 Hint·Chapter·Pattern·Source 단서 숨김 — 내장 브라우저 확인
+- [x] Multi-Chapter Writing 완료와 새로고침 복원 — 내장 브라우저 확인
+- [x] Desktop 기본 렌더링과 320×740 반응형 — 문서 너비 320px, 가로 Overflow 0,
+  주요 CTA 44px 이상
+- [x] Chapter 1–12 전체 완료 회귀 — 각 Chapter의 Pass 1 → Pass 2 → Pass 3 완료와
+  Pass 4+ Mixed Review 진입을 단일 curriculum 테스트로 확인
+- [x] 전체 회귀 — `npm run verify`, 33개 파일 339개 테스트와 production build 통과
+
+관찰 사항:
+
+- 기본 `favicon.ico` 요청의 404가 남아 있으나 학습 Flow와 무관하며 기존 동작과 같다.
+- 실제 모바일 기기 터치감은 viewport 검증으로 표현하지 않는다. 이번 단위에는 실제 마이크
+  검증이 필요한 새 녹음 기능 변경이 없다.
+
 ## Latest result — Chapter 12 Source rollout (2026-10-02)
 
 - `npm run verify` 통과: repository safety check, 31개 테스트 파일 / 328개 테스트,
