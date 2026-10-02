@@ -71,7 +71,7 @@ const chapterSections = [
 type ScreenProps = { progress: PassProgress; dispatch: Dispatch<Action> };
 
 function breadcrumbParts(progress: PassProgress): string[] {
-  const chapter = progress.pass === 2 ? "Chapter 3 · Pass 2" : "Chapter 3";
+  const chapter = progress.pass > 1 ? `Chapter 3 · Pass ${progress.pass}` : "Chapter 3";
   switch (progress.currentScreen) {
     case "overview": return [chapter, "Overview"];
     case "read": return [chapter, "My Story", "Read"];
@@ -216,6 +216,7 @@ function ChapterNavigation({ progress, dispatch }: ScreenProps) {
       )}
       <button className="chapter-nav-progress" aria-current={progress.currentScreen === "complete" ? "page" : undefined} onClick={() => dispatch({ type: "navigate", screen: "complete" })}>Chapter progress</button>
       {progress.pass === 2 && <button className="text-button" onClick={() => dispatch({ type: "selectPass", pass: 1 })}>Review Pass 1</button>}
+      {progress.pass === 3 && <><button className="text-button" onClick={() => dispatch({ type: "selectPass", pass: 2 })}>Review Pass 2</button><button className="text-button" onClick={() => dispatch({ type: "selectPass", pass: 1 })}>Review Pass 1</button></>}
     </nav>
   );
 }
@@ -326,7 +327,35 @@ function Pass2Overview({ progress, dispatch }: ScreenProps) {
   );
 }
 
+function Pass3Overview({ progress, dispatch }: ScreenProps) {
+  const items = completionForPass(progress);
+  const completed = items.filter(item => item.completed).length;
+  const finished = isPassReady(progress) && progress.completedAt !== null;
+  const next = items.find(item => !item.completed);
+  const open = (id: typeof items[number]["id"]) => id === "myStory"
+    ? dispatch({ type: "navigate", screen: "full" })
+    : id === "output"
+      ? dispatch({ type: "output", value: { ...progress.output, mode: "no-hint" } })
+      : dispatch({ type: "navigate", screen: id });
+  return <>
+    <section className="chapter-hero">
+      <div className="hero-copy"><span className="eyebrow">CHAPTER 03 · PASS 3 · COMPLETE</span><h1 tabIndex={-1}>Personality<br />Traits<span className="blue-period">.</span></h1><p>도움 장치를 줄이고 Chapter 3 전체를 내 영어로 완성하세요.</p></div>
+      <div className="chapter-art" aria-hidden="true"><div className="art-orbit" /><div className="art-number">03</div><div className="art-label">COMPLETE</div><div className="art-star">✳</div></div>
+    </section>
+    <div className="overview-grid">
+      <section className="panel section-list">
+        <div className="section-heading"><h2>Pass 3 focus</h2><span className="badge">7 Required areas</span></div>
+        <div className="chapter-core-progress"><div className="progress-label"><span>Pass 3 required practice</span><strong>{completed} / {items.length}</strong></div><progress max={items.length} value={completed} aria-label="Pass 3 필수 영역 완료 상태" /></div>
+        {items.map((item, index) => <button className="section-row available" key={item.id} onClick={() => open(item.id)}><span className="section-number">{String(index + 1).padStart(2, "0")}</span><span className="section-info"><strong>{item.label}</strong><small>{item.completed ? "Completed" : item.id === "output" ? "No hint" : "Required"}</small></span><span className="status-tag">{item.completed ? "Done ✓" : "Required"}</span><span aria-hidden="true">↗</span></button>)}
+        <button className="section-row" disabled><span className="section-number">08</span><span className="section-info"><strong>Pronunciation</strong><small>Separate learning area</small></span><span className="later-tag">Separate</span></button>
+      </section>
+      <aside className="overview-aside"><section className="panel start-card"><span className="eyebrow">{finished ? "CHAPTER 3 COMPLETE" : next ? "CONTINUE PASS 3" : "READY TO FINISH"}</span><h2>{finished ? "Chapter 3 · Pass 3 complete ✓" : next ? next.label : "Ready to complete Chapter 3"}</h2><p>{finished ? "Pass 1–3 progress is saved in this browser." : next ? "Finish each required area at your own pace." : "All required practice is complete. Save the final completion when you’re ready."}</p><button className="primary full-width" onClick={() => next ? open(next.id) : dispatch({ type: "navigate", screen: "complete" })}>{finished ? "View completion" : next ? `Continue: ${next.label}` : "Review completion"} <span aria-hidden="true">→</span></button><button className="text-button" onClick={() => dispatch({ type: "selectPass", pass: 2 })}>Review Pass 2</button></section><div className="gentle-note"><span aria-hidden="true">✦</span><div><strong>Completion &gt; Perfection</strong><p>정답률이 아니라 실제로 꺼내본 기록으로 완료해요.</p></div></div></aside>
+    </div>
+  </>;
+}
+
 function Overview({ progress, dispatch, hasPass2 }: ScreenProps & { hasPass2: boolean }) {
+  if (progress.pass === 3) return <Pass3Overview progress={progress} dispatch={dispatch} />;
   if (progress.pass === 2) return <Pass2Overview progress={progress} dispatch={dispatch} />;
   const resumeLabel = progress.lastSection === "myStory" ? "My Story" : chapterSections.find((section) => section.screen === progress.lastSection)?.title ?? "My Story";
   const core = coreCompletion(progress);
@@ -477,7 +506,7 @@ function Reader({ progress, dispatch }: ScreenProps) {
   return (
     <>
       <ScreenHeading
-        eyebrow={progress.pass === 2 ? "CHAPTER 3 · PASS 2 · CORE" : "CHAPTER 3 · REQUIRED"}
+        eyebrow={progress.pass > 1 ? `CHAPTER 3 · PASS ${progress.pass} · CORE` : "CHAPTER 3 · REQUIRED"}
         title="My Story · Read"
         description="Read the story at your own pace."
       />
@@ -539,7 +568,7 @@ function Recall({ progress, dispatch }: ScreenProps) {
   return (
     <>
       <ScreenHeading
-        eyebrow={progress.pass === 2 ? "CHAPTER 3 · PASS 2 · CORE" : "CHAPTER 3 · REQUIRED"}
+        eyebrow={progress.pass > 1 ? `CHAPTER 3 · PASS ${progress.pass} · CORE` : "CHAPTER 3 · REQUIRED"}
         title="My Story · Chunk Recall"
         description={isWeakPractice ? "Review the chunks you marked to revisit." : "Read the Korean text. Recall it in English."}
       />
@@ -645,7 +674,7 @@ function FullRecall({ progress, dispatch }: ScreenProps) {
   return (
     <>
       <ScreenHeading
-        eyebrow={progress.pass === 2 ? "CHAPTER 3 · PASS 2 · CORE" : "CHAPTER 3 · REQUIRED"}
+        eyebrow={progress.pass > 1 ? `CHAPTER 3 · PASS ${progress.pass} · CORE` : "CHAPTER 3 · REQUIRED"}
         title="My Story · Full Recall"
       />
       <section className="panel full-story">
@@ -682,11 +711,11 @@ function FullRecall({ progress, dispatch }: ScreenProps) {
         <section className="panel reflection">
           <div className="section-heading">
             <h2>
-              {progress.pass === 2 ? "My Story reinforced" : "My Story complete"}
+              {progress.pass === 3 ? "My Story completed" : progress.pass === 2 ? "My Story reinforced" : "My Story complete"}
             </h2>
             <span className="badge">Self check</span>
           </div>
-          {progress.pass === 2 && <p>Full Recall을 완료했어요. 필요하면 Chunk Recall로 돌아가 보강할 수 있어요.</p>}
+          {progress.pass > 1 && <p>Full Recall을 완료했어요. 필요하면 Chunk Recall로 돌아가 보강할 수 있어요.</p>}
           <div className="reflection-grid">
             <div>
               <h3>
@@ -746,14 +775,16 @@ function FullRecall({ progress, dispatch }: ScreenProps) {
   );
 }
 
-function ChapterCompletion({ progress, dispatch, hasPass2 }: ScreenProps & { hasPass2: boolean }) {
+function ChapterCompletion({ progress, dispatch, hasPass2, hasPass3 }: ScreenProps & { hasPass2: boolean; hasPass3: boolean }) {
   const items = completionForPass(progress);
   const ready = isPassReady(progress);
   const complete = ready && progress.completedAt !== null;
   const pass2 = progress.pass === 2;
+  const pass3 = progress.pass === 3;
+  const areaCount = pass3 ? "seven required areas" : pass2 ? "five core areas" : "four required sections";
   return (
     <>
-      <ScreenHeading eyebrow={`CHAPTER 3 · PASS ${progress.pass}`} title={complete ? `Chapter 3 · Pass ${progress.pass} complete` : "Chapter progress"} description={complete ? `All ${pass2 ? 'five core areas' : 'four required sections'} are complete. Your Pass ${progress.pass} progress is saved.` : ready ? `All ${pass2 ? 'five core areas' : 'four required sections'} are done. Finish Pass ${progress.pass} when you're ready.` : "Build on what you’ve practiced. There’s no need to rush."} />
+      <ScreenHeading eyebrow={`CHAPTER 3 · PASS ${progress.pass}`} title={complete ? pass3 ? "Chapter 3 · Pass 3 complete" : `Chapter 3 · Pass ${progress.pass} complete` : "Chapter progress"} description={complete ? `All ${areaCount} are complete. Your Pass ${progress.pass} progress is saved.` : ready ? `All ${areaCount} are done. Finish Pass ${progress.pass} when you're ready.` : "Build on what you’ve practiced. There’s no need to rush."} />
       <section className="panel chapter-completion">
         <div className="section-heading"><h2>{complete ? "Core learning complete" : "Core learning"}</h2><span className="badge">{complete ? "Completed ✓" : `${items.filter((item) => item.completed).length} / ${items.length} ${pass2 ? 'core' : 'required'}`}</span></div>
         <ul className="conversation-checklist">
@@ -761,16 +792,18 @@ function ChapterCompletion({ progress, dispatch, hasPass2 }: ScreenProps & { has
             <li key={item.id}><button className="text-button" onClick={() => dispatch({ type: "navigate", screen: item.id === "myStory" ? progress.resumeScreen : item.id })}>{item.label} <span aria-hidden="true">↗</span></button><span className={item.completed ? "is-complete" : "muted"}>{item.completed ? "Practiced ✓" : "Open to practice"}</span></li>
           ))}
         </ul>
-        <p className="muted">{pass2 ? "Grammar Focus and What About You? do not block this Pass 2 completion. Pronunciation remains a separate learning area." : "Grammar Focus and What About You? are optional."}</p>
+        <p className="muted">{pass3 ? "All Chapter 3 learning areas are required in Pass 3. Pronunciation remains separate." : pass2 ? "Grammar Focus and What About You? do not block this Pass 2 completion. Pronunciation remains a separate learning area." : "Grammar Focus and What About You? are optional."}</p>
         <ActionFooter
           back={<button className="secondary" onClick={() => dispatch({ type: "navigate", screen: "overview" })}>← Back to overview</button>}
           middle={ready ? <button className="secondary" onClick={() => dispatch({ type: "navigate", screen: "review" })}>{complete ? `Review Pass ${progress.pass}` : "Chapter Review"}</button> : undefined}
           forward={ready && !complete
             ? <button className="primary" onClick={() => dispatch({ type: "finishPass" })}>Finish Pass {progress.pass} <span aria-hidden="true">✓</span></button>
-            : complete && !pass2
+            : complete && progress.pass === 1
               ? <button className="primary" onClick={() => dispatch({ type: "startPass2" })}>{hasPass2 ? "Continue Pass 2" : "Start Pass 2"} <span aria-hidden="true">→</span></button>
+              : complete && pass2
+                ? <button className="primary" onClick={() => dispatch({ type: "startPass3" })}>{hasPass3 ? "Continue Pass 3" : "Start Pass 3"} <span aria-hidden="true">→</span></button>
               : complete
-                ? <button className="primary" onClick={() => dispatch({ type: "navigate", screen: "overview" })}>Back to Pass 2 overview <span aria-hidden="true">→</span></button>
+                ? <button className="primary" onClick={() => dispatch({ type: "navigate", screen: "overview" })}>{pass3 ? "Back to Chapter 3 overview" : "Back to Pass 2 overview"} <span aria-hidden="true">→</span></button>
               : <button className="secondary" onClick={() => dispatch({ type: "navigate", screen: "review" })}>Chapter Review <span aria-hidden="true">→</span></button>}
         />
       </section>
@@ -835,6 +868,7 @@ export default function App() {
             <h2>Chapter 3</h2>
             <p>Personality Traits</p>
             {progress.pass === 2 && <span className="badge">Pass 2 · Reinforce</span>}
+            {progress.pass === 3 && <span className="badge">Pass 3 · Complete</span>}
           </div>
           <ChapterNavigation progress={progress} dispatch={dispatch} />
           <div className="sidebar-progress">
@@ -883,12 +917,12 @@ export default function App() {
             <FullRecall progress={progress} dispatch={dispatch} />
           )}
           {progress.currentScreen === "conversation" && <ConversationScreen pass={progress.pass} progress={progress.conversation} dispatch={(action) => dispatch({ type: "conversation", action })} onOverview={() => dispatch({ type: "navigate", screen: "overview" })} onNext={() => dispatch({ type: "navigate", screen: "output" })} />}
-          {progress.currentScreen === "output" && <OutputPractice pass={progress.pass} progress={progress.output} onChange={(value) => dispatch({ type: "output", value })} onOverview={() => dispatch({ type: "navigate", screen: "overview" })} onNext={() => dispatch({ type: "navigate", screen: progress.pass === 2 ? "review" : "writing" })} />}
-          {progress.currentScreen === "review" && <ReviewScreen pass={progress.pass} progress={progress.review} onChange={(value) => dispatch({ type: "review", value })} eligibleItems={progress.pass === 2 ? pass2ReviewExercises : buildReviewItems({ chunkRatings: progress.chunkRatings, conversationRatings: progress.conversation.ratings, outputRatings: progress.output.ratings })} onOverview={() => dispatch({ type: "navigate", screen: "overview" })} onNext={() => dispatch({ type: "navigate", screen: progress.pass === 2 ? "writing" : "complete" })} />}
-          {progress.currentScreen === "writing" && <WritingScreen pass={progress.pass} progress={progress.writing} onChange={(value) => dispatch({ type: "writing", value })} onOverview={() => dispatch({ type: "navigate", screen: "overview" })} onNext={() => dispatch({ type: "navigate", screen: progress.pass === 2 ? "complete" : "review" })} />}
-          {progress.currentScreen === "about" && <AboutScreen progress={progress.about} onChange={(value) => dispatch({ type: "about", value })} onOverview={() => dispatch({ type: "navigate", screen: "overview" })} onNext={() => dispatch({ type: "navigate", screen: "writing" })} />}
-          {progress.currentScreen === "grammar" && <GrammarScreen progress={progress.grammar} onChange={(value) => dispatch({ type: "grammar", value })} onOverview={() => dispatch({ type: "navigate", screen: "overview" })} onNext={() => dispatch({ type: "navigate", screen: "about" })} />}
-          {progress.currentScreen === "complete" && <ChapterCompletion progress={progress} dispatch={dispatch} hasPass2={chapterProgress.passes[2] !== null} />}
+          {progress.currentScreen === "output" && <OutputPractice pass={progress.pass} progress={progress.output} onChange={(value) => dispatch({ type: "output", value })} onOverview={() => dispatch({ type: "navigate", screen: "overview" })} onNext={() => dispatch({ type: "navigate", screen: progress.pass === 3 ? "grammar" : progress.pass === 2 ? "review" : "writing" })} />}
+          {progress.currentScreen === "review" && <ReviewScreen pass={progress.pass} progress={progress.review} onChange={(value) => dispatch({ type: "review", value })} eligibleItems={progress.pass > 1 ? pass2ReviewExercises : buildReviewItems({ chunkRatings: progress.chunkRatings, conversationRatings: progress.conversation.ratings, outputRatings: progress.output.ratings })} onOverview={() => dispatch({ type: "navigate", screen: "overview" })} onNext={() => dispatch({ type: "navigate", screen: progress.pass === 2 ? "writing" : "complete" })} />}
+          {progress.currentScreen === "writing" && <WritingScreen pass={progress.pass} progress={progress.writing} onChange={(value) => dispatch({ type: "writing", value })} onOverview={() => dispatch({ type: "navigate", screen: "overview" })} onNext={() => dispatch({ type: "navigate", screen: progress.pass === 3 ? "review" : progress.pass === 2 ? "complete" : "review" })} />}
+          {progress.currentScreen === "about" && <AboutScreen pass={progress.pass} progress={progress.about} onChange={(value) => dispatch({ type: "about", value })} onOverview={() => dispatch({ type: "navigate", screen: "overview" })} onNext={() => dispatch({ type: "navigate", screen: "writing" })} />}
+          {progress.currentScreen === "grammar" && <GrammarScreen pass={progress.pass} progress={progress.grammar} onChange={(value) => dispatch({ type: "grammar", value })} onOverview={() => dispatch({ type: "navigate", screen: "overview" })} onNext={() => dispatch({ type: "navigate", screen: "about" })} />}
+          {progress.currentScreen === "complete" && <ChapterCompletion progress={progress} dispatch={dispatch} hasPass2={chapterProgress.passes[2] !== null} hasPass3={chapterProgress.passes[3] !== null} />}
           <footer className="page-footer">
             <span>조금씩, 꾸준히, 내 것으로.</span>
             <span>Chapter 3 · Pass {progress.pass} · {sectionTitle ?? (progress.currentScreen === "complete" ? "Chapter progress" : "My Story")}</span>

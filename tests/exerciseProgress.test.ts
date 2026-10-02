@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { allReviewExercises, buildReviewItems, exactExercises, outputExercises, variationExercises } from '../src/data/outputPractice';
-import { initialPracticeProgress, initialReviewProgress, isOutputComplete, parsePracticeProgress, parseReviewProgress, practiceItems, ratePractice, rateReview, restartPractice, startReview } from '../src/exerciseProgress';
+import { initialPracticeProgress, initialReviewProgress, isNoHintComplete, isOutputComplete, parsePracticeProgress, parseReviewProgress, practiceItems, ratePractice, rateReview, restartPractice, startReview } from '../src/exerciseProgress';
 
 describe('source-backed exercises', () => {
   it('has six exact and six supplemental pairs with unique IDs and provenance', () => {
@@ -56,6 +56,14 @@ describe('output state', () => {
     expect(restarted.finished.exact).toBe(false); expect(restarted.cursors.exact).toBe(0);
     expect(restarted.ratings).toEqual(variation.ratings);
     expect(restarted.cursors.variation).toBe(1);
+  });
+  it('does not count earlier exact ratings as completed no-hint practice', () => {
+    let p = initialPracticeProgress();
+    for (let i = 0; i < exactExercises.length; i++) p = ratePractice(p, 'effort');
+    expect(isNoHintComplete(p)).toBe(false);
+    p = { ...p, mode: 'no-hint' };
+    for (let i = 0; i < outputExercises.length; i++) p = ratePractice(p, 'effort');
+    expect(isNoHintComplete(p)).toBe(true);
   });
   it('migrates absent completion views and rejects fake finished flags', () => {
     const old = { ...initialPracticeProgress(), finished: undefined };
