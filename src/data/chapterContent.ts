@@ -13,6 +13,7 @@ import {
 import { writingQuestions, writingTemplates } from "./writing";
 import type { ExerciseCatalog } from "../exerciseProgress";
 import type { WritingSource } from "../writingProgress";
+import { chapter1Content } from "./chapter1";
 
 export type ChapterContent = {
   id: ChapterId;
@@ -23,8 +24,15 @@ export type ChapterContent = {
   pass2ReviewExercises: typeof pass2ReviewExercises;
   writing: WritingSource;
   grammar: {
-    explanations: typeof grammarExplanations;
-    pairs: typeof grammarPairs;
+    title: string;
+    subtitle: string;
+    sections: {
+      heading: string;
+      description: string;
+      examples: { id: string; english: string; korean: string }[];
+    }[];
+    note?: string;
+    sourcePages: number[];
   };
 };
 
@@ -45,12 +53,27 @@ export const chapter3Content: ChapterContent = {
     templates: writingTemplates,
   },
   grammar: {
-    explanations: grammarExplanations,
-    pairs: grammarPairs,
+    title: "I’m interested vs It’s interesting",
+    subtitle: `${grammarPairs.length} example pairs`,
+    sections: [
+      {
+        heading: "-ed",
+        description: grammarExplanations.ed,
+        examples: grammarPairs.map((pair) => ({ id: `${pair.id}-ed`, english: pair.ed, korean: pair.edKorean })),
+      },
+      {
+        heading: "-ing",
+        description: grammarExplanations.ing,
+        examples: grammarPairs.map((pair) => ({ id: `${pair.id}-ing`, english: pair.ing, korean: pair.ingKorean })),
+      },
+    ],
+    note: grammarExplanations.people,
+    sourcePages: [54, 55],
   },
 };
 
 export const chapterContentById: Partial<Record<ChapterId, ChapterContent>> = {
+  1: chapter1Content,
   3: chapter3Content,
 };
 

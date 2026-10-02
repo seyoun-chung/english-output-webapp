@@ -2,7 +2,13 @@
 
 ## Latest state — 2026-10-02
 
-- version 5 앱 저장 container와 Chapter Library 구현·검증이 완료됐다. Git 반영 전 상태다.
+- Chapter 1 `Work, English, and Dreams` Source 묶음과 공통 화면 주입이 구현·검증됐다.
+- Chapter 1은 My Story 6, Conversation 8, Exact 6, Source Variation 6,
+  What About You 11, Beginner Template 8 및 main textbook Grammar를 포함한다.
+- 학습 화면은 `ChapterContentContext`를 통해 현재 Chapter Source를 읽으며 Chapter 1과 Chapter 3 진행 기록을 독립 저장한다.
+- 최신 검증은 21개 테스트 파일 / 292개 테스트, production build와 숨김 브라우저 Chapter 1 주요 화면·390px·Chapter 3 전환이다.
+- 다음 작업은 Chapter 2 원본 PDF 확인과 Source 묶음 등록이다.
+- version 5 앱 저장 container와 Chapter Library 구현·검증이 완료됐다.
 - 기존 version 1–4 값은 Chapter 3 entry로 이전되고 Chapter별 기록은 `chapters` 아래 독립적으로 저장된다.
 - Library는 12개 Chapter 목차를 보여주지만 `chapterContentById`에 Source 묶음이 있는 Chapter만 시작/재개할 수 있다.
 - 현재 등록된 Source 묶음은 Chapter 3뿐이며 나머지는 `Source setup in progress`다.
