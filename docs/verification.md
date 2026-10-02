@@ -1,5 +1,16 @@
 # Local verification
 
+## Latest result — Chapter 8 Source rollout (2026-10-02)
+
+- `npm run verify` 통과: repository safety check, 27개 테스트 파일 / 312개 테스트,
+  TypeScript와 production build.
+- Chapter 8 Source 묶음의 개수, provenance 파일, 독립 진행 초기화와 질문별 출처 표시를 자동 검사했다.
+- 메인 교재 My Story pp.158–159와 Real Conversations pp.166–167을 PNG로 렌더링해 구현 문장과 시각 대조했다.
+- 내장 브라우저에서 Library → Chapter 8 → Recall/Hint/Answer, 10턴 Conversation,
+  Grammar, What About You와 Writing Template을 실제 버튼으로 확인했다.
+- 좁은 내장 브라우저에서 Overview와 Writing Template의 반응형 배치를 시각 확인했다.
+- 실제 모바일 기기의 터치감과 실제 마이크·스피커는 이번 검증에 포함하지 않았다.
+
 ## Latest result — Chapter 7 Source rollout (2026-10-02)
 
 - `npm run verify` 통과: repository safety check, 26개 테스트 파일 / 308개 테스트,
