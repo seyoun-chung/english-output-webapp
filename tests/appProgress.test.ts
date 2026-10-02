@@ -16,7 +16,7 @@ describe("version 5 app progress", () => {
 
   it("keeps unavailable chapters locked", () => {
     const current = initialAppProgress();
-    expect(updateAppProgress(current, { type: "selectChapter", chapterId: 6 })).toBe(current);
+    expect(updateAppProgress(current, { type: "selectChapter", chapterId: 7 })).toBe(current);
   });
 
   it("opens the library without changing chapter progress", () => {
