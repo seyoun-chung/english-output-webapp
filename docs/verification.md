@@ -1,5 +1,17 @@
 # Local verification
 
+## Latest result — Chapter 7 Source rollout (2026-10-02)
+
+- `npm run verify` 통과: repository safety check, 26개 테스트 파일 / 308개 테스트,
+  TypeScript와 production build.
+- Chapter 7 Source 묶음의 개수, provenance 파일, 독립 진행 초기화와 질문별 출처 표시를 자동 검사했다.
+- 메인 교재 My Story p.141과 Real Conversations p.149를 PNG로 렌더링해 구현 문장과 시각 대조했다.
+- Aside에서 desktop 폭의 Chapter 7 Overview가 가로 Overflow 없이 렌더링되는 것을 확인했다.
+- 내장 브라우저에서 Library → Chapter 7 → My Story Read/Recall/Hint/Answer/자기평가 저장,
+  9턴 Conversation, Grammar, What About You와 Writing Template을 실제 버튼으로 확인했다.
+- 좁은 내장 브라우저에서 Overview, My Story Read와 Writing Template의 반응형 배치를 시각 확인했다.
+- 실제 모바일 기기의 터치감과 실제 마이크·스피커는 이번 검증에 포함하지 않았다.
+
 ## Latest result — Chapter 6 Source rollout (2026-10-02)
 
 - `npm run verify` 통과: repository safety check, 25개 테스트 파일 / 304개 테스트,
