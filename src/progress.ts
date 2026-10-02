@@ -1,8 +1,9 @@
-import { chunkIds } from "./data/chapter3";
 import { initialConversationProgress, parseConversationProgress, updateConversationProgress, type ConversationProgress, type ConversationAction } from "./conversationProgress";
 import { initialPracticeProgress, parsePracticeProgress, initialReviewProgress, parseReviewProgress, type PracticeProgress, type ReviewProgress } from "./exerciseProgress";
 import { initialWritingProgress, parseWritingProgress, initialAboutProgress, parseAboutProgress, initialGrammarProgress, parseGrammarProgress, type WritingProgress, type AboutProgress, type GrammarProgress } from "./writingProgress";
 import { isPassReady } from "./chapterCompletion";
+import { chapter3Content, type ChapterContent } from "./data/chapterContent";
+import type { ChapterId } from "./data/chapters";
 
 export type Rating = "immediate" | "effort" | "review";
 export type PassNumber = 1 | 2 | 3;
@@ -34,14 +35,15 @@ export type PassProgress = {
 
 export type Progress = {
   version: 4;
-  chapterId: 3;
+  chapterId: ChapterId;
   activePass: PassNumber;
   passes: { 1: PassProgress; 2: PassProgress | null; 3: PassProgress | null };
 };
 
 export const STORAGE_KEY = "english-output-webapp:progress";
 
-export function initialPassProgress(pass: PassNumber): PassProgress {
+export function initialPassProgress(pass: PassNumber, content: ChapterContent = chapter3Content): PassProgress {
+  const chunkIds = content.chunks.map(({ id }) => id);
   const output = initialPracticeProgress();
   if (pass === 2) output.mode = "variation";
   if (pass === 3) output.mode = "no-hint";
@@ -50,11 +52,11 @@ export function initialPassProgress(pass: PassNumber): PassProgress {
     currentScreen: "overview",
     resumeScreen: pass === 1 ? "read" : "full",
     lastSection: "myStory",
-    conversation: initialConversationProgress(),
+    conversation: initialConversationProgress(content.conversations),
     output,
     review: initialReviewProgress(),
-    writing: initialWritingProgress(),
-    about: initialAboutProgress(),
+    writing: initialWritingProgress(content.writing),
+    about: initialAboutProgress(content.writing),
     grammar: initialGrammarProgress(),
     completedAt: null,
     readMode: "korean",
@@ -67,8 +69,8 @@ export function initialPassProgress(pass: PassNumber): PassProgress {
   };
 }
 
-export function initialProgress(): Progress {
-  return { version: 4, chapterId: 3, activePass: 1, passes: { 1: initialPassProgress(1), 2: null, 3: null } };
+export function initialProgress(content: ChapterContent = chapter3Content): Progress {
+  return { version: 4, chapterId: content.id, activePass: 1, passes: { 1: initialPassProgress(1, content), 2: null, 3: null } };
 }
 
 export const activePassProgress = (progress: Progress): PassProgress =>
@@ -79,17 +81,18 @@ const isRecord = (value: unknown): value is Record<string, unknown> =>
 const validDate = (value: unknown): value is string =>
   typeof value === "string" && Number.isFinite(Date.parse(value));
 
-function parsePassProgress(raw: unknown, pass: PassNumber, legacyVersion?: 1 | 2): PassProgress {
-  const initial = initialPassProgress(pass);
+function parsePassProgress(raw: unknown, pass: PassNumber, content: ChapterContent, legacyVersion?: 1 | 2): PassProgress {
+  const chunkIds = content.chunks.map(({ id }) => id);
+  const initial = initialPassProgress(pass, content);
   if (!isRecord(raw)) return initial;
 
-  const parsedConversation = legacyVersion === 1 ? null : parseConversationProgress(raw.conversation);
+  const parsedConversation = legacyVersion === 1 ? null : parseConversationProgress(raw.conversation, content.conversations);
   const parsed = {
     conversation: parsedConversation,
-    output: legacyVersion === 1 ? null : parsePracticeProgress(raw.output),
-    review: legacyVersion === 1 ? null : parseReviewProgress(raw.review),
-    writing: legacyVersion === 1 ? null : parseWritingProgress(raw.writing),
-    about: legacyVersion === 1 ? null : parseAboutProgress(raw.about),
+    output: legacyVersion === 1 ? null : parsePracticeProgress(raw.output, content.exercises),
+    review: legacyVersion === 1 ? null : parseReviewProgress(raw.review, content.exercises),
+    writing: legacyVersion === 1 ? null : parseWritingProgress(raw.writing, content.writing),
+    about: legacyVersion === 1 ? null : parseAboutProgress(raw.about, content.writing),
     grammar: legacyVersion === 1 ? null : parseGrammarProgress(raw.grammar),
   };
   const lastSection: Section = typeof raw.lastSection === "string" && Object.hasOwn(parsed, raw.lastSection)
@@ -147,35 +150,35 @@ function parsePassProgress(raw: unknown, pass: PassNumber, legacyVersion?: 1 | 2
   };
 }
 
-export function parseProgress(raw: string | null): Progress {
-  if (!raw) return initialProgress();
+export function parseProgress(raw: string | null, content: ChapterContent = chapter3Content): Progress {
+  if (!raw) return initialProgress(content);
   try {
     const value: unknown = JSON.parse(raw);
-    if (!isRecord(value) || value.chapterId !== 3) return initialProgress();
+    if (!isRecord(value) || value.chapterId !== content.id) return initialProgress(content);
     if (value.version === 1 || value.version === 2) {
-      if (value.pass !== 1) return initialProgress();
+      if (value.pass !== 1 || content.id !== 3) return initialProgress(content);
       return {
         version: 4,
-        chapterId: 3,
+        chapterId: content.id,
         activePass: 1,
-        passes: { 1: parsePassProgress(value, 1, value.version), 2: null, 3: null },
+        passes: { 1: parsePassProgress(value, 1, content, value.version), 2: null, 3: null },
       };
     }
-    if ((value.version !== 3 && value.version !== 4) || !isRecord(value.passes)) return initialProgress();
-    const pass1 = parsePassProgress(value.passes[1], 1);
+    if ((value.version !== 3 && value.version !== 4) || !isRecord(value.passes)) return initialProgress(content);
+    const pass1 = parsePassProgress(value.passes[1], 1, content);
     const pass2 = isRecord(value.passes[2]) && value.passes[2].pass === 2
-      ? parsePassProgress(value.passes[2], 2) : null;
+      ? parsePassProgress(value.passes[2], 2, content) : null;
     const pass3 = value.version === 4 && isRecord(value.passes[3]) && value.passes[3].pass === 3
-      ? parsePassProgress(value.passes[3], 3) : null;
+      ? parsePassProgress(value.passes[3], 3, content) : null;
     const activePass: PassNumber = value.activePass === 3 && pass3 ? 3 : value.activePass === 2 && pass2 ? 2 : 1;
-    return { version: 4, chapterId: 3, activePass, passes: { 1: pass1, 2: pass2, 3: pass3 } };
+    return { version: 4, chapterId: content.id, activePass, passes: { 1: pass1, 2: pass2, 3: pass3 } };
   } catch {
-    return initialProgress();
+    return initialProgress(content);
   }
 }
 
-export const weakIds = (progress: PassProgress) =>
-  chunkIds.filter((id) => progress.chunkRatings[id] === "effort" || progress.chunkRatings[id] === "review");
+export const weakIds = (progress: PassProgress, content: ChapterContent = chapter3Content) =>
+  content.chunks.map(({ id }) => id).filter((id) => progress.chunkRatings[id] === "effort" || progress.chunkRatings[id] === "review");
 
 export type Action =
   | { type: "startPass2" }
@@ -198,18 +201,19 @@ export type Action =
   | { type: "complete" };
 
 type PassAction = Exclude<Action, { type: "startPass2" } | { type: "startPass3" } | { type: "selectPass" }>;
-function updatePassProgress(progress: PassProgress, action: PassAction): PassProgress {
+function updatePassProgress(progress: PassProgress, action: PassAction, content: ChapterContent): PassProgress {
+  const chunkIds = content.chunks.map(({ id }) => id);
   let next = progress;
   switch (action.type) {
     case "output": case "review": case "writing": case "about": case "grammar":
       next = { ...progress, [action.type]: action.value, currentScreen: action.type, lastSection: action.type };
       break;
     case "finishPass":
-      if (!isPassReady(progress)) return progress;
+      if (!isPassReady(progress, content)) return progress;
       next = { ...progress, currentScreen: "complete", completedAt: progress.completedAt ?? new Date().toISOString() };
       break;
     case "conversation": {
-      const conversation = updateConversationProgress(progress.conversation, action.action);
+      const conversation = updateConversationProgress(progress.conversation, action.action, content.conversations);
       if (conversation === progress.conversation) return progress;
       next = { ...progress, conversation, currentScreen: "conversation", lastSection: "conversation" };
       break;
@@ -232,7 +236,7 @@ function updatePassProgress(progress: PassProgress, action: PassAction): PassPro
       next = { ...progress, readMode: action.mode };
       break;
     case "practice": {
-      const queue = action.weakOnly ? weakIds(progress) : [...chunkIds];
+      const queue = action.weakOnly ? weakIds(progress, content) : [...chunkIds];
       if (!queue.length) return progress;
       next = { ...progress, currentScreen: "recall", resumeScreen: "recall", lastSection: "myStory", queue, queueIndex: 0 };
       break;
@@ -268,16 +272,17 @@ function updatePassProgress(progress: PassProgress, action: PassAction): PassPro
   return { ...next, lastStudiedAt: new Date().toISOString() };
 }
 
-export function updateProgress(progress: Progress, action: Action): Progress {
+function updateProgressWithContent(progress: Progress, action: Action, content: ChapterContent): Progress {
+  if (progress.chapterId !== content.id) return progress;
   if (action.type === "startPass2") {
-    if (!progress.passes[1].completedAt || !isPassReady(progress.passes[1])) return progress;
-    const pass2 = progress.passes[2] ?? initialPassProgress(2);
+    if (!progress.passes[1].completedAt || !isPassReady(progress.passes[1], content)) return progress;
+    const pass2 = progress.passes[2] ?? initialPassProgress(2, content);
     return { ...progress, activePass: 2, passes: { ...progress.passes, 2: pass2 } };
   }
   if (action.type === "startPass3") {
     const pass2 = progress.passes[2];
-    if (!pass2?.completedAt || !isPassReady(pass2)) return progress;
-    const pass3 = progress.passes[3] ?? initialPassProgress(3);
+    if (!pass2?.completedAt || !isPassReady(pass2, content)) return progress;
+    const pass3 = progress.passes[3] ?? initialPassProgress(3, content);
     return { ...progress, activePass: 3, passes: { ...progress.passes, 3: pass3 } };
   }
   if (action.type === "selectPass") {
@@ -286,7 +291,14 @@ export function updateProgress(progress: Progress, action: Action): Progress {
     return action.pass === progress.activePass ? progress : { ...progress, activePass: action.pass };
   }
   const current = activePassProgress(progress);
-  const next = updatePassProgress(current, action);
+  const next = updatePassProgress(current, action, content);
   if (next === current) return progress;
   return { ...progress, passes: { ...progress.passes, [progress.activePass]: next } };
 }
+
+export function updateProgress(progress: Progress, action: Action): Progress {
+  return updateProgressWithContent(progress, action, chapter3Content);
+}
+
+export const progressReducerFor = (content: ChapterContent) =>
+  (progress: Progress, action: Action): Progress => updateProgressWithContent(progress, action, content);
