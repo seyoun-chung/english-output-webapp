@@ -15,6 +15,7 @@ import type { ExerciseCatalog } from "../exerciseProgress";
 import type { WritingSource } from "../writingProgress";
 import { chapter1Content } from "./chapter1";
 import { chapter2Content } from "./chapter2";
+import { chapter4Content } from "./chapter4";
 
 export type ChapterContent = {
   id: ChapterId;
@@ -77,6 +78,7 @@ export const chapterContentById: Partial<Record<ChapterId, ChapterContent>> = {
   1: chapter1Content,
   2: chapter2Content,
   3: chapter3Content,
+  4: chapter4Content,
 };
 
 export function requireChapterContent(chapterId: ChapterId): ChapterContent {
