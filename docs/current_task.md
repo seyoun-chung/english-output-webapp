@@ -30,7 +30,7 @@ Chapter 3 Pass 3 병합 후 사용자가 중단 없이 전체 Chapter 개발을 
 
 ### Chapter 8 Source rollout
 
-- 상태: 구현·자동 검증·반응형 브라우저 검증 완료, commit·push 전
+- 상태: PR #23으로 main 반영 완료. merge commit `e110f45`
 - main textbook pp.158–164, 166–167, 170–172와 Week 8 My Story / Real Conversations 노트를 Source로 확인
 - Chapter 8 My Story 6 chunks, Conversation 10 turns, Exact 6, Source Variation 6,
   Grammar, What About You / Let’s Have a Talk 14 questions, Beginner Template 6개를 등록
@@ -38,7 +38,21 @@ Chapter 3 Pass 3 병합 후 사용자가 중단 없이 전체 Chapter 개발을 
 - PDF로 My Story pp.158–159와 Real Conversations pp.166–167을 시각 대조하고,
   브라우저에서 Library, Recall/Hint/Answer, Conversation, Grammar, What About You, Writing Template을 확인
 - 좁은 내장 브라우저에서 Overview와 Writing Template의 반응형 배치를 시각 확인
-- 다음 increment: Chapter 9 Source 콘텐츠 적용
+- 다음 increment였던 Chapter 9 Source 콘텐츠 적용을 진행함
+
+### Chapter 9 Source rollout
+
+- 상태: 구현·자동 검증·반응형 브라우저 검증 완료, commit·push 전
+- main textbook pp.176–182, 184–185, 189–191와 Week 9 My Story / Real Conversations 노트를 Source로 확인
+- Chapter 9 My Story 6 chunks, Conversation 11 turns, Exact 6, Source Variation 6,
+  Grammar, What About You / Let’s Have a Talk 15 questions, Beginner Template 6개를 등록
+- Source의 직원 C 대사는 문장을 바꾸지 않고 현재 A/B 역할 엔진의 B 역할로 그룹화
+- `npm run verify`: 28개 테스트 파일, 316개 테스트와 production build 통과
+- PDF로 My Story, Grammar, Real Conversations, What About You, Beginner Template,
+  Let’s Have a Talk 원문 페이지를 시각 대조
+- 내장 브라우저에서 Library, My Story Read/Recall/Hint/Answer, 11턴 Conversation,
+  What About You, Writing Template과 320×740 반응형 배치를 확인
+- 다음 increment: Chapter 10 Source 콘텐츠 적용
 
 ### Chapter 5 Source rollout
 
