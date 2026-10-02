@@ -1,5 +1,34 @@
 # Current Task
 
+## Active — Chapter 3 Pass 3 Complete (2026-10-02)
+
+사용자가 빠른 전체 개발을 위해 Chapter 3 Pass 3을 한 번의 구현 단위로 완료하고,
+그 다음 공통 엔진 일반화와 Chapter 1–12 적용으로 이어가는 방안을 승인했다.
+Pass 4+는 삭제하지 않으며 전체 Chapter의 Pass 1–3 적용 직후 다음 단계로 진행한다.
+
+- 상태: Pass 3 구현과 자동·브라우저 검증 완료, Git 반영 전
+- 저장 형식: version 4. version 1–3 기록을 이전하며 Pass 1·2 snapshot을 보존
+- 명시적 진입: 완료된 Pass 2에서만 `Start Pass 3` 가능
+- 필수 완료 영역: My Story Full Recall, Real Conversations, Output No Hint,
+  Grammar Focus, What About You?, Weekly Writing, Chapter Review
+- Output No Hint는 이전 모드 평가와 별개로 No Hint 모드를 실제 끝까지 진행해야 완료
+- Chapter Review는 Chapter 3 Source 기반 고정 12문항을 재사용한다. 전역 문제 수·간격 정책은 확정하지 않는다.
+- 완료 방식: 7개 영역 완료 뒤 사용자가 `Finish Pass 3`를 눌러 완료 시각 저장
+- Pronunciation은 별도 학습 영역이며 Pass 3 완료를 막지 않는다.
+- 다음 개발: Chapter 데이터와 학습 엔진의 Chapter 3 결합을 분리한 뒤 Source가 확인된 Chapter 1–12에 적용
+
+검증 결과:
+
+- `npm test`: 17개 파일, 278개 테스트 통과
+- TypeScript와 production build 통과
+- 숨김 내장 브라우저에서 기존 Pass 2 완료 기록 → Pass 3 시작 → 7개 필수 영역 →
+  `Finish Pass 3` → 새로고침 복원까지 실제 버튼으로 완료
+- 390×844 Overview와 320×740 Writing에서 가로 Overflow 없음,
+  주요 CTA 44px 이상, 모바일 ActionFooter 세로 배치 확인
+- 콘솔 warning/error 없음
+
+세부 결정과 수용 기준은 [pass3_complete_plan.md](./pass3_complete_plan.md)를 따른다.
+
 ## Proposed next increment — Chapter 3 Pass 2 Reinforce (2026-10-01)
 
 Pass 1 실제 학습과 피드백 반영이 끝난 뒤, 사용자가 Chapter 3 Pass 2 설계 작업을 승인했다.

@@ -1,5 +1,22 @@
 # Local verification
 
+## Latest result — Chapter 3 Pass 3 Complete (2026-10-02)
+
+- `npm run verify` 통과: repository safety check, 17개 테스트 파일 / 278개 테스트,
+  TypeScript와 production build.
+- version 1–3 → version 4 migration, Pass 1·2 보존, 명시적 Pass 3 진입,
+  7개 필수 영역 완료 조건과 새로고침 복원을 자동 테스트로 확인했다.
+- No Hint 완료는 같은 Source ID의 이전 Exact 평가만으로 충족되지 않고,
+  No Hint 모드를 실제로 끝까지 진행한 기록을 요구한다.
+- 숨김 내장 브라우저에서 보존된 Pass 2 완료 기록으로 Pass 3을 시작해 Full Recall,
+  A/B/Full Dialogue, No Hint 12문항, Grammar, What About You, 새 Writing,
+  Review 12문항, `Finish Pass 3`을 실제 버튼으로 완료했다.
+- 완료 후 새로고침에서도 `Chapter 3 · Pass 3 complete`와 7/7 상태가 복원됐다.
+- 390×844 Overview와 320×740 Writing에서 문서 `scrollWidth`와 `clientWidth`가 같았고,
+  주요 CTA는 44px 이상이었다. 320px ActionFooter는 Back/Next가 겹치지 않고 세로로 배치됐다.
+- 브라우저 콘솔 warning/error는 없었다.
+- 실제 모바일 기기의 터치감은 viewport simulation으로 증명하지 않았다.
+
 ## Latest result — Pass 2 Increment 3 (2026-10-01)
 
 - `npm run verify` 통과: repository safety check, 16 test files / 264 tests, TypeScript와 production build.
