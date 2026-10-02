@@ -1,5 +1,16 @@
 # Local verification
 
+## Latest result — Chapter 1 Source rollout (2026-10-02)
+
+- `npm run verify` 통과: repository safety check, 21개 테스트 파일 / 292개 테스트,
+  TypeScript와 production build.
+- Chapter 1 Source 묶음의 개수, provenance 파일, Chapter 1 전용 진행 초기화와 Chapter 3 기록 보존을 자동 검사했다.
+- 숨김 내장 브라우저에서 Library → Chapter 1 → My Story Read/Recall/Hint/Answer,
+  Real Conversations, Output Exact, Grammar, What About You, Writing Template을 실제 버튼으로 확인했다.
+- 390×844 Writing에서 문서 가로 Overflow가 없고 Back/Mark complete CTA가 각각 46px/44px였다.
+- 새 숨김 브라우저 세션에서 Chapter 1 문서 제목과 화면 복원이 정상이며 console warning/error가 없었다.
+- Library에서 Chapter 3로 전환했을 때 기존 `Personality Traits` Overview와 문서 제목이 복원됐다.
+
 ## Latest result — Version 5 storage and Chapter Library (2026-10-02)
 
 - `npm run verify` 통과: repository safety check, 20개 테스트 파일 / 288개 테스트,
