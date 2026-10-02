@@ -1,5 +1,16 @@
 # Local verification
 
+## Latest result — Chapter 6 Source rollout (2026-10-02)
+
+- `npm run verify` 통과: repository safety check, 25개 테스트 파일 / 304개 테스트,
+  TypeScript와 production build.
+- Chapter 6 Source 묶음의 개수, provenance 파일과 독립 진행 초기화를 자동 검사했다.
+- 내장 브라우저에서 Library → Chapter 6 → My Story 영어 본문, 10턴 Conversation,
+  Grammar와 Writing Template을 확인했다.
+- Desktop 원문·대화·Grammar와 320×740 Writing에서 문서 가로 Overflow가 없었다.
+  주요 학습 CTA는 44px 이상이었고 console warning/error는 없었다.
+- 실제 모바일 기기의 터치감과 실제 마이크·스피커는 viewport simulation으로 증명하지 않았다.
+
 ## Latest result — Chapter 5 Source rollout (2026-10-02)
 
 - `npm run verify` 통과: repository safety check, 24개 테스트 파일 / 301개 테스트,

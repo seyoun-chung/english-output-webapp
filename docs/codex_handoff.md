@@ -2,7 +2,13 @@
 
 ## Latest state — 2026-10-02
 
-- Chapter 5 `Catching up With Friends` Source 묶음이 구현·검증됐고 현재 작업 브랜치에서 Git 반영 전이다.
+- Chapter 6 `Giving Directions` Source 묶음이 구현·검증됐고 현재 작업 브랜치에서 Git 반영 전이다.
+- Chapter 6은 My Story 6, Conversation 10, Exact 6, Source Variation 6,
+  What About You / Let’s Have a Talk 13, Beginner Template 6 및 main textbook Grammar를 포함한다.
+- Source의 B/C 여행자 대사는 현재 A/B 역할 엔진에서 B 역할로 그룹화하되 Source 문장은 그대로 보존했다.
+- 최신 검증은 25개 테스트 파일 / 304개 테스트, production build와 브라우저 주요 화면 및 320×740 점검이다.
+  다음 Source 적용 단위는 Chapter 7이다.
+- Chapter 5 `Catching up With Friends` Source 묶음은 PR #20, merge commit `c91507d`로 main에 반영됐다.
 - Chapter 5는 My Story 6, Conversation 9, Exact 6, Source Variation 6,
   What About You / Let’s Have a Talk 12, Beginner Template 8 및 main textbook Grammar를 포함한다.
 - 최신 검증은 24개 테스트 파일 / 301개 테스트, production build와 브라우저 주요 화면,
