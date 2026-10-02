@@ -1,5 +1,19 @@
 # Codex Handoff — Textbook Mastery Web App
 
+## Latest state — 2026-10-02
+
+- Chapter 3 Pass 1, Pass 2, Pass 3의 처음부터 명시적 완료까지 구현됐다.
+- localStorage schema는 version 4이며 version 1–3을 안전하게 이전한다.
+- Pass 3은 Full Recall, A/B/Full Dialogue, No Hint, Grammar, What About You,
+  새 Weekly Writing, Chapter Review를 모두 요구한다.
+- `Finish Pass 3` 후 `Chapter 3 · Pass 3 complete`를 저장하고 새로고침 후 복원한다.
+- Pass 1·2·3 기록은 서로 분리되고 이전 회독 기록을 덮어쓰지 않는다.
+- 현재 다음 작업은 Chapter 3에 결합된 데이터·표시·저장을 공통 Chapter 엔진으로 일반화하는 것이다.
+- 그 뒤 로컬 `docs/sources/` 원본을 확인하여 Chapter 1–12 데이터를 적용한다.
+- Pass 4+는 삭제되지 않았고 전체 Chapter Pass 1–3 적용 직후 Mixed/Smart/All Random 단계로 진행한다.
+- 실제 모바일 기기 검증 대신 이번 빠른 개발 단계에서는 반응형 브라우저 검증을 사용한다.
+  이를 실제 모바일 터치감 검증으로 표현하지 않는다.
+
 > 이 문서는 ChatGPT에서 진행한 제품 기획의 **맥락, 의사결정, 학습 철학, 구현 우선순위**를 Codex가 이어받기 위한 handoff 문서다.  
 > 개발 전 반드시 `textbook_mastery_prd_v1_1.md`와 함께 읽는다.
 

@@ -9,7 +9,7 @@ import { ActionFooter } from "./ActionFooter";
 import { RecallRatingButtons } from "./RecallRatingButtons";
 
 type Props = {
-  pass: 1 | 2;
+  pass: 1 | 2 | 3;
   progress: ConversationProgress;
   dispatch: (action: ConversationAction) => void;
   onOverview: () => void;
@@ -186,7 +186,7 @@ export function ConversationScreen({ pass, progress, dispatch, onOverview, onNex
   return (
     <div className="conversation-screen">
       <div className="page-heading">
-        <span className="eyebrow">CHAPTER 3 · {pass === 2 ? "PASS 2 · CORE" : "REQUIRED"}</span>
+        <span className="eyebrow">CHAPTER 3 · {pass > 1 ? `PASS ${pass} · CORE` : "REQUIRED"}</span>
         <h1 tabIndex={-1}>Real Conversations</h1>
         <p>{progress.view === "read" ? "Read both sides. Then take a role." : progress.view === "full" ? "Full Dialogue · Follow the Korean dialogue. Recall both roles in English." : `${conversationViewLabel(progress)} · Read your partner’s line. Say your part in English.`}</p>
       </div>
