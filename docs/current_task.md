@@ -4,9 +4,23 @@
 
 Chapter 3 Pass 3 병합 후 사용자가 중단 없이 전체 Chapter 개발을 계속 진행하도록 승인했다.
 
-### Chapter 4 Source rollout
+### Chapter 5 Source rollout
 
 - 상태: 구현·자동 검증·반응형 브라우저 검증 완료, commit·push 전
+- main textbook pp.94–102, 104–105, 110–112와 Week 5 My Story / Real Conversations 노트를 Source로 확인
+- Chapter 5 My Story 6 chunks, Conversation 9 turns, Exact 6, Source Variation 6,
+  Grammar, What About You / Let’s Have a Talk 12 questions, Beginner Template 8개를 등록
+- Chapter 5도 공통 Pass 1–3 엔진과 독립된 version 5 진행 기록을 사용
+- `npm run verify`: 24개 테스트 파일, 301개 테스트와 production build 통과
+- 브라우저에서 Library 진입, My Story 언어 전환, Conversation, Output Variation,
+  Grammar, What About You, Writing, Review 빈 상태와 실제 문제 진입을 확인
+- 390×844 Review/Output과 320×740 Writing에서 가로 Overflow 없음,
+  주요 학습 CTA 44px 이상, console warning/error 없음
+- 다음 increment: Chapter 6 Source 콘텐츠 적용
+
+### Chapter 4 Source rollout
+
+- 상태: PR #19로 main 반영 완료. merge commit `15a8baf`
 - main textbook pp.70–78, 80–81, 88–90과 Week 4 My Story / Real Conversations 노트를 Source로 확인
 - Chapter 4 My Story 6 chunks, Conversation 10 turns, Exact 6, Source Variation 6,
   Grammar, What About You / Let’s Have a Talk 13 questions, Beginner Template 6개를 등록
@@ -16,7 +30,7 @@ Chapter 3 Pass 3 병합 후 사용자가 중단 없이 전체 Chapter 개발을 
   Grammar, What About You, Writing, 실제 Chapter Review 문제 진입을 확인
 - 390×844 My Story/Conversation/Output과 320×740 Writing에서 가로 Overflow 없음,
   주요 학습 CTA 44px 이상, console warning/error 없음
-- 다음 increment: Chapter 5 Source 콘텐츠 적용
+- 다음 increment였던 Chapter 5 Source 콘텐츠 적용을 진행함
 
 ### Foundation increment
 

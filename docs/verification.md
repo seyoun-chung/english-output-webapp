@@ -1,5 +1,17 @@
 # Local verification
 
+## Latest result — Chapter 5 Source rollout (2026-10-02)
+
+- `npm run verify` 통과: repository safety check, 24개 테스트 파일 / 301개 테스트,
+  TypeScript와 production build.
+- Chapter 5 Source 묶음의 개수, provenance 파일과 독립 진행 초기화를 자동 검사했다.
+- 메인 교재 My Story p.95와 Real Conversations p.105를 PNG로 렌더링해 구현 문장과 시각 대조했다.
+- 내장 브라우저에서 Library → Chapter 5 → My Story 한·영 전환, 9턴 Conversation,
+  Output Variation, Grammar, What About You, Writing, Review 빈 상태와 실제 문제 진입을 확인했다.
+- 390×844 Review/Output과 320×740 Writing에서 문서 가로 Overflow가 없었다.
+  주요 학습 CTA는 44px 이상이었고 console warning/error는 없었다.
+- 실제 모바일 기기의 터치감과 실제 마이크·스피커는 viewport simulation으로 증명하지 않았다.
+
 ## Latest result — Chapter 4 Source rollout (2026-10-02)
 
 - `npm run verify` 통과: repository safety check, 23개 테스트 파일 / 298개 테스트,
