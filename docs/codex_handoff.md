@@ -2,6 +2,11 @@
 
 ## Latest state — 2026-10-02
 
+- version 5 앱 저장 container와 Chapter Library 구현·검증이 완료됐다. Git 반영 전 상태다.
+- 기존 version 1–4 값은 Chapter 3 entry로 이전되고 Chapter별 기록은 `chapters` 아래 독립적으로 저장된다.
+- Library는 12개 Chapter 목차를 보여주지만 `chapterContentById`에 Source 묶음이 있는 Chapter만 시작/재개할 수 있다.
+- 현재 등록된 Source 묶음은 Chapter 3뿐이며 나머지는 `Source setup in progress`다.
+- 최신 검증은 20개 테스트 파일 / 288개 테스트와 production build, 숨김 브라우저 desktop/390px Library·재개 흐름이다.
 - `ChapterContent`가 Chapter metadata, My Story, Conversation, Output/Review, Writing, Grammar Source 묶음의 공통 경계다.
 - 진행 초기화·복원·리듀서와 각 영역 완료 판정은 선택한 Chapter Source 묶음을 받을 수 있다.
 - 인자를 생략한 기존 호출은 Chapter 3을 사용하므로 기존 version 1–4 저장 기록과 UI 동작을 보존한다.
