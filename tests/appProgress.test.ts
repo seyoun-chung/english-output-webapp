@@ -16,7 +16,7 @@ describe("version 5 app progress", () => {
 
   it("keeps unavailable chapters locked", () => {
     const current = initialAppProgress();
-    expect(updateAppProgress(current, { type: "selectChapter", chapterId: 1 })).toBe(current);
+    expect(updateAppProgress(current, { type: "selectChapter", chapterId: 2 })).toBe(current);
   });
 
   it("opens the library without changing chapter progress", () => {
@@ -30,5 +30,14 @@ describe("version 5 app progress", () => {
     const current = initialAppProgress();
     const next = updateAppProgress(current, { type: "chapter", action: { type: "navigate", screen: "read" } });
     expect(next.chapters[3]?.passes[1].currentScreen).toBe("read");
+  });
+
+  it("starts Chapter 1 independently and preserves Chapter 3", () => {
+    const current = initialAppProgress();
+    const next = updateAppProgress(current, { type: "selectChapter", chapterId: 1 });
+
+    expect(next.activeChapterId).toBe(1);
+    expect(next.chapters[1]?.chapterId).toBe(1);
+    expect(next.chapters[3]).toBe(current.chapters[3]);
   });
 });

@@ -43,10 +43,11 @@ export function buildReviewItems({ chunkRatings, conversationRatings, outputRati
   chunkRatings: Record<number, Rating | null>;
   conversationRatings: Record<number, Rating | null>;
   outputRatings: Record<string, Rating | null>;
-}): ExerciseItem[] {
-  return [
-    ...storyExercises.filter(item => rated(chunkRatings[Number(item.id.slice(6))])),
-    ...conversationExercises.filter(item => rated(conversationRatings[Number(item.id.slice(13))])),
-    ...outputExercises.filter(item => rated(outputRatings[item.id])),
-  ];
+}, items: ExerciseItem[] = allReviewExercises): ExerciseItem[] {
+  return items.filter((item) => {
+    const group = exerciseGroup(item.id);
+    if (group === 'story') return rated(chunkRatings[Number(item.id.slice(6))]);
+    if (group === 'conversation') return rated(conversationRatings[Number(item.id.slice(13))]);
+    return rated(outputRatings[item.id]);
+  });
 }
