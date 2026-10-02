@@ -2,11 +2,17 @@
 
 ## Latest state — 2026-10-02
 
-- Chapter 10 `Travel` Source 묶음이 구현·검증됐고 현재 작업 브랜치에서 Git 반영 전이다.
+- Chapter 11 `Boot camp` Source 묶음이 구현·검증됐고 현재 작업 브랜치에서 Git 반영 전이다.
+- Chapter 11은 My Story 6, Conversation 9, Exact 6, Source Variation 6,
+  What About You / Let’s Have a Talk 12, Beginner Template 6 및 main textbook Grammar를 포함한다.
+- 기존 catalog의 Chapter 11 Real Conversations 페이지는 원본 대조 후 223–224에서 220–221로 바로잡았다.
+- 최신 검증은 30개 테스트 파일 / 324개 테스트, production build, 원본 PDF 시각 대조와
+  브라우저 주요 흐름 및 320px 반응형 점검이다. 다음 Source 적용 단위는 Chapter 12다.
+- Chapter 10 `Travel` Source 묶음은 PR #25, merge commit `8b45dc7`로 main에 반영됐다.
 - Chapter 10은 My Story 6, Conversation 8, Exact 6, Source Variation 6,
   What About You / Let’s Have a Talk 12, Beginner Template 7 및 main textbook Grammar를 포함한다.
 - 최신 검증은 29개 테스트 파일 / 320개 테스트, production build, 원본 PDF 시각 대조와
-  브라우저 주요 흐름 및 320×740 반응형 점검이다. 다음 Source 적용 단위는 Chapter 11이다.
+  브라우저 주요 흐름 및 320×740 반응형 점검이다.
 - Chapter 9 `My Favorite Food` Source 묶음은 PR #24, merge commit `d026240`으로 main에 반영됐다.
 - Chapter 9는 My Story 6, Conversation 11, Exact 6, Source Variation 6,
   What About You / Let’s Have a Talk 15, Beginner Template 6 및 main textbook Grammar를 포함한다.

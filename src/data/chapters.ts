@@ -30,7 +30,7 @@ export const chapterCatalog: readonly ChapterMetadata[] = [
   { id: 8, week: 8, title: "Health and Resolutions", sourceFile, pages: { myStoryKorean: 158, myStoryEnglish: 159, grammar: 163, conversationKorean: 166, conversationEnglish: 167, whatAboutYou: 170 } },
   { id: 9, week: 9, title: "My Favorite Food", sourceFile, pages: { myStoryKorean: 176, myStoryEnglish: 177, grammar: 181, conversationKorean: 184, conversationEnglish: 185, whatAboutYou: 189 } },
   { id: 10, week: 10, title: "Travel", sourceFile, pages: { myStoryKorean: 196, myStoryEnglish: 197, grammar: 201, conversationKorean: 204, conversationEnglish: 205, whatAboutYou: 208 } },
-  { id: 11, week: 11, title: "Boot camp", sourceFile, pages: { myStoryKorean: 214, myStoryEnglish: 215, grammar: 218, conversationKorean: 223, conversationEnglish: 224, whatAboutYou: 226 } },
+  { id: 11, week: 11, title: "Boot camp", sourceFile, pages: { myStoryKorean: 214, myStoryEnglish: 215, grammar: 218, conversationKorean: 220, conversationEnglish: 221, whatAboutYou: 226 } },
   { id: 12, week: 12, title: "Beautiful Memories", sourceFile, pages: { myStoryKorean: 232, myStoryEnglish: 233, grammar: 237, conversationKorean: 240, conversationEnglish: 241, whatAboutYou: 246 } },
 ] as const;
 
