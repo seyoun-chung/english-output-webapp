@@ -9,6 +9,9 @@ node_modules/
 dist/
 build/
 
+# Local verification artifacts
+tmp/
+
 # Environment variables
 .env
 .env.local

@@ -14,9 +14,11 @@ describe("version 5 app progress", () => {
     expect(migrated.chapters[3]?.passes[1].chunkRatings[1]).toBe("effort");
   });
 
-  it("keeps unavailable chapters locked", () => {
+  it("opens the final source-backed chapter", () => {
     const current = initialAppProgress();
-    expect(updateAppProgress(current, { type: "selectChapter", chapterId: 12 })).toBe(current);
+    const next = updateAppProgress(current, { type: "selectChapter", chapterId: 12 });
+    expect(next.activeChapterId).toBe(12);
+    expect(next.chapters[12]?.chapterId).toBe(12);
   });
 
   it("opens the library without changing chapter progress", () => {
