@@ -143,7 +143,7 @@ describe("Pass 2 Increment 3 UI", () => {
     expect(html).toContain("Start Full Recall");
     expect(html).toContain("Review Pass 1");
     expect(html).toContain("5 Core areas");
-    expect(html).toContain("6 Recall + 6 Output");
+    expect(html).toContain("전체 / 어려운 문제 복습");
     expect(html).toContain("Complete one new draft");
     expect(html).toContain("Play A · Play B · Full Dialogue");
     expect(html).toContain("Start with 6 source variations");
@@ -186,18 +186,13 @@ describe("Pass 2 Increment 3 UI", () => {
     expect(html).toContain("Next: Chapter Review");
   });
 
-  it("uses a fixed source-locked 6 Recall + 6 Output review set", () => {
-    expect(pass2ReviewExercises).toHaveLength(12);
-    expect(pass2ReviewExercises.filter(item => exerciseGroup(item.id) === "output")).toHaveLength(6);
-    expect(pass2ReviewExercises.filter(item => exerciseGroup(item.id) !== "output")).toHaveLength(6);
-    expect(new Set(pass2ReviewExercises.map(item => item.id)).size).toBe(12);
-    expect(pass2ReviewExercises.every(item => item.source.file && item.english.length > 0)).toBe(true);
+  it("offers only assessed items in the current pass instead of a fixed set", () => {
     let progress = updateProgress(completedPass1Chapter(), { type: "startPass2" });
     progress = updateProgress(progress, { type: "navigate", screen: "review" });
     const html = render(progress);
-    expect(html).toContain("Balanced Chapter Review");
-    expect(html).toContain("12 items");
-    expect(html).toContain("6 Recall + 6 Output");
+    expect(html).toContain("Choose your review");
+    expect(html).toContain("No practiced items yet");
+    expect(html).not.toContain("6 Recall + 6 Output");
   });
 
   it("requires all five core areas, finishes explicitly, restores after reload, and preserves Pass 1", () => {
@@ -220,7 +215,7 @@ describe("Pass 2 Increment 3 UI", () => {
     if (section === "myStory") pass.fullRecallCompleted = false;
     if (section === "conversation") pass.conversation.ratings[1] = null;
     if (section === "output") delete pass.output.ratings[variationExercises[0].id];
-    if (section === "review") pass.review.completed = false;
+    if (section === "review") { pass.review.completed = false; pass.review.hasCompletedSet = false; }
     if (section === "writing") pass.writing.completed = false;
     const chapter = { ...completedPass1Chapter(), activePass: 2 as const, passes: { 1: completedPass1Chapter().passes[1], 2: pass } };
     expect(isPassReady(pass)).toBe(false);

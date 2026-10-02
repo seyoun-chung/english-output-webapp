@@ -99,7 +99,7 @@ describe("version 4 and Pass 3 isolation", () => {
     if (section === "grammar") pass.grammar.studied = false;
     if (section === "about") pass.about.completedQuestionIds = [];
     if (section === "writing") pass.writing.completed = false;
-    if (section === "review") pass.review.completed = false;
+    if (section === "review") { pass.review.completed = false; pass.review.hasCompletedSet = false; }
     expect(isPassReady(pass)).toBe(false);
   });
 });

@@ -1,5 +1,17 @@
 # Codex Handoff — Textbook Mastery Web App
 
+## Latest correction — Chapter Review (2026-10-02)
+
+사용자 확정 정책은 전체 복습과 어려운 문제만 복습의 병행이다.
+Pass 2·3 고정 12문제는 더 이상 새 세트 구성에 사용하지 않는다.
+현재 Chapter·회독의 평가한 Source 항목과 과거 Review에서 실제 평가한 항목을
+모집합으로 하고, latestRatings → 기존 Review ratings → 학습 평가 순서로
+어려운 문제를 결정한다. 새 학습 자기평가는 해당 항목의 최신 상태를 갱신한다.
+Review 완료는 등급과 무관하게 세트 전체 평가로 인정한다.
+hasCompletedSet은 추가 연습을 시작해도 기존 완료 자격을 보존한다.
+기존 저장 형식에 선택 필드로 추가하여 이전 평가·진행·완료 기록을 보존한다.
+검증은 docs/current_task.md의 최신 항목 참조. Git 반영 전이다.
+
 ## Pass 4+ Automatic — 2026-10-02
 
 - Branch: `codex/pass-4-automatic`

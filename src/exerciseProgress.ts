@@ -3,7 +3,20 @@ import type { Rating } from './progress';
 export { buildReviewItems } from './data/outputPractice';
 export type PracticeMode = 'exact' | 'variation' | 'no-hint';
 export type PracticeProgress = { mode: PracticeMode; cursors: Record<PracticeMode, number>; finished: Record<PracticeMode, boolean>; ratings: Record<string, Rating> };
-export type ReviewProgress = { selectedGroups: ExerciseGroup[]; queue: string[]; index: number; ratings: Record<string, Rating>; completed: boolean };
+export type ReviewProgress = { selectedGroups: ExerciseGroup[]; queue: string[]; index: number; ratings: Record<string, Rating>; completed: boolean; latestRatings?: Record<string, Rating>; hasCompletedSet?: boolean };
+export const hasCompletedReview = (p: ReviewProgress) => p.completed || p.hasCompletedSet === true;
+export function studyRatings(p: { chunkRatings: Record<number, Rating | null>; conversation: { ratings: Record<number, Rating | null> }; output: { ratings: Record<string, Rating> } }): Record<string, Rating> {
+  return Object.fromEntries([
+    ...Object.entries(p.chunkRatings).map(([id, value]) => [`story-${id}`, value]),
+    ...Object.entries(p.conversation.ratings).map(([id, value]) => [`conversation-${id}`, value]),
+    ...Object.entries(p.output.ratings),
+  ].filter((entry): entry is [string, Rating] => rating(entry[1])));
+}
+export const difficultReviewItems = (items: ExerciseItem[], learned: Record<string, Rating>, p: ReviewProgress) =>
+  items.filter(item => {
+    const value = p.latestRatings?.[item.id] ?? p.ratings[item.id] ?? learned[item.id];
+    return value === 'effort' || value === 'review';
+  });
 export type ExerciseCatalog = {
   exact: ExerciseItem[];
   variation: ExerciseItem[];
@@ -65,13 +78,16 @@ export function parseReviewProgress(raw: unknown, catalog: ExerciseCatalog = cha
   next.index = raw.index;
   next.ratings = cleanRatings(raw.ratings, next.queue);
   next.completed = raw.completed === true && next.queue.length > 0 && next.queue.every(id => rating(next.ratings[id]));
+  if (record(raw.latestRatings)) next.latestRatings = { ...next.ratings, ...cleanRatings(raw.latestRatings, [...ids]) };
+  if (typeof raw.hasCompletedSet === 'boolean') next.hasCompletedSet = raw.hasCompletedSet || next.completed;
   return next;
 }
 export function startReview(p: ReviewProgress, ids: string[], catalog: ExerciseCatalog = chapter3ExerciseCatalog): ReviewProgress {
-  return parseReviewProgress({ ...p, queue: [...new Set(ids)], index: 0, ratings: {}, completed: false }, catalog) ?? initialReviewProgress();
+  return parseReviewProgress({ ...p, latestRatings: { ...p.ratings, ...p.latestRatings }, hasCompletedSet: hasCompletedReview(p), queue: [...new Set(ids)], index: 0, ratings: {}, completed: false }, catalog) ?? initialReviewProgress();
 }
 export function rateReview(p: ReviewProgress, value: Rating): ReviewProgress {
   if (!p.queue.length || p.completed) return p;
   const ratings = { ...p.ratings, [p.queue[p.index]]: value };
-  return { ...p, ratings, index: Math.min(p.index + 1, p.queue.length - 1), completed: p.index === p.queue.length - 1 && p.queue.every(id => rating(ratings[id])) };
+  const completed = p.index === p.queue.length - 1 && p.queue.every(id => rating(ratings[id]));
+  return { ...p, ratings, latestRatings: { ...p.ratings, ...p.latestRatings, [p.queue[p.index]]: value }, hasCompletedSet: hasCompletedReview(p) || completed, index: Math.min(p.index + 1, p.queue.length - 1), completed };
 }

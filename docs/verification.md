@@ -1,5 +1,16 @@
 # Local verification
 
+## Latest — Chapter Review clearing (2026-10-02)
+
+- [x] 34개 테스트 파일 / 344개 테스트, TypeScript·production build, repository safety 통과.
+- [x] Chapter 1·2 각각 Pass 1·2·3: 어려운 항목 2 → 1 → 0, 중간 및 완료 새로고침,
+  전체 다시 연습과 재평가 후 어려운 항목 재등록을 격리 Chrome에서 실제 클릭으로 검증.
+- [x] 최초 학습 평가 보존, 다른 회독과 분리, 이전 fixed-set 평가 migration,
+  추가 연습 중 완료 이력 유지 자동 검증.
+- [x] Desktop 1280px·mobile viewport 320px 가로 넘침 없음 및 완료 화면 시각 확인.
+- 마이크 코드는 변경하지 않았고 이번 Review 시험은 녹음을 수행하지 않았다.
+- 실제 모바일 기기 시험이 아닌 반응형 웹 검증이다.
+
 ## Latest result — Pass 4+ Automatic (2026-10-02)
 
 Codex 확인 완료:
@@ -249,6 +260,25 @@ Text pattern checks cover common token/key formats, literal secret assignments, 
 **Limitations:** pattern checks are not a security audit or a guarantee. They cannot find every secret, encoded value, arbitrary personal information, Git history leak, or binary payload; harmless examples can trigger a finding. Git configuration/global ignore policies can affect ignore probes. Human review of the staged diff, destination, identity, and permissions remains mandatory. Authentication configuration is not modified. If a real credential is found, stop upload, avoid copying it into chat, and request user action to revoke/rotate it when necessary.
 
 ## Browser acceptance checklist
+
+### Microphone preflight
+
+녹음 검증과 무음 진단마다 아래 순서로 확인한다. 재연결·입력 장치 변경 뒤에는
+다시 확인하며, 이전 세션에서 통과했다는 이유로 생략하지 않는다.
+
+1. 사용하려는 내장/이어폰/USB/Bluetooth 마이크를 구분하고 현재 연결 여부를 확인한다.
+2. Windows 기본 입력 장치(일반·통신), 해당 장치의 음소거, 입력 볼륨을 실제로 조회한다.
+   장치 인식 `OK`는 음소거 해제나 정상 신호의 증거가 아니다.
+3. 브라우저 사이트 권한과 실제 캡처 장치 이름을 확인한다. 앱은 현재 기본 입력을
+   요청하므로 Windows 기본값만으로 브라우저가 같은 장치를 쓴다고 단정하지 않는다.
+4. 사용자가 요청한 녹음 시험에서 입력 신호, 새 녹음 생성, 재생을 확인한다.
+   파일 크기·재생 시간만으로 목소리가 들어 있다고 판단하지 않는다.
+5. 코드/API 모의 검증과 실제 기기 결과를 구분한다. 실제 목소리 청취가 필요하면
+   자동 확인을 마친 뒤 사용자에게 새 녹음의 목소리가 들리는지만 확인받는다.
+6. 사용자가 의도적으로 음소거했을 수 있으므로 상태 확인은 읽기 전용으로 한다.
+   녹음 복구 요청 범위에서 해제했다면 변경 전후 상태를 기록한다. 자동 상시 해제는 하지 않는다.
+7. 같은 문제가 재발하면 연결 시점·기본 입력 변경·음소거 전후 상태를 비교한다.
+   음소거가 켜진 사실과 그것을 다시 켠 프로그램/드라이버에 대한 추정은 분리한다.
 
 An agent can verify the following with the available browser tools and report actual results. User microphone access is a separate opt-in manual check, not a prerequisite for studying.
 

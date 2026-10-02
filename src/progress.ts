@@ -4,6 +4,7 @@ import { initialWritingProgress, parseWritingProgress, initialAboutProgress, par
 import { isPassReady } from "./chapterCompletion";
 import { chapter3Content, type ChapterContent } from "./data/chapterContent";
 import type { ChapterId } from "./data/chapters";
+import { roleTurnIds } from "./data/conversations";
 
 export type Rating = "immediate" | "effort" | "review";
 export type PassNumber = 1 | 2 | 3;
@@ -268,6 +269,30 @@ function updatePassProgress(progress: PassProgress, action: PassAction, content:
       if (progress.currentScreen !== "full") return progress;
       next = { ...progress, fullRecallCompleted: true };
       break;
+  }
+  // A new study assessment supersedes an older review without changing other items.
+  const assessed: string[] = [];
+  if (action.type === "rate" && progress.currentScreen === "recall")
+    assessed.push(`story-${progress.queue[progress.queueIndex]}`);
+  if (action.type === "conversation" && action.action.type === "rate" && progress.conversation.view === "role")
+    assessed.push(`conversation-${roleTurnIds(progress.conversation.role, content.conversations)[progress.conversation.positions[progress.conversation.role]]}`);
+  if (action.type === "output") {
+    for (const [id, value] of Object.entries(action.value.ratings))
+      if (value !== progress.output.ratings[id]) assessed.push(id);
+    const mode = progress.output.mode;
+    if (action.value.mode === mode && (action.value.cursors[mode] !== progress.output.cursors[mode] || action.value.finished[mode] !== progress.output.finished[mode])) {
+      const items = mode === "exact" ? content.exercises.exact : mode === "variation" ? content.exercises.variation : content.exercises.output;
+      assessed.push(items[progress.output.cursors[mode]].id);
+    }
+  }
+  if (assessed.length) {
+    const latestRatings = { ...next.review.ratings, ...next.review.latestRatings };
+    for (const id of assessed) {
+      const value = id.startsWith("story-") ? next.chunkRatings[Number(id.slice(6))]
+        : id.startsWith("conversation-") ? next.conversation.ratings[Number(id.slice(13))] : next.output.ratings[id];
+      if (value) latestRatings[id] = value;
+    }
+    next = { ...next, review: { ...next.review, latestRatings } };
   }
   return { ...next, lastStudiedAt: new Date().toISOString() };
 }
