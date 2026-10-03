@@ -1,0 +1,12 @@
+.backup-bar { padding: 12px 24px; background: #fff; border-bottom: 1px solid #dce4f2; }
+.backup-bar summary { cursor: pointer; min-height: 44px; display: list-item; padding: 12px 0; }
+.backup-panel { max-width: 900px; margin: 0 auto; padding: 12px 0; overflow-wrap: anywhere; }
+.backup-panel h2, .backup-panel h3 { margin: 12px 0; }
+.backup-panel p { line-height: 1.6; }
+.backup-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin: 16px 0; }
+.backup-file { display: flex; flex-direction: column; gap: 8px; max-width: 100%; }
+.backup-file input { max-width: 100%; min-height: 44px; }
+@media (max-width: 600px) {
+  .backup-bar { padding: 8px 16px; }
+  .backup-actions { flex-direction: column; align-items: stretch; }
+}

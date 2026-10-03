@@ -9,17 +9,23 @@
   "scripts": {
     "dev": "vite --host 127.0.0.1",
     "dev:phone": "node scripts/dev-phone-https.mjs",
-    "build": "tsc --noEmit && vite build",
+    "build": "tsc --noEmit && tsc --project tsconfig.server.json && vite build",
     "preview": "vite preview --host 127.0.0.1",
     "test": "vitest run",
     "check:safety": "node scripts/check-repository-safety.mjs",
-    "verify": "npm run check:safety && npm test && npm run build"
+    "check:identity": "node scripts/check-git-identity.mjs",
+    "check:history": "node scripts/check-git-identity.mjs --history",
+    "check:publishable": "node scripts/check-git-identity.mjs --publishable",
+    "verify": "npm run check:identity && npm run check:safety && npm test && npm run build"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.117.2",
     "react": "19.3.0",
     "react-dom": "19.3.0"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "^0.5.8",
+    "@types/node": "^22.20.5",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "typescript": "7.0.2",

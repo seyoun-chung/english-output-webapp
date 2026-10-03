@@ -143,7 +143,7 @@ describe("Pass 2 Increment 3 UI", () => {
     expect(html).toContain("Start Full Recall");
     expect(html).toContain("Review Pass 1");
     expect(html).toContain("5 Core areas");
-    expect(html).toContain("전체 / 어려운 문제 복습");
+    expect(html).toContain("All questions or difficult ones");
     expect(html).toContain("Complete one new draft");
     expect(html).toContain("Play A · Play B · Full Dialogue");
     expect(html).toContain("Start with 6 source variations");

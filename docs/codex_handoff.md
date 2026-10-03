@@ -1,5 +1,132 @@
 # Codex Handoff — Textbook Mastery Web App
 
+## Latest release handoff — PR #30 (2026-10-04)
+
+Backup, Google sign-in, account-scoped sync and identity guards were committed as `bb8476a` and pushed
+to `codex/predeployment-records-release`. [PR #30](https://github.com/seyoun-chung/english-output-webapp/pull/30)
+is the authoritative merge record; query its final state/current main rather than assuming a recorded candidate is main.
+406 tests/build and staged safety passed. No CI is configured; hosted services and deployment remain unverified/off.
+Earlier uncommitted-development statements below are historical. After pulling the merged release, home must still
+verify/enable local hooks separately; clone alone never installs them. Home resync must retain cleaned baseline
+`16db1c7` AND include the actual merged PR #30 commit, when merged, before declaring up to date.
+Remaining decisions: Supabase region/free limits, participant/content access and record retention, then approved
+real Google/Supabase setup and final deployment. Do not deploy or upload learner data on this release approval.
+
+## HISTORY REWRITTEN — home must resynchronize first (2026-10-04)
+
+GitHub main is now `16db1c7eaf484d19ae031dc138cd4b6f37fdcbe9`, replacing `4824761`.
+All 30 remote heads were rewritten with identical commit trees and preserved topology/messages/dates.
+This was privacy metadata cleanup ONLY: newer local backup/login/sync development remains uncommitted.
+STA Track local branches are aligned; existing working files/index, stash and local recovery originals remain.
+Do not upload ignored tmp recovery bundles or old stash/internal refs. Old GitHub commit remains directly
+accessible; Support cleanup is pending and no complete-erasure claim is permitted.
+Support ticket [#4819958](https://help.github.com/ticket/personal/0/4819958) was submitted with explicit
+user approval on 2026-10-04; the ticket list confirmed Open. No raw private email or source files were
+included in the message; the support account's existing contact email is used for replies.
+Eligibility and actual server cleanup remain unconfirmed. Do not submit a duplicate ticket.
+
+Home pull/push restriction ends after the clean-clone resynchronization and preservation/identity checks
+below are verified, NOT after Support replies. Resume only from that verified new clone; preserve the old
+clone without pushing its history. STA Track is already aligned and this ticket does not block local development.
+
+Home agent prompt to provide when the user requests home handoff:
+
+```text
+AGENTS.md를 읽고 우선 읽기 전용 Git 상태 확인부터 해줘.
+STA Track에서 과거 작성자 이메일을 제거하여 GitHub 이력을 재작성했어.
+재작성 기준 main은 16db1c7eaf484d19ae031dc138cd4b6f37fdcbe9야.
+현재 GitHub main을 직접 확인하고 이 커밋의 포함 여부 및 내 로컬 이력과 비교해줘.
+일반 pull/merge/push는 먼저 하지 마. 미커밋·신규 파일, stash, 로컬 전용 commit을 모두 확인해줘.
+기존 폴더·작업·교재·환경설정은 보존하고 브라우저 학습 기록도 별도로 백업해야 해.
+기존 clone의 이력이 다르면 원본을 그대로 둔 채 새 폴더에 clone하는 안전한 재동기화부터 진행해줘.
+로컬 전용 작업이 있거나 보존 여부가 불확실하면 덮어쓰지 말고 멈춰서 알려줘.
+과거 브랜치를 새 이력에 merge하거나 예전 commit/stash를 그대로 올리지 마.
+학습 기록·교재·설정은 위치와 내용을 확인하고 필요한 것만 안전하게 옮겨줘.
+새 clone의 실효 noreply 설정과 hook 제공/설치 여부를 확인해줘. 없는 hook을 설치됐다고 말하지 마.
+원격 최신 상태 일치와 로컬 작업/학습 기록 보존을 검증한 뒤 실행 방법을 알려줘.
+기존 폴더/백업 삭제, commit, push, 강제 동기화, 배포는 하지 마.
+```
+
+The local guide/guard changes are not pushed yet: include this prompt in the actual user handoff,
+and update the expected latest main if a later feature release is merged. Never say home only needs pull.
+
+## Mandatory home-computer handoff gate — 2026-10-04
+
+사용자 요청: 다른 저장소의 이메일 감사는 별도 대화에서 수행하고 여기서는 영어 앱 작업을 계속한다.
+집 컴퓨터 작업 안내에는 일반 pull 전에 아래 확인을 반드시 포함한다.
+
+1. 미커밋/신규 파일, 현재 브랜치, 실제 원격 main, 로컬 HEAD와 공통 조상 및 이력 재작성 여부 확인.
+2. 이메일 정리를 위해 원격 이력이 바뀐 경우 일반 pull/merge/push 금지. 기존 clone/작업/교재/.env는
+   보존하고 학습 기록은 별도 백업한다. 새 폴더 clone 등 승인된 재동기화를 먼저 수행한다.
+3. 새 기록에 기존 브랜치 전체를 merge하거나 과거 커밋을 push하지 않는다. 필요한 미완료 변경만
+   개별 검토 후 옮긴다. 기존 폴더/백업은 검증과 별도 삭제 승인 전까지 유지한다.
+4. 새 clone의 noreply, 실제 hooksPath/차단 동작, 학습 기록 보존을 확인한 뒤 개발 재개.
+5. 아직 이력 재작성이 실행되지 않았다면 실행됐다고 말하지 않는다. 완료 보고에는 실제 새 main SHA,
+   집에서 사용할 프롬프트, 미해결 GitHub PR/캐시 참조를 구분한다.
+
+현재 시점 이력 재작성/강제 push는 미실행이다. 이 확인은 다른 컴퓨터에서 자동 실행되는 기능이
+아니므로 집에서 메인 에이전트가 이 지침을 읽고 실제 상태를 확인해야 한다.
+
+## Current gate — historical email privacy (2026-10-04)
+
+Pre-deployment Git preparation is held after the requested remote-history privacy audit.
+Three old commits have personal author/committer emails; do not echo values or rewrite history without
+separate approval. The repository is private, current Git identity is noreply, and current Vercel projects
+are not linked to this repository. No new commit/push/PR/merge or deployment was performed.
+See current_task and verification for audit evidence, scope limits and the required privacy decision.
+Existing local feature edits and prior validation remain intact. Full product GOAL is not complete.
+
+## Latest — Google login approved and locally implemented (2026-10-04)
+
+User approved replacing email OTP with Continue with Google. Beta means community feedback, not a decision to monetize.
+`googleLogin.ts` uses basic Google scopes, a fixed same-origin return URL and validated Supabase authorize URL.
+Client is PKCE with automatic URL detection disabled; one module-level callback promise exchanges the code once,
+cleans the callback URL and returns generic retry messages. AccountShell validates the user with Auth before
+mounting account-scoped records. Existing records are not renamed or deleted. No hosted credentials/setup changed.
+README documents Google vs Supabase redirect URLs and secret placement; actual Vercel/Supabase setup remains gated.
+
+## Latest — Vercel selected; conditional sync reads (2026-10-04)
+
+Hosting choice is existing Vercel, free-first, deployment last. No deployment/payment approval.
+Google login remains a recommendation, not an approved replacement for the current email OTP.
+`202610040001_conditional_read.sql` adds an authenticated own-record revision check. Apply both
+migrations in filename order only after hosted approval. The client caches a validated private
+snapshot per account transport, rejects mismatched unchanged responses and still checks identity
+before/after every request. No records/history deleted. Free-tier history retention remains undecided.
+Local Vercel project linkage is absent; actual account plan/project is unverified. Request the existing
+project URL when connection work is authorized. Current branch and all earlier local edits preserved.
+
+## Latest — Supabase local implementation approved (2026-10-03)
+
+사용자는 여러 사용자용 앱과 Supabase 기반 로컬 개발을 승인했다. 외부 연결·결제·배포는 아니다.
+`AccountRoot`는 설정 flag가 켜진 경우에만 로드되며 OTP 인증, 검증된 계정별 App remount,
+계정별 storage wrapper와 AccountSyncPanel을 연결한다. 로그인 계정이 변경되면 이전 기록 화면을
+숨기고 늦은 RPC 응답을 폐기한다. 인증 토큰을 클라이언트 ID만으로 신뢰하지 않는다.
+
+현재 Supabase 데이터 경로는 SDK → RLS/RPC다. `server/accountSync.ts`는 별도 서버를 위한
+검증된 identity 계약/테스트일 뿐 현재 production route로 연결하지 않았다.
+SQL migration은 `supabase/migrations/202610030001_progress.sql`. Hosted 프로젝트 적용 미실행.
+공식 설정과 로컬 테스트 방법은 verification/README 참조. 현재 Git 변경 전체 미커밋 상태 유지.
+운영 프로젝트 연결·비용·지역·가입 허용 범위·메일 설정과 교재 배포 권한은 아직 확인 필요.
+
+## Latest — Record safety and local sync test (2026-10-03)
+
+- 아래 과거 문구-only 기록 이후 백업/복원·저장 보호와 로컬 동기화 시험을 추가했다.
+- 실제 사용자 저장값은 시험에 사용하지 않았다. 원본 손상 시 자동 덮어쓰기를 차단한다.
+- 복원 전 원본 보관·재복구, 이전 version 1–5 미리보기 migration 제공.
+- 동기화는 명시적 시험 모드에서만 작동하는 loopback 서버다. 운영 인증·외부 전송은 없다.
+- `VITE_LOCAL_SYNC_TEST=1`을 설정한 개발 서버에서만 시험 UI/API가 활성화된다.
+- 현재 브랜치 `codex/review-english-copy`, main 기준 `4824761`, 로컬 미커밋 변경 유지.
+- commit/push/PR/merge 및 배포 미실행. 실제 외부 저장 서비스 선택·보안 승인 필요.
+- 로컬 검증/시험 서버 실행법은 verification 최신 항목 참조. 중간 기능 완료를 전체 완료로 표시하지 않는다.
+
+## Latest — English review copy (2026-10-03)
+
+PR #29는 main `4824761`로 병합됐고 사용자가 Review 정상 동작을 확인했다.
+후속 `codex/review-english-copy`에서 Review UI 안내만 짧은 영어로 통일했다.
+학습 콘텐츠와 저장 방식은 변경하지 않았다. 347개 테스트·빌드 및 격리 Chrome
+6개 Chapter/Pass 조합 검증 통과. 이번 문구 변경은 아직 commit·push 전이다.
+
 ## Latest correction — Chapter Review (2026-10-02)
 
 사용자 확정 정책은 전체 복습과 어려운 문제만 복습의 병행이다.

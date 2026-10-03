@@ -1,5 +1,121 @@
 # Local verification
 
+## Predeployment release recheck — 2026-10-04
+
+- [x] `npm run verify`: 44 files / 406 tests, client/server TypeScript, build and safety passed again.
+- [x] Effective identity and 63 publishable commits pass; full-ref audit still detects the three
+  preserved historical recovery commits. Recovery refs/bundles are not part of this feature push.
+- [x] GitHub reports private repository, no open PRs, deployments, repository hooks or Actions workflows
+  before release. Current Vercel account lists only two other projects; no deployment performed.
+- [x] Prior isolated browser checks below remain evidence for unchanged features; not rerun for documentation-only release cleanup.
+- [x] Support ticket #4819958 submitted and Open verified. Server cleanup is still pending, not completed.
+- [ ] Hosted Google/Supabase, actual-device sync, content-access/retention policies and final deployment require approval/verification.
+- Historical sections below describe their execution time, not the current release state.
+
+## Executed identity history rewrite — 2026-10-04
+
+- [x] Original local all-ref and remote all-ref bundles plus 137 worktree file copies preserved in ignored tmp.
+- [x] Fresh mirror git-filter-repo 2.47.0: 63/63 trees, messages, names, timestamps and mapped parent topology identical;
+  30 branch tips mapped correctly; personal author/committer email removed. GitHub signatures not retained by rewrite.
+- [x] Atomic push with explicit old-SHA leases: all 30 remote branch SHAs verified after write, no branch deleted.
+- [x] 27 local heads remapped with same-tree checks/CAS; 137 worktree SHA256 hashes unchanged; index untouched.
+- [x] npm run verify: 44 files / 406 tests and full types/build/safety passed after rewrite.
+- [x] Actual pre-push hook using --to-stdin: new main accepted, old-main source SHA rejected with exit 1.
+  Direct stdin to git hook run without --to-stdin was insufficient to simulate a push; corrected invocation used.
+- [ ] GitHub residual removal: old commit API still returns 200. Support #4819958 submitted; cleanup pending.
+- [ ] Home clone resync pending. Recovery stash/internal refs/bundles intentionally retain old history locally.
+- No deployment or new feature release; new main `16db1c7eaf484d19ae031dc138cd4b6f37fdcbe9` has identical files
+  to old main. Guard and latest feature work remain local/uncommitted.
+
+## Latest integrated check — 2026-10-04
+
+- [x] `npm run verify`: 44 test files / 406 tests passed, client/server TypeScript and Vite production build passed.
+- [x] Current identity and worktree safety checks passed (137 text files).
+- [ ] Historical identity cleanup and remote release are still pending; passing local tests is not a completed deployment.
+
+## Identity guard — 2026-10-04
+
+- [x] `gitIdentity` + `repositorySafety`: 2 files / 28 tests passed. Effective author/committer
+  overrides are rejected; a safe newest commit does not hide an unsafe ancestor; raw emails never printed by guard.
+- [x] Current effective identities pass; `--history` rejects the 3 known initial commits among 65 local reachable commits
+  (includes local refs beyond the previously audited 63 remote commits).
+- [x] Existing active hooks/core.hooksPath absent before install; local core.hooksPath now `.githooks`.
+  `git hook run pre-push` actually invokes guard and rejects known history; no remote push performed.
+- [x] Repository safety: 137 files; diff whitespace check passed. No app/content changes in this fix.
+- [ ] Remote history cleanup, home-computer hook activation, hosted/server enforcement: not performed.
+- Local hooks require Node/Git, are not installed by clone alone, and can be bypassed by deliberate flags/config changes.
+  They do not cover GitHub web/API-created commits or other computers. Manual release checks remain mandatory.
+
+## GitHub privacy/security audit — 2026-10-04
+
+Verdict: **Needs decision before Git release**. Requirements-evidence-audit and project-compass
+were used to distinguish verified evidence from release assumptions. No history was rewritten.
+
+| Criterion | Evidence / result | Status |
+| --- | --- | --- |
+| Repository access | Authenticated GitHub REST reports private | Complete |
+| Current upload candidates | Existing repository safety check: 133 text files, no pattern findings; supplemental secret/path patterns reviewed | Complete within pattern scope |
+| Existing GitHub history | Fetched origin refs; 63 commits and 319 distinct file blobs scanned, no recognized secret/file/path findings | Complete within reachable scope |
+| Commit identity privacy | Three old commits contain a personal email in author/committer metadata: `6c863d8`, `86845bd`, `c5959ff`; current identity is noreply | Failed / decision pending |
+| GitHub discussion text | 29 PR titles/bodies; issue endpoint repeats those 29 PRs; 0 issue comments, 0 inline review comments, 0 reviews, 0 releases. No pattern findings | Complete within returned scope |
+| Deployment linkage | Current Vercel account lists two projects, neither linked to this repository | Complete for this account only |
+
+- Automated scans report category/location only, never the matched secret or private email.
+- History email candidate in repositorySafety tests is synthetic Git SSH/URL test data, not a personal email.
+- Supplemental Supabase-secret match in accountStorage tests is a synthetic rejection fixture, not a live key.
+- This is not a guarantee of no secrets or all personal information: arbitrary names, unknown secret formats,
+  deleted/unreachable GitHub objects, attachments, Actions artifacts/logs, other accounts/integrations and
+  hosted configuration were not exhaustively audited. GitHub username/author display names remain metadata.
+- Staged snapshot audit, dependency-vulnerability audit and live hosted security tests were not run in this audit.
+- Commit/push/PR/merge are held pending the historical-email decision. Existing local edits remain intact.
+  No deployment, external learner-data upload, history rewrite, credential rotation or force push performed.
+
+
+## Latest — Backup recovery and local sync (2026-10-03)
+
+- [x] 최종 `npm run verify`: 38개 파일 / 380개 테스트, 클라이언트·서버 TypeScript,
+  production build, repository safety 통과. `git diff --check` 통과.
+
+- [x] Backup/migration 24, sync protocol/store 6, sync client 3 테스트.
+- [x] Chapter 1–12 실제 reducer 이동·평가 상태 및 Pass 1–3 완료 fixture의 백업 왕복.
+- [x] 격리 Chrome 1280px/320px: 파일 다운로드/취소/복원/재복구, 손상 JSON 거부,
+  reload, Chapter·Library·Pass 4+ 백업 접근. 실제 사용자 storage 사용 안 함.
+- [x] Chapter 1·2 × Pass 1–3: 어려운 문제 2→1→0, reload, 전체 재연습, 최초 평가 보존.
+- [x] 같은 브라우저의 두 탭: 첫 탭 변경을 두 번째 탭이 덮어쓰지 않고 경고 표시.
+- [x] 별도 시험 서버의 두 브라우저: 최초 연결 선택, 양쪽 편집 충돌, 양방향 선택,
+  원격 수신 전 복구 사본, offline 후 재시도. 1280px/320px overflow 없음.
+- [x] localhost API 필수 헤더·Origin 검사, 8MB 초과 거부. production preview는 sync JSON API 없음.
+- [x] 동시 store 인스턴스 8개 중 1개만 저장, 7개 충돌, 이전 revision 보존.
+- [ ] 운영 인증·타인 접근 차단·클라우드 DB·실제 집/STA Track 동기화: 서비스 미승인, 미실행.
+- 실제 모바일·마이크 시험은 이번 변경에서 미실행. 녹음 코드는 수정하지 않음.
+
+### Local sync test setup (not production)
+
+일반 개발 서버에는 시험 UI/API가 없다. 별도 PowerShell 터미널에서:
+
+```powershell
+$env:VITE_LOCAL_SYNC_TEST='1'
+$env:ENGLISH_OUTPUT_TEST_SYNC_DIR=Join-Path $env:TEMP ('english-output-sync-'+[guid]::NewGuid())
+npm run dev -- --port 5174 --strictPort
+```
+
+http://127.0.0.1:5174 에서 별도 브라우저 프로필 두 개로 시험한다. 실제 기록 대신
+시험 자료만 사용한다. `Local sync test` → `Connect local test sync`를 눌러야 저장한다.
+수동 `Sync now` 방식이며 서로 다른 컴퓨터를 연결하지 않는다.
+시험 폴더의 revision JSON은 이전 사본이며 개인 작문을 포함할 수 있다. Git에 추가하지 않는다.
+종료는 Ctrl+C. 환경변수는 이 터미널에만 적용되므로 시험 뒤 터미널을 닫는다.
+`npm run verify`는 클라이언트·서버 타입 검사, 단위 검사, 안전 검사, production build를 수행한다.
+
+## Latest — Simple English review copy (2026-10-03)
+
+- [x] 35개 테스트 파일 / 347개 테스트, TypeScript·production build·안전 검사 통과.
+- [x] Pass 1–3 선택·빈 상태·완료 화면의 영어 안내와 단수형 자동 검사.
+- [x] 격리 Chrome에서 Chapter 1·2 × Pass 1–3 어려운 문제 2 → 1 → 0,
+  새로고침 복원, 전체 연습 재시작 검증. 사용자 저장 데이터는 수정하지 않음.
+- [x] 1280px/320px 가로 넘침 없음 및 완료 화면 스크린샷 시각 확인.
+- Aside 연결과 URL 실행 시도 실패로 격리 Chrome 자동 검증을 사용함.
+- 실제 모바일 기기·마이크 검증은 이번 문구 수정에서 미실행.
+
 ## Latest — Chapter Review clearing (2026-10-02)
 
 - [x] 34개 테스트 파일 / 344개 테스트, TypeScript·production build, repository safety 통과.
@@ -258,6 +374,40 @@ The default scanner checks tracked worktree files plus nonignored untracked file
 Text pattern checks cover common token/key formats, literal secret assignments, authorization values, credential-bearing URLs, and personal computer paths. Reports contain only filename, line number, and category, never the matching secret. Required ignore rules and fetch/push remote URL credentials are checked. Staged mode also refuses an unstaged ignore-policy difference because Git ignore probes use the worktree policy. Credential stores are never opened.
 
 **Limitations:** pattern checks are not a security audit or a guarantee. They cannot find every secret, encoded value, arbitrary personal information, Git history leak, or binary payload; harmless examples can trigger a finding. Git configuration/global ignore policies can affect ignore probes. Human review of the staged diff, destination, identity, and permissions remains mandatory. Authentication configuration is not modified. If a real credential is found, stop upload, avoid copying it into chat, and request user action to revoke/rotate it when necessary.
+
+## 2026-10-04 Google login local verification
+
+- [x] `npm run verify`: 43 test files / 405 tests, client/server type checks, build and repository pattern checks passed.
+- [x] Unit checks: Google-only basic scopes, fixed return URL, foreign authorize URL rejection, callback code removal, cancellation, generic errors and successful exchange.
+- [x] Isolated Chromium mock-provider test: SDK PKCE challenge/verifier, keyboard login, expired and orphan code recovery, cancellation, callback URL cleanup, verified-user display, two account isolation, two-browser sync, offline retry, signout and reload.
+- [x] Login screens inspected at 1280/320 widths; no horizontal overflow. No real Google/Supabase calls, emails or user browser records used.
+- [ ] Real OAuth consent, hosted provider configuration and actual device/cloud sync remain unexecuted. Real connection, privacy/region/tester scope and final deployment need approval. Local mode on port 5173 remains unchanged; fake-provider server is test-only and stopped after QA.
+
+## 2026-10-04 Conditional sync reads and free-first beta
+
+- [x] `npm run verify`: 42 files / 402 tests; repository pattern safety check, client/server type checks and build passed.
+- [x] Exact second SQL migration tested locally: empty records, unchanged revisions, changed revisions, account isolation, invalid revision and anonymous access denial.
+- [x] Client tests cover private cache copies, malformed unchanged markers and existing account-switch protections.
+- [x] 200 synthetic accounts in local PGlite: one saved record per account, own-record isolation and conditional read. Summed unchanged JSON response bytes were less than 10% of full responses (asserted). This excludes HTTP/Auth/compression, does not measure monthly usage, and is not a concurrent hosted load test.
+- [x] `scripts/account-browser-qa.cjs` rerun with mocked conditional RPC at 1280/320 widths: account switching, two-browser sync, offline retry and reload passed; no real provider calls.
+- [ ] Actual Vercel project/plan, hosted Supabase migrations/Auth, 200-user concurrency and real devices: unverified. Current login is still email OTP; Google login needs user decision. History is not pruned, so long-term free storage capacity remains unproven.
+
+Aside launch/connection was attempted but its daemon was unavailable. Isolated bundled Playwright Chromium was used instead; no user browser records were touched. No deployment, paid service or Git mutation performed.
+
+## 2026-10-03 Supabase local implementation verification
+
+This section supersedes older statements that no account implementation exists. Default development still uses local-only storage; the Supabase implementation is opt-in and has not been connected to a real project or deployed.
+
+- [x] `npm run verify`: 42 test files, 397 tests passed; client/server TypeScript checks, production build and repository safety check passed.
+- [x] Exact SQL migration tested in isolated PGlite PostgreSQL: authenticated user separation, anonymous denial, direct write denial, revision conflict, idempotent retry and retained history (3 tests). This is not hosted Supabase JWT or concurrent physical-connection verification.
+- [x] Storage/configuration/canonical comparison (3 tests), captured-session transport and late account-switch responses (4 tests), provider-neutral server boundary (7 tests). The latter is not mounted in the direct Supabase SDK integration.
+- [x] `scripts/account-browser-qa.cjs`: isolated Chromium contexts at 1280px and 320px; failed/successful OTP, account separation, explicit initial copy choice, two-browser automatic sync, offline retry, reload and remembered sync preference. All HTTPS intercepted; no real provider calls or emails. No page errors or horizontal overflow. Desktop and mobile screenshots visually inspected.
+- [x] Existing isolated browser regression checks: backup preview/cancel/restore/recovery/corrupt-original preservation, Chapter 1–2 Pass 1–3 review clearing and restart, stale-tab overwrite prevention.
+- [ ] Real Supabase project, JWT/RLS integration, production SMTP/email delivery, deployment and real-device checks: not executed; external connection requires separate approval. No real learning data or recordings uploaded.
+
+To reproduce the mocked account browser check, run a separate local Vite process with `VITE_ACCOUNT_SYNC_ENABLED=1`, `VITE_SUPABASE_URL=https://example.supabase.co`, `VITE_SUPABASE_PUBLISHABLE_KEY=sb_publishable_localtest` and `npm run dev -- --port 5174 --strictPort`. Run `node scripts/account-browser-qa.cjs` with Playwright available to Node (the bundled runtime can provide `NODE_PATH`). Do not manually use this fake configuration in an ordinary browser: the test script supplies the interception. Stop the test server afterward. No real `.env` or credentials are required.
+
+Remaining release decisions: actual service plan/region, email sender, signup/tester policy, data/history retention and shared-device guidance. A login screen alone does not protect downloadable textbook JavaScript assets; deployment/content access must be reviewed separately.
 
 ## Browser acceptance checklist
 

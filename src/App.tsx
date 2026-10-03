@@ -24,7 +24,12 @@ import {
   weakIds,
 } from "./progress";
 import type { Action, PassProgress, Rating, ReadMode, Screen } from "./progress";
-import { initialAppProgress, parseAppProgress, updateAppProgress, type AppProgress } from "./appProgress";
+import { updateAppProgress, type AppProgress, type AppAction } from "./appProgress";
+import { readProtectedProgress, restoreProgressBackup, saveProgressIfUnchanged } from './progressBackup';
+import { ProgressBackupPanel } from './ProgressBackupPanel';
+import { LocalSyncPanel } from './LocalSyncPanel';
+import { AccountSyncPanel } from './AccountSyncPanel';
+import type { SyncTransport } from './syncClient';
 import { ChapterContentProvider, useChapterContent } from "./ChapterContentContext";
 import { AutomaticScreen } from "./AutomaticScreen";
 
@@ -309,7 +314,7 @@ function Pass2Overview({ progress, dispatch }: ScreenProps) {
     action: () => dispatch({ type: "output", value: { ...progress.output, mode: "variation" } }),
   } : !reviewComplete ? {
     eyebrow: "OUTPUT COMPLETE", title: "Chapter Review next",
-    description: "이번 회독에서 학습한 문제를 전체 또는 어려운 문제만 복습해보세요.", label: "Start Chapter Review",
+    description: "Review all questions or just the difficult ones.", label: "Start Chapter Review",
     action: () => dispatch({ type: "navigate", screen: "review" }),
   } : !writingComplete ? {
     eyebrow: "REVIEW COMPLETE", title: "Weekly Writing next",
@@ -364,7 +369,7 @@ function Pass2Overview({ progress, dispatch }: ScreenProps) {
           <button className="section-row" disabled><span className="section-number">04</span><span className="section-info"><strong>Grammar Focus</strong><small>Does not block Pass 2</small></span><span className="later-tag">Next pass</span></button>
           <button className="section-row" disabled><span className="section-number">05</span><span className="section-info"><strong>What About You?</strong><small>Does not block Pass 2</small></span><span className="later-tag">Next pass</span></button>
           <button className="section-row available" onClick={() => dispatch({ type: "navigate", screen: "writing" })}><span className="section-number">06</span><span className="section-info"><strong>Weekly Writing</strong><small>{writingComplete ? "New Pass 2 draft complete" : "Complete one new draft"}</small></span><span className="status-tag">Core</span><span aria-hidden="true">↗</span></button>
-          <button className="section-row available" onClick={() => dispatch({ type: "navigate", screen: "review" })}><span className="section-number">07</span><span className="section-info"><strong>Chapter Review</strong><small>{reviewComplete ? "Review set complete" : "전체 / 어려운 문제 복습"}</small></span><span className="status-tag">Core</span><span aria-hidden="true">↗</span></button>
+          <button className="section-row available" onClick={() => dispatch({ type: "navigate", screen: "review" })}><span className="section-number">07</span><span className="section-info"><strong>Chapter Review</strong><small>{reviewComplete ? "Review set complete" : "All questions or difficult ones"}</small></span><span className="status-tag">Core</span><span aria-hidden="true">↗</span></button>
           <button className="section-row" disabled><span className="section-number">08</span><span className="section-info"><strong>Pronunciation</strong><small>Separate learning area</small></span><span className="later-tag">Next pass</span></button>
         </section>
         <aside className="overview-aside">
@@ -885,18 +890,22 @@ function ChapterCompletion({ progress, dispatch, hasPass2, hasPass3 }: ScreenPro
   );
 }
 
-export default function App() {
-  const [storageError, setStorageError] = useState(false);
+export default function App({ storage, syncTransport }: { storage?: Storage; syncTransport?: SyncTransport } = {}) {
+  const progressStorage = storage ?? {
+    getItem: (key: string) => localStorage.getItem(key), setItem: (key: string, value: string) => localStorage.setItem(key, value),
+  };
+  const alive = useRef(true);
+  useEffect(() => { alive.current = true; return () => { alive.current = false; }; }, []);
+  const [boot] = useState(() => readProtectedProgress({
+    getItem: key => progressStorage.getItem(key), setItem: (key, value) => progressStorage.setItem(key, value),
+  }));
+  const [storageWarning, setStorageWarning] = useState<string | null>(boot.message);
+  const protectedRecord = useRef(boot.protected);
+  const originalRecord = useRef(boot.original);
   const [appProgress, appDispatch] = useReducer(
-    (state: AppProgress, action: Parameters<typeof updateAppProgress>[1]) => updateAppProgress(state, action),
-    undefined,
-    () => {
-    try {
-      return parseAppProgress(localStorage.getItem(STORAGE_KEY));
-    } catch {
-      return initialAppProgress();
-    }
-  });
+    (state: AppProgress, action: AppAction | { type: 'restoreBackup'; progress: AppProgress }) =>
+      action.type === 'restoreBackup' ? action.progress : updateAppProgress(state, action),
+    boot.progress);
   const activeContent = chapterContentById[appProgress.activeChapterId] ?? chapterContentById[3]!;
   const chapterProgress = appProgress.chapters[appProgress.activeChapterId] ?? initialProgress(activeContent);
   const currentChapterName = chapterName(activeContent.metadata);
@@ -907,13 +916,41 @@ export default function App() {
     document.title = appProgress.view === "library" ? "Chapter Library · English Output" : appProgress.view === "automatic" ? "Pass 4+ Automatic · English Output" : `${currentChapterName} · English Output`;
   }, [appProgress.view, currentChapterName]);
   useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(appProgress));
-      setStorageError(false);
-    } catch {
-      setStorageError(true);
+    if (protectedRecord.current) return;
+    let cancelled = false;
+    if (!navigator.locks) {
+      setStorageWarning('Safe saving is unavailable in this browser. Download a backup before leaving.');
+      return;
     }
+    void navigator.locks.request(STORAGE_KEY, () => {
+      if (cancelled || protectedRecord.current) return;
+      try {
+        originalRecord.current = saveProgressIfUnchanged(progressStorage, originalRecord.current, appProgress);
+        setStorageWarning(null);
+      } catch {
+        protectedRecord.current = true;
+        setStorageWarning('Progress could not be saved safely. Another tab may have changed it, or storage is full. Download a backup before reloading.');
+      }
+    }).catch(() => setStorageWarning('Saving failed. Download a backup before leaving.'));
+    return () => { cancelled = true; };
   }, [appProgress]);
+  const latestProgress = useRef(appProgress);
+  latestProgress.current = appProgress;
+  const restore = async (text: string, expected?: string) => {
+      if (!navigator.locks) throw new Error('Use a browser with safe storage support to restore a backup.');
+      await navigator.locks.request(STORAGE_KEY, () => {
+        if (!alive.current) throw new Error('Account changed. No record was replaced.');
+        if (expected !== undefined && JSON.stringify(latestProgress.current) !== expected) throw new Error('Your browser record changed during sync. Sync again; nothing was replaced.');
+        const result = restoreProgressBackup(progressStorage, text, originalRecord.current, `${Date.now()}-${crypto.randomUUID()}`);
+        originalRecord.current = result.saved;
+        protectedRecord.current = false;
+        setStorageWarning(null);
+        appDispatch({ type: 'restoreBackup', progress: result.progress });
+      });
+    };
+  const safetyPanel = <><ProgressBackupPanel progress={appProgress} original={originalRecord.current} warning={storageWarning} onRestore={restore} storage={storage} />
+    {syncTransport && <AccountSyncPanel progress={appProgress} disabled={Boolean(storageWarning)} onRestore={restore} transport={syncTransport} storage={storage} />}
+    {import.meta.env.DEV && import.meta.env.VITE_LOCAL_SYNC_TEST === '1' && <LocalSyncPanel progress={appProgress} disabled={Boolean(storageWarning)} onRestore={restore} />}</>;
   const progress = activePassProgress(chapterProgress);
   const chunkId = progress.queue[progress.queueIndex];
   const conversationPosition = `${progress.conversation.view}-${progress.conversation.role}-${progress.conversation.positions[progress.conversation.role]}`;
@@ -927,10 +964,11 @@ export default function App() {
   const sectionTitle = chapterSections.find((section) => section.screen === progress.currentScreen)?.title;
   const locationParts = breadcrumbParts(progress, activeContent.metadata);
   if (appProgress.view === "library") {
-    return <ChapterLibrary progress={appProgress} onOpen={(chapterId) => appDispatch({ type: "selectChapter", chapterId })} onAutomatic={() => appDispatch({ type: "showAutomatic" })} />;
+    return <>{safetyPanel}<ChapterLibrary progress={appProgress} onOpen={(chapterId) => appDispatch({ type: "selectChapter", chapterId })} onAutomatic={() => appDispatch({ type: "showAutomatic" })} /></>;
   }
-  if (appProgress.view === "automatic") return <AutomaticScreen progress={appProgress} dispatch={appDispatch} />;
+  if (appProgress.view === "automatic") return <>{safetyPanel}<AutomaticScreen progress={appProgress} dispatch={appDispatch} /></>;
   return (
+    <>{safetyPanel}
     <ChapterContentProvider content={activeContent}>
     <div className="app-shell">
       <a className="skip-link" href="#main-content">
@@ -985,12 +1023,6 @@ export default function App() {
               </span>
             ))}
           </nav>
-          {storageError && (
-            <div className="storage-warning" role="alert">
-              진행 기록을 저장할 수 없어요. 현재 학습은 가능하지만 새로고침하면
-              사라질 수 있어요. 브라우저 저장 공간 설정을 확인해주세요.
-            </div>
-          )}
           {progress.currentScreen === "overview" && (
             <Overview progress={progress} dispatch={dispatch} hasPass2={chapterProgress.passes[2] !== null} />
           )}
@@ -1022,5 +1054,6 @@ export default function App() {
       </div>
     </div>
     </ChapterContentProvider>
+    </>
   );
 }

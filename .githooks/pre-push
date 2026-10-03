@@ -1,0 +1,4 @@
+#!/bin/sh
+# Check publishable refs plus every proposed source SHA, including arbitrary refs.
+# Recovery-only stash/app refs are preserved locally, never automatically published.
+node scripts/check-git-identity.mjs --push
