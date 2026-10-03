@@ -1,5 +1,21 @@
 # Current Task
 
+## Bounded server recovery — local implementation (2026-10-04)
+
+사용자가 사이드 대화를 통해 합리적 보관 정책의 선택·로컬 구현·검증을 위임했다.
+PR #30은 `b06da28`로 merged. 그 main 기준 `codex/bounded-recovery-history`에서 작업한다.
+선택 정책: 최근 저장 3개 + 최근 저장일 7일의 첫 사본(UTC)을 중복 없이 최대 10개 보관한다.
+자동 저장이 잦아도 하루 시작 사본이 모두 밀려나지 않도록 단순 최근 5개 후보를 개선했다.
+현재 학습 진도/답변/작문, 브라우저 복구 사본, 다운로드 백업은 이 제한으로 변경하지 않는다.
+세 번째 SQL migration은 설치만으로 삭제하지 않으며 다음 성공한 저장에서 해당 사용자만 정리한다.
+실제 DB 적용/삭제·외부 연결·배포는 승인 밖이다. 사용자가 이번 변경의 commit/push/PR/merge를 승인했다.
+배포 전 승인 범위 안의 로컬 준비를 마무리하며 외부 연결/콘텐츠 접근 결정만 사용자에게 모아 전달한다.
+구체적인 연결 순서·남은 승인·운영 검증은 docs/deployment_readiness.md를 따른다.
+최종 로컬 준비 검증: 45 files / 411 tests, client/server build, identity/safety, npm audit(0 known advisories).
+배포 전 독립적인 로컬 구현/검사는 완료했다. 실제 연결은 외부 저장/프로젝트·지역 승인 및 교재 제공 권한,
+참여자 접근 범위가 필요하다. 현재 인증 화면만으로 정적 교재 번들을 보호한다고 주장하지 않는다.
+검증 결과는 docs/verification.md 참조. 남은 연결 결정: 서비스 지역/비용, 가입/교재 접근 권한.
+
 ## Release candidate published — PR #30 (2026-10-04)
 
 최신 개발분은 `bb8476a`로 commit/push했고 [PR #30](https://github.com/seyoun-chung/english-output-webapp/pull/30)에 포함됐다.

@@ -153,8 +153,10 @@ Supabase용 Google 로그인과 사용자별 자동 동기화 코드가 추가�
 - `VITE_ACCOUNT_SYNC_ENABLED=1`
 - `VITE_SUPABASE_URL`: 승인한 HTTPS Supabase 프로젝트 origin
 - `VITE_SUPABASE_PUBLISHABLE_KEY`: publishable key만 사용. secret/service_role 키는 금지.
-- SQL migration은 `supabase/migrations/`의 파일명 순서대로 적용한다(현재 2개). 실제 프로젝트 적용은 별도 승인 필요.
-- 변경 없는 기록은 revision만 받아 통신량을 줄인다. 복구용 이력은 아직 자동 삭제하지 않으므로 베타 전 보관 정책을 확정해야 한다.
+- SQL migration은 `supabase/migrations/`의 파일명 순서대로 적용한다(현재 3개). 실제 프로젝트 적용은 별도 승인 필요.
+- 변경 없는 기록은 revision만 받아 통신량을 줄인다. 서버 복구 사본은 최근 저장 3개와 최근 저장일 7일의 첫 기록을 합쳐 사용자당 최대 10개다(날짜 기준 UTC, 저장하지 않은 날은 제외).
+- 현재 학습 기록은 이 제한과 별도로 유지한다. 브라우저 복구 사본과 다운로드한 백업은 이 정책으로 삭제하지 않는다. 오래된 서버 사본으로 돌아갈 수 있는 범위는 제한된다.
+- 보관 제한 migration 설치 자체는 기존 데이터를 삭제하지 않는다. 승인 후 실제 적용 시 각 사용자의 다음 저장 성공과 같은 트랜잭션에서 그 사용자의 오래된 서버 사본만 정리한다. 무료 용량/영구 복구를 보장하지 않으며 실제 운영 사용량 확인이 필요하다.
 - 로그인은 `Continue with Google`로 변경됐다(2026-10-04 사용자 승인). 이메일 OTP UI는 제공하지 않으며 로그인 메일/SMTP가 필요하지 않다.
 - 실제 연결 승인 후 Google OAuth Web client를 만들고 Supabase Google provider에 Client ID/Secret을 설정한다. Secret은 Supabase 설정에만 보관하며 `VITE_*`, 앱 코드, Git에 넣지 않는다.
 - Google 승인된 redirect URI는 해당 Supabase 프로젝트의 `/auth/v1/callback`; Supabase Site URL/redirect allowlist는 실제 Vercel 앱의 정확한 origin + `/`로 설정한다. 로컬 시험 주소는 별도 등록하며 광범위한 wildcard는 쓰지 않는다.

@@ -1,5 +1,23 @@
 # Local verification
 
+## Bounded history — local-only (2026-10-04)
+
+- [x] Release recheck: 45 files / 411 tests, client/server build, identity and 140-file safety passed.
+- [x] UTC day boundaries preserve daily anchors even with Asia/Seoul DB session timezone.
+- [x] Authenticated users cannot invoke the internal retention trigger directly.
+- [x] Full npm audit: 0 known advisories at check time, not a guarantee of no vulnerabilities.
+- [x] Deployment preparation runbook completed; no hosted connection, real records or deployment used.
+
+- [x] `npm run verify`: 45 files / 410 tests, client/server TypeScript, build, identity and 139-file safety passed.
+- [x] PGlite applied all three migrations. Synthetic 1,000 saves over 10 UTC dates retain exactly
+  7 daily first-save anchors plus latest 3 revisions; another user's legacy rows remain untouched.
+- [x] Installing the retention migration leaves legacy rows intact. Transaction rollback restores pruning.
+- [x] Current progress including writing remains exact; retry/stale-write behavior and RLS/direct-delete denial pass.
+- [x] Diff whitespace check passed. No UI/content/audio change; existing browser evidence was not rerun.
+- [ ] Hosted migration/deletion, concurrent hosted load and real 100–200-user storage capacity: not executed.
+- Current record, browser recovery copies and downloaded files are outside this pruning policy.
+  Daily anchors use UTC active dates, not a guarantee of every historical edit or an exact 7-calendar-day window.
+
 ## Predeployment release recheck — 2026-10-04
 
 - [x] `npm run verify`: 44 files / 406 tests, client/server TypeScript, build and safety passed again.
