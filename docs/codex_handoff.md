@@ -1,5 +1,17 @@
 # Codex Handoff — Textbook Mastery Web App
 
+## Latest release handoff — PR #30 (2026-10-04)
+
+Backup, Google sign-in, account-scoped sync and identity guards were committed as `bb8476a` and pushed
+to `codex/predeployment-records-release`. [PR #30](https://github.com/seyoun-chung/english-output-webapp/pull/30)
+is the authoritative merge record; query its final state/current main rather than assuming a recorded candidate is main.
+406 tests/build and staged safety passed. No CI is configured; hosted services and deployment remain unverified/off.
+Earlier uncommitted-development statements below are historical. After pulling the merged release, home must still
+verify/enable local hooks separately; clone alone never installs them. Home resync must retain cleaned baseline
+`16db1c7` AND include the actual merged PR #30 commit, when merged, before declaring up to date.
+Remaining decisions: Supabase region/free limits, participant/content access and record retention, then approved
+real Google/Supabase setup and final deployment. Do not deploy or upload learner data on this release approval.
+
 ## HISTORY REWRITTEN — home must resynchronize first (2026-10-04)
 
 GitHub main is now `16db1c7eaf484d19ae031dc138cd4b6f37fdcbe9`, replacing `4824761`.

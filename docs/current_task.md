@@ -1,5 +1,15 @@
 # Current Task
 
+## Release candidate published — PR #30 (2026-10-04)
+
+최신 개발분은 `bb8476a`로 commit/push했고 [PR #30](https://github.com/seyoun-chung/english-output-webapp/pull/30)에 포함됐다.
+46개 변경 파일, staged index 137개 파일 안전 검사와 406개 테스트/build 통과. 실제 배포 없음.
+원격 PR은 충돌 없이 병합 가능하며 자동 CI/check/status는 설정되어 있지 않다. CI 통과로 표현하지 않는다.
+사용자 승인으로 merge 진행 단계다. 최종 병합 여부와 main SHA는 GitHub PR에서 직접 확인한다.
+이 기록 이전의 '개발분 미커밋'은 과거 상태다. 승인 범위 안의 로컬 구현/검증은 완료됐으며,
+이후 실제 연결은 서비스 지역/비용·가입 범위·교재 권한·기록 보관 정책 결정이 필요하다.
+GitHub Support 회신은 로컬 개발의 차단 조건이 아니다. 배포는 별도 최종 승인 전까지 금지한다.
+
 ## Predeployment release preparation — 2026-10-04
 
 사용자가 최신 개발분의 새 브랜치, 검사, commit/push/PR/merge 진행을 승인했다.
