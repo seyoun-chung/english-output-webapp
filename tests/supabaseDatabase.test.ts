@@ -14,6 +14,7 @@ beforeAll(async () => {
     insert into auth.users values ('${a}'), ('${b}');`);
   await db.exec(await readFile(new URL('../supabase/migrations/202610030001_progress.sql', import.meta.url), 'utf8'));
   await db.exec(await readFile(new URL('../supabase/migrations/202610040001_conditional_read.sql', import.meta.url), 'utf8'));
+  await db.exec(await readFile(new URL('../supabase/migrations/202610040002_bounded_history.sql', import.meta.url), 'utf8'));
 }, 20000);
 afterAll(async () => { await db.close(); });
 const asUser = async (id: string) => { await db.exec('reset role'); await db.query("select set_config('request.jwt.claim.sub',$1,false)", [id]); await db.exec('set role authenticated'); };

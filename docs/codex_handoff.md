@@ -1,5 +1,16 @@
 # Codex Handoff — Textbook Mastery Web App
 
+## Latest local work — bounded server recovery (2026-10-04)
+
+PR #30 merged as `b06da28`; new local branch `codex/bounded-recovery-history` starts there.
+User delegated retention design/local implementation through the side conversation. Third migration keeps
+latest 3 saves plus first snapshot of each of latest 7 active UTC dates, at most 10 per user, under the
+existing serialized write transaction. Current progress and browser/exported backups are unaffected.
+Installation does not prune legacy rows; a user's next successful save does. Hosted apply/deletion and
+deployment remain unapproved. User approved commit/push/PR/merge of this change and remaining local
+predeployment preparation. See deployment_readiness.md for consolidated external decisions/runbook.
+No new recovery-selection UI added.
+
 ## Latest release handoff — PR #30 (2026-10-04)
 
 Backup, Google sign-in, account-scoped sync and identity guards were committed as `bb8476a` and pushed
