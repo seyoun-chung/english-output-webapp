@@ -6,6 +6,8 @@ import { isPassReady } from "../src/chapterCompletion";
 import { initialPassProgress, initialProgress, progressReducerFor, type PassProgress, type Progress } from "../src/progress";
 import { completeAboutAnswer, completeWriting, editAboutAnswer, editWritingDraft } from "../src/writingProgress";
 import { collectLearnedItems, initialAutomaticProgress, updateAutomaticProgress } from "../src/automaticProgress";
+import { initialAppProgress } from '../src/appProgress';
+import { createProgressBackup, readProgressBackup } from '../src/progressBackup';
 
 function readyPass(content: ChapterContent, passNumber: 1 | 2 | 3): PassProgress {
   const pass = initialPassProgress(passNumber, content);
@@ -57,6 +59,10 @@ describe("full curriculum completion flow", () => {
       expect(isPassReady(completed.passes[1], content)).toBe(true);
       expect(isPassReady(completed.passes[2]!, content)).toBe(true);
       expect(isPassReady(completed.passes[3]!, content)).toBe(true);
+      const app = initialAppProgress();
+      app.activeChapterId = metadata.id;
+      app.chapters[metadata.id] = completed;
+      expect(readProgressBackup(createProgressBackup(app)).progress).toEqual(app);
     }
   });
 

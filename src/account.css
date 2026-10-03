@@ -1,0 +1,9 @@
+.account-card { max-width: 480px; margin: 6vh auto; padding: 24px; background: white; border: 1px solid #dce4f2; border-radius: 16px; overflow-wrap: anywhere; }
+.account-card h1 { font-size: 28px; line-height: 1.25; }
+.account-card p { line-height: 1.6; }
+.account-card form { display: grid; gap: 12px; margin: 24px 0; }
+.account-card input { min-width: 0; width: 100%; min-height: 48px; font: inherit; font-size: 16px; border: 1px solid #7890ad; border-radius: 8px; padding: 10px; }
+.account-card button, .account-bar button { min-height: 44px; white-space: normal; }
+.account-card > button { display: block; width: 100%; margin-top: 12px; }
+.account-bar { padding: 12px 24px; background: white; display: flex; gap: 16px; flex-wrap: wrap; align-items: center; justify-content: space-between; overflow-wrap: anywhere; }
+@media (max-width: 600px) { .account-card { margin: 16px; padding: 20px; } .account-bar { padding: 12px 16px; } }

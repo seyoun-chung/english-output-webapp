@@ -1,5 +1,144 @@
 # Current Task
 
+## Predeployment release preparation — 2026-10-04
+
+사용자가 최신 개발분의 새 브랜치, 검사, commit/push/PR/merge 진행을 승인했다.
+`codex/predeployment-records-release`를 원격 main과 동일한 `16db1c7`에서 생성하고 기존 변경을 보존했다.
+백업/복원, Google 로그인, 계정별 동기화의 로컬 구현과 안전장치를 함께 버전 관리한다.
+재검증: 44 files / 406 tests, client/server types/build, worktree safety, publishable identity 통과.
+전체 refs 감사의 예전 이메일은 보존된 로컬 복구 refs이며 업로드 대상에서 제외한다.
+이번 단계는 Git release이며 배포가 아니다. 실제 Google/Supabase 연결, 서비스 지역/비용,
+가입 허용 범위, 교재 제공 권한, 복구 이력 보관 정책 확정과 운영 검증이 남아 있다.
+아래는 시점별 이력이며 최신 결과가 과거 승인대기/미실행 설명보다 우선한다.
+
+## Completed branch-history cleanup; GitHub residuals pending — 2026-10-04
+
+사용자가 영향 설명 후 진행을 승인했다. 별도 mirror에서 git-filter-repo 2.47.0으로 실제 이메일만
+승인된 noreply로 바꾸고, 63개 커밋 모두의 tree/메시지/이름/날짜와 parent topology 보존을 검증했다.
+원격 heads 30개를 정확한 이전 SHA lease와 atomic push로 교체했고 전부 ls-remote 재확인했다.
+새 main: `16db1c7eaf484d19ae031dc138cd4b6f37fdcbe9` (이전 `4824761`).
+STA Track 로컬 heads 27개도 동일 tree 확인 후 CAS update-ref로 정렬했으며 index/worktree는
+변경하지 않았다. 사전 백업한 작업 파일 137개 해시가 그대로임을 확인했다. 브랜치 삭제 없음.
+프로젝트 앱 개발 변경은 여전히 미커밋이며 이번 push에는 기존 이력의 이메일 정리만 포함됐다.
+
+복구용 원본 bundle 및 작업 파일 사본은 ignored tmp에 보관한다. 파일 사본에는 `.backup` suffix가
+있다. 실제 이메일이 포함된 복구 원본·stash·앱 내부 refs는 삭제하지 않았고 외부 업로드 금지다.
+pre-push는 publishable branches/remotes/tags와 실제 전송 source SHA를 검사한다. 복구 refs는
+자동 업로드하지 않지만 과거 SHA를 직접 push하면 차단됨을 --to-stdin 훅 실행으로 검증했다.
+현재 branch history 63개 검사 통과; 전체 refs 감사는 보존된 복구 이력 때문에 계속 탐지할 수 있다.
+
+잔여 문제: GitHub API로 기존 commit `6c863d8`이 아직 조회된다. 브랜치 정리는 완료됐지만
+PR refs/캐시/서버 객체의 완전 삭제는 미완료다. 사용자 승인으로 GitHub Support 요청
+[#4819958](https://help.github.com/ticket/personal/0/4819958)을 2026-10-04 제출했고 목록에서 Open 접수를 확인했다.
+저장소 URL, 관련 SHA, 수행한 정리/검증 내역만 본문에 전달했으며 실제 이메일 값과 파일은 첨부하지 않았다.
+계정의 기존 연락 이메일은 지원 서비스의 회신 주소로 사용된다. 저장소 삭제 요청이 아니며,
+개인 이메일 metadata의 삭제 대상 적격성 및 서버 정리 결과는 지원팀 검토 대기다. 배포/학습 데이터 전송 없음.
+최종 npm run verify: 44 files / 406 tests, client/server types/build/safety/identity 통과.
+집에서는 handoff의 재동기화 및 검증 완료 전 일반 pull/merge/push 금지.
+새 clone의 원격 이력 일치, 로컬 작업/학습 기록 보존, noreply와 제공된 보호 장치 확인 후 새 폴더에서 재개한다.
+이는 지원팀 답변/티켓 종료를 기다리라는 뜻이 아니다. 기존 clone은 재사용/push하지 않고 보존한다.
+아래 미실행/승인대기 표시는 이 작업 전 기록이며 이 항목이 우선한다.
+
+## Session split and home handoff — 2026-10-04
+
+사용자 요청으로 전체 GitHub 저장소 이메일 점검을 별도 읽기 전용 대화로 분리했다.
+여기서는 영어 앱 개발/검증을 유지한다. 집 안내 시 이력 재작성 여부 확인과 필요 시 재동기화를
+일반 pull보다 먼저 진행하도록 AGENTS/handoff에 기록했다. 이 문서는 아직 로컬 미커밋이므로
+집에 자동 전달된다고 간주하지 말고 최종 전달 프롬프트에도 반드시 포함한다.
+최신 통합 검증: 44 files / 406 tests, client/server TypeScript, production build, identity/safety 통과.
+과거 이력은 그대로이며 push guard는 여전히 차단 중. 강제 push 및 새 main SHA는 생성되지 않았다.
+다음 Git 실행 전 원격 이력 재작성 범위의 명시 승인을 확정해야 한다. 외부 서비스 연결/배포도 미실행.
+
+## Identity recurrence prevention — 2026-10-04
+
+현재 사용자 요청으로 로컬 identity guard와 `.githooks`를 추가/활성화했다.
+기존 hooksPath/활성 훅이 없음을 먼저 확인했으며 다른 프로젝트의 전역 설정은 변경하지 않았다.
+문제 3개는 2026-09-22 01:19–01:35 KST의 초기 커밋이다. 같은 날 21:10부터 확인한 이후
+이력은 noreply다. 새 설정 해제가 아니라 이전 이력의 잔류이며 과거 파일 위주 검사의 빈틈이다.
+관련 28 tests 및 실제 git hook run pre-push 차단 확인. 전체 로컬 refs 65개 중 3개 탐지.
+현재 branch/HEAD/작업 내용은 유지. 과거 이력 재작성, force push, 외부 지원 요청은 미실행.
+이력 정리 별도 승인 전 Git release 보류. 집 컴퓨터에는 아직 훅이 설치되지 않았다.
+
+## Current gate — GitHub privacy audit (2026-10-04)
+
+배포 전 정리 중 사용자 요청으로 기존 원격 이력까지 보안/개인정보 검사를 확대했다.
+현재 브랜치 `codex/review-english-copy`, HEAD와 원격 main은 `4824761`이며 로컬 변경은 미커밋이다.
+원격 저장소는 private. 현재 작성자 이메일은 승인된 noreply다.
+그러나 과거 커밋 `6c863d8`, `86845bd`, `c5959ff`의 작성자/커미터에 실제 개인 이메일이 남아 있다.
+값 자체는 문서에 재기록하지 않는다. 이력 삭제/재작성/force push는 하지 않았다.
+이 개인정보 처리 결정 전 commit/push/PR/merge를 보류한다. 선택지는 비공개 이력을 유지하고
+이 사실을 수용한 뒤 진행하거나, 별도로 승인된 이력 정리 계획을 수립하는 것이다.
+후자는 집/STA Track의 기존 clone 및 PR 참조에 영향을 주므로 일반 push 승인과 구분한다.
+나머지 로컬 기능 구현/격리 검증은 이전 기록을 유지하며 실제 배포와 외부 서비스 연결은 미실행이다.
+Vercel CLI 읽기 조회로 현재 계정의 프로젝트 2개는 이 저장소와 연결되지 않음을 확인했다.
+아래 과거 Vercel 미확인/Git 승인 대기 기록보다 이 항목이 우선한다. 상세 범위는 verification 참조.
+
+## Latest approval — Continue with Google (2026-10-04)
+
+사용자가 Google 로그인 변경과 로컬 구현·검증을 승인했다. 아래의 Google 선택 대기는 해소됐다.
+베타는 커뮤니티 피드백/개선 목적이며 유료화 결정이 아니다. Vercel 선택과 배포 마지막 원칙 유지.
+Google PKCE 버튼/콜백/취소·실패 재시도, URL code 제거 구현. 기존 계정별 저장/동기화 유지.
+실제 OAuth 프로젝트/secret 설정, Supabase 연결, 개인 데이터 전송, 배포·Git 반영은 미실행.
+다음 외부 연결에 필요한 정보는 기존 Vercel 프로젝트 주소와 승인할 Supabase 프로젝트/지역 및
+참여자 접근 범위다. 복구 이력 보관/교재 제공 권한도 미확정이며 전체 GOAL은 미완료다.
+
+## Latest decision — Vercel, free-first beta (2026-10-04)
+
+- 사용자는 기존 Vercel을 호스팅으로 선택했다. Cloudflare 배포 제안은 대체한다.
+- 선택은 배포·외부 데이터 전송·유료 전환 승인이 아니다. 실제 배포는 최종 단계 유지.
+- 현재 로컬에 `.vercel/project.json` 연결 정보가 없으며 Vercel 연결 도구도 없다. 기존 프로젝트 URL/요금제는 미확인.
+- Supabase 로컬 개발은 승인됐지만 Google 로그인 전환은 아직 제안 상태다. 현 구현은 이메일 OTP.
+- 무료 통신량 개선: 계정별 검증된 메모리 사본과 조건부 읽기 RPC로 unchanged 시 전체 기록을 재전송하지 않는다.
+  두 번째 migration을 추가했으며 원격 적용·기록 삭제는 하지 않았다.
+- 다음 실제 결정: 베타 로그인 방식을 Google로 바꿀지, 기존 이메일 방식을 유지할지 사용자 선택 필요.
+  복구 이력 보관 정책, 실제 서비스 연결·지역·비용·테스터 범위·교재 접근 권한도 확정 전이다.
+  이 선택 없이 외부 연결/배포로 넘어가지 않는다. 전체 GOAL 미완료.
+
+## Active GOAL — 1차 제품 전체 완성 (2026-10-03)
+
+### Latest decision and implementation — multi-user Supabase, pre-deployment only
+
+사용자는 여러 사람이 휴대폰/노트북에서 자기 기록으로 사용하는 앱을 확정했고,
+Supabase 기준 로컬 구현(선택 1)을 승인했다. 본인 한 명 전용이라는 과거 제안을 대체한다.
+실제 계정 생성·클라우드 연결·메일 발송·개인 기록 업로드·결제·배포·Git 반영은 승인 범위 밖이다.
+
+- 이메일 코드 로그인 UI/SDK, 로그인 검증 후 계정별 브라우저 기록/백업 분리 구현.
+- Supabase SQL migration: RLS로 본인 기록/이력만 조회, 직접 변경 차단, auth.uid 기반 RPC,
+  revision CAS와 행 잠금, 중복 요청 처리, 이전 revision 보존.
+- 계정별 명시적 sync 활성화 후 자동 저장·focus/online 재조회·재접속 baseline 복원.
+- 첫 기기의 미연결 기록은 자동 업로드하지 않는다. 백업 가져오기→미리보기→복원으로 명시적 이전.
+- PGlite 로컬 PostgreSQL에서 SQL 실행/권한 검사, Supabase HTTP를 가짜 응답으로 대체한
+  격리 브라우저에서 OTP 오류/성공·계정 전환·양방향 동기화·오프라인/재접속을 확인했다.
+- 실제 인증메일·Hosted Supabase JWT/RLS·운영 동시 트랜잭션·실제 기기간 시험은 미실행이다.
+- 다음 승인 경계: 서비스 비용·저장 지역·이메일 발송/테스터 가입 범위를 안내하고 실제 연결 승인.
+  실제 앱 배포는 그 연결 검증 후에도 별도 최종 승인이다. 전체 GOAL 미완료.
+
+아래 로컬 prototype 기록은 이전 단계이며 최신 상태는 이 항목과 verification을 따른다.
+
+최우선 범위와 완료 판정은 [product_v1_completion_plan.md](./product_v1_completion_plan.md)를 따른다.
+기존 학습 기능은 재구현하지 않고 저장 보호·백업/복원·고정 HTTPS 주소·기기 간 동기화와
+통합 검증을 완료한다. 아래의 과거 `남은 개발 단위 없음`은 당시 학습 엔진 범위의 기록이며,
+이번 전체 제품 GOAL 완료를 뜻하지 않는다. 배포는 최종 단계에서 별도 승인 후 진행한다.
+로컬 백업/복원·재복구 UI·version 1–5 보호된 migration·저장 보호를 구현했다.
+동기화는 로컬 전용 시험 서버·충돌 처리·수동 연결 UI까지 구현했다. 운영 동기화는 아니다.
+격리 Chrome 두 브라우저에서 최초 연결 선택, 양방향 변경, 충돌, 오프라인 재시도,
+복구 사본과 여러 탭 덮어쓰기 차단을 확인했다. 상세 증거는 verification 최신 항목 참조.
+최종 `npm run verify`: 38개 파일 / 380개 테스트, 클라이언트·서버 타입 검사·빌드·안전 검사 통과.
+다음 실제 결정 경계: 외부 저장 서비스와 비공개 로그인 방식 승인 후 운영용 연결을 구현하고,
+로컬에서 확인한 뒤 별도 최종 배포 승인. 비용·외부 계정 생성·업로드는 미실행.
+개인정보·보안·비용 및 Git 일괄 권한은 미확정. 외부 업로드와 Git 반영은 하지 않았다.
+
+## Current — Simple English review copy (2026-10-03)
+
+- 사용자 실제 학습 기록에서 Review 클리어 흐름 정상 동작 확인.
+- 이전 변경은 PR #29, main `4824761`로 병합됨.
+- 최신 main에서 `codex/review-english-copy` 생성 후 Review 안내·버튼과 Pass 2
+  Overview의 연결 문구를 짧은 영어로 통일. 학습 Source·자기평가 버튼·저장 로직은 유지.
+- 35개 파일 / 347개 테스트, build, 안전 검사 통과.
+- 격리 Chrome에서 Chapter 1·2 × Pass 1–3 클리어·새로고침·전체 재연습 통과.
+  1280px/320px 레이아웃과 완료 화면 확인. 실제 모바일 기기 검증은 아님.
+- 로컬 수정만 완료. 이번 변경의 commit·push·merge는 미실행.
+
 ## Current — Chapter Review 전체/어려운 문제 선택 (2026-10-02)
 
 - 사용자 확정: 모든 문제에 자기평가하면 한 세트 완료. 전체 재연습과 어려운 문제만

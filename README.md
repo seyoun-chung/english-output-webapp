@@ -19,16 +19,19 @@ Learn → Memorize → Recall → Output → Write → Review → Repeat
 
 ## Current Scope
 
-현재 작업 범위는 **Chapter 3 — Personality Traits**를 시범 챕터로 사용하는 로컬 프로토타입입니다. 다른 챕터로 확장하기 전에 공통 학습·저장·복습 기능을 검증합니다.
+현재 Chapter 1–12의 Pass 1–3과 전역 Pass 4+ 혼합·랜덤 복습/작문을 구현했습니다.
+기록 백업·복원과 저장 보호를 사용할 수 있습니다. 아직 고정 웹 주소에 배포하지 않았고,
+집·STA Track 간 자동 동기화도 제공하지 않습니다. 전체 완료 기준은
+[`docs/product_v1_completion_plan.md`](./docs/product_v1_completion_plan.md)를 참조하세요.
 
 ```text
-Chapter 3 Overview
+Chapter Library → Chapter Overview
 → My Story Read
 → Chunk Recall
 → Full Recall
 → Real Conversations / Output Practice
 → Weekly Writing / Chapter Review
-→ Pass 1 completion
+→ Pass 1 / Pass 2 / Pass 3 completion → Pass 4+ Automatic
 ```
 
 ## Documentation
@@ -46,17 +49,19 @@ Chapter 3 Overview
 
 React + TypeScript + Vite + 일반 CSS를 유지하며 다음 기능을 구현했습니다.
 
-- 본문 한국어 / 영어 / 함께 보기, 원문 기반 힌트, 정답 확인, 6개 Chunk 자기평가
+- Chapter 1–12 본문 한국어 / 영어 / 함께 보기, 원문 기반 힌트, 정답 확인, Chunk 자기평가
 - Full Recall과 `생각해서 나왔어요` 또는 `다시 봐야 해요`로 평가한 Chunk 재연습 (`바로 나왔어요`와 미평가 Chunk는 제외)
-- Real Conversations: 7개 원문 대화 읽기, A/B 역할 연습, 전체 대화 인출
-- Output Practice: 기본 6개 Chunk와 출처를 확인한 변형 6개, No hint 모드. 부교재 전체 문제를 전산화한 것은 아닙니다.
-- Weekly Writing: 자유 작문, 원문 질문 10개, 원문 템플릿 7개와 독립적인 로컬 초안
-- Grammar Focus: 원문 5쌍의 예문 / What About You?: 원문 질문에 개인 답안 작성 (선택 학습)
+- Real Conversations: Chapter별 원문 대화 읽기, A/B 역할 연습, 전체 대화 인출
+- Output Practice: Source에 존재하는 Exact / Variation / No hint 연습
+- Weekly Writing: 자유 작문, Chapter별 원문 질문·템플릿과 독립적인 로컬 초안
+- Grammar Focus / What About You?: 초기 회독 선택, Pass 3 필수
 - Chapter Review: 이미 자기평가한 원문 항목만 선택하여 복습. 작문 초안은 대상에서 제외
 - My Story, Real Conversations, 기본 Output Practice, Weekly Writing 완료 후 Pass 1 완료 가능
 - Pronunciation은 비활성화하고 `Coming later`로 표시
 - 말하기 연습에서 선택형 녹음·재생으로 내 목소리를 점검할 수 있습니다. STT·텍스트 변환·자동 채점은 하지 않습니다.
-- Paragraph Recall, 로그인, 서버 DB, 기기 간 동기화는 구현하지 않습니다.
+- Pass 4+: 학습한 항목의 Mixed / Smart / All Random 복습과 Multi-Chapter Writing
+- 백업 내보내기·복원·복원 전 사본 재복구, 손상 기록과 여러 탭 덮어쓰기 방지
+- 로그인·운영 서버·기기 간 동기화는 아직 미완료입니다. 별도 로컬 동기화 시험 기반만 있습니다.
 
 ## Local Development
 
@@ -137,12 +142,54 @@ IP 주소나 포트가 달라지면 브라우저의 학습 기록은 별개입�
 
 ## Progress Storage
 
+### Account sync implementation (not connected or deployed)
+
+Supabase용 Google 로그인과 사용자별 자동 동기화 코드가 추가됐습니다.
+기본 개발 실행은 기존 로컬 모드이며 외부 연결이 없습니다. 실제 프로젝트를 연결하려면
+서비스·지역·비용·외부 전송에 대한 사용자 승인이 먼저 필요합니다.
+
+승인 후 설정할 항목(현재 미설정):
+
+- `VITE_ACCOUNT_SYNC_ENABLED=1`
+- `VITE_SUPABASE_URL`: 승인한 HTTPS Supabase 프로젝트 origin
+- `VITE_SUPABASE_PUBLISHABLE_KEY`: publishable key만 사용. secret/service_role 키는 금지.
+- SQL migration은 `supabase/migrations/`의 파일명 순서대로 적용한다(현재 2개). 실제 프로젝트 적용은 별도 승인 필요.
+- 변경 없는 기록은 revision만 받아 통신량을 줄인다. 복구용 이력은 아직 자동 삭제하지 않으므로 베타 전 보관 정책을 확정해야 한다.
+- 로그인은 `Continue with Google`로 변경됐다(2026-10-04 사용자 승인). 이메일 OTP UI는 제공하지 않으며 로그인 메일/SMTP가 필요하지 않다.
+- 실제 연결 승인 후 Google OAuth Web client를 만들고 Supabase Google provider에 Client ID/Secret을 설정한다. Secret은 Supabase 설정에만 보관하며 `VITE_*`, 앱 코드, Git에 넣지 않는다.
+- Google 승인된 redirect URI는 해당 Supabase 프로젝트의 `/auth/v1/callback`; Supabase Site URL/redirect allowlist는 실제 Vercel 앱의 정확한 origin + `/`로 설정한다. 로컬 시험 주소는 별도 등록하며 광범위한 wildcard는 쓰지 않는다.
+- Google scope는 기본 identity인 openid/email/profile만 사용한다. 메일함/Drive 접근이나 offline provider access를 요청하지 않는다. 동의 화면, 개인정보 안내, 테스터/공개 audience 설정은 실제 연결 전에 확인한다.
+- 브라우저 PKCE로 로그인 시작→같은 브라우저 복귀→일회용 code 교환. 실패/취소 시 재시도 가능하며 code/provider error를 URL에서 지우고 원문을 화면·로그에 노출하지 않는다.
+- 공식 설정: https://supabase.com/docs/guides/auth/social-login/auth-google 및 https://supabase.com/docs/guides/auth/sessions/pkce-flow . 실제 외부 로그인 시험은 아직 미실행.
+- 공개 가입/테스터 허용 범위, 익명 로그인 비활성화, 인증 요청 rate limit과 abuse 보호 확인.
+
+`Enable sync`를 한 번 선택하면 계정별로 설정을 기억합니다. 진도 변경 뒤 자동 저장하며
+화면 복귀·온라인 복귀·활성 화면의 주기 확인으로 다른 기기의 기록을 가져옵니다.
+양쪽 기록이 달라졌다면 `Use this device` 또는 `Use account copy`로 선택하며,
+자동으로 한쪽을 덮어쓰지 않습니다. `Pause sync`는 로컬 저장을 중단하지 않습니다.
+
+계정 로그인은 기존 미로그인 기록을 자동 업로드하지 않습니다. 이전 모드에서 백업을 내려받은 뒤
+로그인한 계정의 `Backup & restore`에서 파일 미리보기와 명시적 복원으로 이전합니다.
+계정별 복구 사본과 sync baseline은 브라우저에 남습니다. 공용 기기에서는 로그아웃하세요.
+브라우저 저장값은 암호화된 금고가 아니며 기기 자체 접근 권한이 있는 사람을 막지 못합니다.
+처음 로그인/재접속 시 인증 확인에는 인터넷 연결이 필요합니다. 연결이 끊겨도 기존 로컬 기록은 유지됩니다.
+녹음·분석 추적은 업로드하지 않습니다.
+
+SQL 권한/행 보호는 로컬 PostgreSQL 엔진으로 시험했고, UI/SDK는 외부 요청을 차단한
+격리 브라우저에서 시험했습니다. 실제 Supabase 계정·메일·호스팅 검증은 아직 하지 않았습니다.
+
 진행 위치·본문 보기 방식·자기평가·힌트 사용·Full Recall 완료 여부·마지막 학습 시각은
-`english-output-webapp:progress` 키 하나에 `version: 2` 구조로 저장합니다.
-대화·Output·복습·선택 학습·작문 초안·Pass 1 완료 상태도 같은 구조에 저장합니다.
-기존 version 1의 My Story 기록은 유지하며 새 구조로 이전합니다.
+`english-output-webapp:progress` 키에 `version: 6` 구조로 저장합니다.
+Chapter 1–12의 Pass 1–3, Pass 4+, 작문과 개인 답안이 포함됩니다.
 새로고침하면 학습 위치와 평가를 복원하며, 정답과 힌트는 다시 숨깁니다.
-손상되었거나 지원하지 않는 버전의 데이터는 초기 상태로 복구합니다.
+손상·미지원·이전 형식 기록은 원본을 덮어쓰지 않고 저장을 보호합니다.
+`Backup & restore`에서 원본을 다운로드하고, 지원되는 version 1–5 기록은
+`Preview saved record`로 확인한 뒤 명시적으로 복원할 수 있습니다.
+정상 백업은 `Download backup` → 다른 브라우저의 `Choose backup` → 미리보기 →
+`Restore this backup`으로 옮깁니다. 개인 작문이 있으므로 파일을 비공개로 보관하세요.
+복원 전 원본은 별도 recovery key에 보관하며 `Show recovery copies`에서 재복구할 수 있습니다.
+녹음은 백업에 포함되지 않습니다. 저장 공간 부족이나 다른 탭 변경 시 경고를 표시합니다.
+경고가 뜨면 현재 기록을 다운로드한 뒤 복구하세요. Web Locks를 지원하는 보안 컨텍스트가 필요합니다.
 
 기록은 해당 브라우저와 주소에만 저장됩니다. 집 컴퓨터와 다른 컴퓨터 사이에는 공유되지 않습니다.
 `localhost`와 `127.0.0.1`, 서로 다른 포트도 별도 기록이므로 같은 주소로 접속해주세요.
@@ -151,9 +198,10 @@ IP 주소나 포트가 달라지면 브라우저의 학습 기록은 별개입�
 ## Content Privacy
 
 원본 교재 PDF는 `.gitignore`의 `docs/sources/*.pdf` 규칙으로 Git 추적에서 제외됩니다.
-프로토타입의 My Story 본문은 `docs/current_task.md`의 승인된 6개 Chunk와 동일하며,
-메인 교재 `eBook_Bookcamp_Oct8.pdf` p.50–51을 출처로 기록합니다.
+Chapter별 학습 본문은 제공된 교재·부교재에서 가져오고 데이터에 출처를 기록합니다.
 이 본문은 앱 코드와 빌드에 포함되므로 PDF 제외 규칙이 본문 코드까지 숨겨주지는 않습니다.
 추가 학습 자료의 출처는 각 화면과 데이터 파일에 기록합니다. 원문 PDF를 Git에 넣지 않아도
 발췌한 학습 문장은 코드에 포함됩니다. 공개 배포 전에는 콘텐츠 사용 권한을 별도로 확인해야 합니다.
-작문·개인 답안에 민감정보를 입력하지 마세요. 초안은 서버로 전송하지 않지만 이 브라우저를 사용하는 사람이 볼 수 있습니다.
+작문·개인 답안에 민감정보를 입력하지 마세요. 기본 로컬 모드에서는 서버로 전송하지 않습니다.
+실제 계정 서비스를 연결하고 동기화를 켜면 작문·개인 답안도 계정 저장소에 전송됩니다.
+브라우저에 남은 사본은 이 기기에 접근할 수 있는 사람이 볼 수 있습니다.
