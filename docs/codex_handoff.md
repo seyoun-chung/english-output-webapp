@@ -1,11 +1,19 @@
 # Codex Handoff — Textbook Mastery Web App
 
+## Latest — physical cross-device verification complete (2026-10-05)
+
+The user opened Chapter 12 on a physical phone with the same Google account. A fresh protected
+production login on STA Track loaded Chapter 12 from the hosted record. STA Track then returned
+the account to Pass 4+, signed out and signed in again; Pass 4+ loaded from the server. Only the
+navigation position changed during this check. This completes the physical-device continuation
+evidence for product v1. Community publication remains a separate user decision.
+
 ## Latest — protected Vercel release hardening (2026-10-05)
 
 The existing Vercel project hosts the app at `https://english-output-webapp.vercel.app/`.
 Vercel authentication protects all deployments; this is not community publication. Production
 Google login, logout/relogin continuation and bidirectional sync with a local origin passed.
-The latter is one browser profile, so a physical second device remains unverified.
+The later physical phone → STA Track test is recorded above.
 
 Branch `codex/deployment-security` starts from origin/main `210afde`. It adds a strict Vercel
 upload allow/exclude boundary, basic browser security headers and a regression test. The focused

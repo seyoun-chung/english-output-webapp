@@ -9,22 +9,20 @@
 
 ## Acceptance ledger
 
-Latest evidence (2026-10-04): learning/backup/login/sync implementation is on merged PR #30/#31,
-origin/main `5f58e65`. Live Seoul connection is now verified from the local app; 411 tests/build pass.
-This supersedes older unconnected/approval-pending notes below. Google/Free Seoul storage approval
-is complete, student allowlist deferred, deployment and community publication remain separate gates.
-Current connection documents use `codex/supabase-live-connection`; their Git release is approved.
-Use the actual PR state as evidence of publication/merge, not this preparation note alone.
+Latest evidence (2026-10-05): release baseline `8f46b62` contains the protected deployment release.
+The full suite passes 46 files / 416 tests and the production build. The fixed
+HTTPS deployment, Google callback, hosted account record, security headers and physical phone ↔
+STA Track continuation are verified. Community publication and beta enhancements remain separate.
 
 | ID | 완료 조건 | 현재 근거 / 상태 | 남은 확인 |
 |---|---|---|---|
-| V1-1 | Chapter 1–12 Pass 1–3 학습·완료·저장 | 공통 엔진과 12개 Source 묶음, fullCurriculumFlow 테스트 존재. 이전 347개 테스트 통과 | 최종 저장·배포 변경 뒤 전체 회귀; 테스트의 완료 fixture를 실제 조작 완료와 혼동하지 않음 |
-| V1-2 | Pass 4+ 혼합·랜덤 복습·작문 | automaticProgress, AutomaticScreen 및 관련 테스트 구현 | 동기화·복원 뒤 기록 유지 및 공개 정답/힌트 정책 회귀 |
-| V1-3 | 주요 오류 안정화·수정 반영 | Review/영어 문구/저장 보호 및 Git 안전장치 반영, 전체 411 tests/build 통과 | 현재 연결 검증 문서 Git 반영, 배포 환경 회귀 |
-| V1-4 | 학습 기록 백업·복원 | 로컬 구현·검증 완료: 파일·미리보기·원본 사본·재복구·version 1–5 migration | 운영 배포 후 회귀 |
-| V1-5 | 고정 HTTPS 주소에서 사용 | 로컬 Vite만 실행 | 비공개 접근·교재 자산 보호, 호스팅/비용 승인, 실제 배포 확인 |
-| V1-6 | 휴대폰·노트북 등에서 이어서 학습 | 실제 Google callback/서울 DB 저장, 독립 origin 양방향 sync 및 서버 role read 격리 확인 | 실제 다른 기기/다른 Google 사용자, 운영 HTTPS callback·서버 부하 확인 |
-| V1-7 | 통합 검증 | 411 tests/build, 실제 연결/백업 파일 복원/재접속/320px 패널 확인 | 최종 배포 주소의 통합 회귀 및 실제 기기 확인; simulation을 실제 기기로 표현하지 않음 |
+| V1-1 | Chapter 1–12 Pass 1–3 학습·완료·저장 | **완료** — 12개 Source 묶음, 전체 Chapter Pass 1–3 완료·저장·백업 round trip 테스트 | 없음 |
+| V1-2 | Pass 4+ 혼합·랜덤 복습·작문 | **완료** — Mixed/Smart/All Random/Writing 구현, Source-only 및 저장 회귀 통과 | 없음 |
+| V1-3 | 주요 오류 안정화·수정 반영 | **완료** — 최신 UI·저장·녹음·보안 회귀 포함 46 files / 416 tests와 build 통과 | 없음 |
+| V1-4 | 학습 기록 백업·복원 | **완료** — 자동 계정 저장, 손상 보호, recovery copy, version 1–5 migration과 실제 파일 복원 검증 | 없음 |
+| V1-5 | 고정 HTTPS 주소에서 사용 | **완료** — 보호된 고정 Vercel 주소, 정확한 OAuth redirect, 운영 로그인·보안 헤더 확인 | 없음 |
+| V1-6 | 휴대폰·노트북 등에서 이어서 학습 | **완료** — 휴대폰 Chapter 12가 STA Track에 반영되고 Pass 4+ 복구가 재로그인 뒤 유지됨 | 다른 사용자·부하 시험은 베타 운영 검증 |
+| V1-7 | 통합 검증 | **완료** — 자동 회귀, 운영 OAuth/저장, 보호 배포, 실제 기기 왕복을 구분해 확인 | 커뮤니티 공개는 별도 결정 |
 
 각 완료 판정은 구현·자동 시험·브라우저·배포 환경 증거를 분리해 기록한다.
 실제 다른 컴퓨터를 사용하지 않은 검사는 두 브라우저 환경 시뮬레이션으로 표시한다.

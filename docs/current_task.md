@@ -1,5 +1,15 @@
 # Current Task
 
+## Physical cross-device continuation verified — 2026-10-05
+
+The user opened Chapter 12 from a physical phone using the same Google account.
+The STA Track production browser had previously loaded Pass 4+; a fresh login then loaded
+Chapter 12 from the hosted account record, proving phone → Supabase → computer continuation.
+The computer returned the account to Pass 4+, signed out, signed in again, and loaded Pass 4+
+from the server, proving the restoration was saved. Ratings, writing and answers were not changed.
+This completes the physical-device evidence for the first-product goal. Community publication,
+student access controls, pronunciation scoring and later beta improvements remain outside v1 completion.
+
 ## Protected production deployment hardening — 2026-10-05
 
 The app is deployed at `https://english-output-webapp.vercel.app/` on the existing
@@ -19,7 +29,7 @@ merged as `c08ce27`. Protected production deployment `dpl_FTogGnUWRwXNV6QXaXg5pR
 is Ready and aliased to the stable URL. Unauthenticated access still redirects to Vercel
 authentication; authenticated responses contain all four configured headers and HSTS. A fresh
 production Google login restored the existing Pass 4+ position and logout completed normally.
-Only a physical second-device continuation check remains for the first-product acceptance evidence.
+The later physical phone check is recorded above.
 
 ## Account header cleanup — 2026-10-04
 
