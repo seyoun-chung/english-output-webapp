@@ -1,5 +1,25 @@
 # Local verification
 
+## Hamster favicon — 2026-10-05
+
+- User approved the final design: lime background, v2 hamster geometry (small ears,
+  wide cheeks, paired teeth) and v1 apricot/cream palette. `public/favicon.svg`
+  is linked from `index.html`; learning content, progress and auth are unchanged.
+- [x] `npm run verify`: 46 files / 416 tests, safety/identity, TypeScript and Vite build passed.
+- [x] Local favicon response: 200 / `image/svg+xml`; production output contains the SVG.
+- [x] In-app browser visual comparison at 16/24/32px with light/dark tab mockups;
+  desktop and 375px signed-out page rendered without horizontal overflow.
+- [x] User visually selected this candidate. Local screenshot: `tmp/favicon-hamster-mix.jpg`.
+- [x] Publishable-ref identity check passed. Full history audit found three old commits
+  in preserved recovery refs; these are historical, excluded from publishable refs,
+  and have not been deleted. Effective author/committer use approved noreply identity.
+- [x] Vercel upload dry-run excludes local gallery/screenshots, textbook PDFs,
+  environment files, dependencies, docs and tests. Favicon is the only new web asset.
+- [ ] Native Chrome tab/cache behavior and physical mobile icon: not verified;
+  in-app tab mockups are not native Chrome evidence.
+- User approved commit/push/PR/merge/protected production deployment. Release execution
+  follows this pre-release record; actual production outcome is reported after deployment.
+
 ## Protected production and deployment security — 2026-10-05
 
 - [x] Stable protected URL: `https://english-output-webapp.vercel.app/`. Unauthenticated
