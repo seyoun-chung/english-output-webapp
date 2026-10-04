@@ -9,8 +9,10 @@ The latter is one browser profile, so a physical second device remains unverifie
 
 Branch `codex/deployment-security` starts from origin/main `210afde`. It adds a strict Vercel
 upload allow/exclude boundary, basic browser security headers and a regression test. The focused
-test and local Vercel production build pass. After the approved PR/merge and redeployment, verify
-the live headers and protected login again. Do not remove recovery stash refs. On the home computer,
+test and local Vercel production build pass. PR #35 merged as `c08ce27`; protected deployment
+`dpl_FTogGnUWRwXNV6QXaXg5pRbFo5Wr` is Ready. Live responses contain all configured headers,
+unauthenticated access still redirects to Vercel authentication, and a fresh Google login restored
+the existing Pass 4+ position before logout. Do not remove recovery stash refs. On the home computer,
 do not run an ordinary pull: apply the home-computer safe-resync gate below because remote history
 was previously rewritten.
 

@@ -14,8 +14,8 @@ All three reviewed migrations were manually applied in one transaction without a
 Real local Google callback, server save/read, two-storage-origin sync, backup restore and 320px panels
 passed. Full verify passed 411 tests/build. See verification.md for methods and remaining limits.
 The stable HTTPS URL, exact auth return URL and protected deployment have been verified. The current
-approved release sequence is Git publication of the deployment exclusions and browser headers,
-protected redeployment, live header/login verification, then one physical second-device check.
+security release merged in PR #35 and protected deployment `dpl_FTogGnUWRwXNV6QXaXg5pRbFo5Wr`
+is Ready. Live headers and a fresh production login were verified. One physical second-device check remains.
 Do not introduce a student-approval feature without a new request. Community publication is a later
 user decision and is not implied by this protected deployment.
 Original local records require explicit reviewed backup/import if needed; never silently overwrite them.
