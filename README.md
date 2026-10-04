@@ -23,7 +23,8 @@ Learn → Memorize → Recall → Output → Write → Review → Repeat
 기록 백업·복원과 저장 보호를 사용할 수 있습니다. 보호된 고정 웹 주소에 배포했고,
 Google 로그인·계정별 Supabase 저장과 운영 주소의 로그인/이어하기를 확인했습니다.
 현재 배포는 Vercel 로그인으로 보호되며 커뮤니티에 공개하지 않았습니다. 실제 두 번째
-기기에서의 이어하기 검증은 남았습니다.
+기기인 휴대폰에서 바꾼 위치가 STA Track에 반영되고, STA Track에서 복구한 위치가 다시
+로그인해도 유지되는 것을 확인했습니다.
 전체 완료 기준은
 [`docs/product_v1_completion_plan.md`](./docs/product_v1_completion_plan.md)를 참조하세요.
 
