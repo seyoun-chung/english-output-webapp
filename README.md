@@ -21,7 +21,9 @@ Learn → Memorize → Recall → Output → Write → Review → Repeat
 
 현재 Chapter 1–12의 Pass 1–3과 전역 Pass 4+ 혼합·랜덤 복습/작문을 구현했습니다.
 기록 백업·복원과 저장 보호를 사용할 수 있습니다. 아직 고정 웹 주소에 배포하지 않았고,
-집·STA Track 간 자동 동기화도 제공하지 않습니다. 전체 완료 기준은
+Google 로그인·계정별 Supabase 저장은 구현됐고, 승인된 서울 프로젝트를 로컬 앱에 연결하여
+실제 로그인/저장과 독립 origin 간 동기화를 확인했습니다. 실제 기기·배포 환경 검증은 남았습니다.
+전체 완료 기준은
 [`docs/product_v1_completion_plan.md`](./docs/product_v1_completion_plan.md)를 참조하세요.
 
 ```text
@@ -61,7 +63,8 @@ React + TypeScript + Vite + 일반 CSS를 유지하며 다음 기능을 구현�
 - 말하기 연습에서 선택형 녹음·재생으로 내 목소리를 점검할 수 있습니다. STT·텍스트 변환·자동 채점은 하지 않습니다.
 - Pass 4+: 학습한 항목의 Mixed / Smart / All Random 복습과 Multi-Chapter Writing
 - 백업 내보내기·복원·복원 전 사본 재복구, 손상 기록과 여러 탭 덮어쓰기 방지
-- 로그인·운영 서버·기기 간 동기화는 아직 미완료입니다. 별도 로컬 동기화 시험 기반만 있습니다.
+- Google 로그인·계정별 저장·충돌 선택·동기화와 제한된 서버 복구 이력. 실제 서울 서비스의
+  로컬 연결 검증은 완료했으며, 고정 배포 주소 및 실제 여러 기기 확인은 아직 남았습니다.
 
 ## Local Development
 
@@ -83,7 +86,12 @@ npm run verify  # 민감정보·제외 파일 검사 + 테스트 + 빌드
 npm run preview # 빌드 결과 로컬 확인
 ```
 
-별도의 `.env`, API 키, GitHub 접근 토큰은 필요하지 않습니다.
+기본 로컬 학습은 별도의 `.env`, API 키, GitHub 접근 토큰 없이 실행할 수 있습니다.
+계정 동기화는 별도 설정이 필요합니다. 이 컴퓨터에는 승인된 프로젝트의 ignored `.env.local`이
+있지만 clone으로 전달되지 않습니다. `VITE_ACCOUNT_SYNC_ENABLED=1`, `VITE_SUPABASE_URL`,
+`VITE_SUPABASE_PUBLISHABLE_KEY`만 사용하며 Google secret/service-role 키를 넣지 않습니다.
+DB에는 세 SQL migration 정의를 적용해야 합니다. 현재 서울 프로젝트에는 이미 수동 적용했으므로
+CREATE 구문을 다시 실행하지 마세요. 자세한 상태는 `docs/codex_handoff.md`를 확인합니다.
 
 ## Optional Voice Practice
 
@@ -142,27 +150,28 @@ IP 주소나 포트가 달라지면 브라우저의 학습 기록은 별개입�
 
 ## Progress Storage
 
-### Account sync implementation (not connected or deployed)
+### Account sync (live local connection verified; not deployed)
 
 Supabase용 Google 로그인과 사용자별 자동 동기화 코드가 추가됐습니다.
-기본 개발 실행은 기존 로컬 모드이며 외부 연결이 없습니다. 실제 프로젝트를 연결하려면
-서비스·지역·비용·외부 전송에 대한 사용자 승인이 먼저 필요합니다.
+설정 없는 기본 실행은 로컬 모드입니다. 현재 STA Track에서는 사용자 승인으로 서울 Free
+프로젝트를 연결했고, 실제 Google 로그인·저장·독립 origin 간 동기화를 확인했습니다.
+새 서비스·지역·유료 전환·전송 범위 변경은 별도 승인이 필요합니다.
 
-승인 후 설정할 항목(현재 미설정):
+연결 설정 항목(현재 컴퓨터 설정 완료, clone에는 포함하지 않음):
 
 - `VITE_ACCOUNT_SYNC_ENABLED=1`
 - `VITE_SUPABASE_URL`: 승인한 HTTPS Supabase 프로젝트 origin
 - `VITE_SUPABASE_PUBLISHABLE_KEY`: publishable key만 사용. secret/service_role 키는 금지.
-- SQL migration은 `supabase/migrations/`의 파일명 순서대로 적용한다(현재 3개). 실제 프로젝트 적용은 별도 승인 필요.
+- SQL migration은 `supabase/migrations/`의 파일명 순서대로 적용한다(현재 3개). 승인된 서울 프로젝트에는 이미 수동 적용했다. CLI 이력에 기록하지 않았으므로 CREATE 구문을 중복 적용하지 않는다.
 - 변경 없는 기록은 revision만 받아 통신량을 줄인다. 서버 복구 사본은 최근 저장 3개와 최근 저장일 7일의 첫 기록을 합쳐 사용자당 최대 10개다(날짜 기준 UTC, 저장하지 않은 날은 제외).
 - 현재 학습 기록은 이 제한과 별도로 유지한다. 브라우저 복구 사본과 다운로드한 백업은 이 정책으로 삭제하지 않는다. 오래된 서버 사본으로 돌아갈 수 있는 범위는 제한된다.
 - 보관 제한 migration 설치 자체는 기존 데이터를 삭제하지 않는다. 승인 후 실제 적용 시 각 사용자의 다음 저장 성공과 같은 트랜잭션에서 그 사용자의 오래된 서버 사본만 정리한다. 무료 용량/영구 복구를 보장하지 않으며 실제 운영 사용량 확인이 필요하다.
 - 로그인은 `Continue with Google`로 변경됐다(2026-10-04 사용자 승인). 이메일 OTP UI는 제공하지 않으며 로그인 메일/SMTP가 필요하지 않다.
-- 실제 연결 승인 후 Google OAuth Web client를 만들고 Supabase Google provider에 Client ID/Secret을 설정한다. Secret은 Supabase 설정에만 보관하며 `VITE_*`, 앱 코드, Git에 넣지 않는다.
+- Google OAuth Web client와 Supabase Google provider 설정은 완료했다. Secret은 Supabase 설정에만 보관하며 `VITE_*`, 앱 코드, Git에 넣지 않는다.
 - Google 승인된 redirect URI는 해당 Supabase 프로젝트의 `/auth/v1/callback`; Supabase Site URL/redirect allowlist는 실제 Vercel 앱의 정확한 origin + `/`로 설정한다. 로컬 시험 주소는 별도 등록하며 광범위한 wildcard는 쓰지 않는다.
 - Google scope는 기본 identity인 openid/email/profile만 사용한다. 메일함/Drive 접근이나 offline provider access를 요청하지 않는다. 동의 화면, 개인정보 안내, 테스터/공개 audience 설정은 실제 연결 전에 확인한다.
 - 브라우저 PKCE로 로그인 시작→같은 브라우저 복귀→일회용 code 교환. 실패/취소 시 재시도 가능하며 code/provider error를 URL에서 지우고 원문을 화면·로그에 노출하지 않는다.
-- 공식 설정: https://supabase.com/docs/guides/auth/social-login/auth-google 및 https://supabase.com/docs/guides/auth/sessions/pkce-flow . 실제 외부 로그인 시험은 아직 미실행.
+- 공식 설정: https://supabase.com/docs/guides/auth/social-login/auth-google 및 https://supabase.com/docs/guides/auth/sessions/pkce-flow . 실제 로컬 앱의 외부 로그인 시험은 완료했으며 배포 URL의 시험은 남았다.
 - 공개 가입/테스터 허용 범위, 익명 로그인 비활성화, 인증 요청 rate limit과 abuse 보호 확인.
 
 `Enable sync`를 한 번 선택하면 계정별로 설정을 기억합니다. 진도 변경 뒤 자동 저장하며
@@ -177,8 +186,10 @@ Supabase용 Google 로그인과 사용자별 자동 동기화 코드가 추가�
 처음 로그인/재접속 시 인증 확인에는 인터넷 연결이 필요합니다. 연결이 끊겨도 기존 로컬 기록은 유지됩니다.
 녹음·분석 추적은 업로드하지 않습니다.
 
-SQL 권한/행 보호는 로컬 PostgreSQL 엔진으로 시험했고, UI/SDK는 외부 요청을 차단한
-격리 브라우저에서 시험했습니다. 실제 Supabase 계정·메일·호스팅 검증은 아직 하지 않았습니다.
+로컬 PostgreSQL 및 격리 브라우저 시험 외에 실제 Google callback·Supabase 저장/read,
+서로 다른 저장 origin의 양방향 동기화·백업 복원과 hosted RLS read 격리를 확인했습니다.
+실제 다른 기기·다른 Google 계정·배포 주소·서버 동시 부하는 미검증입니다.
+로그인 메일/SMTP는 이 Google 로그인 흐름에 사용하지 않습니다.
 
 진행 위치·본문 보기 방식·자기평가·힌트 사용·Full Recall 완료 여부·마지막 학습 시각은
 `english-output-webapp:progress` 키에 `version: 6` 구조로 저장합니다.
@@ -193,7 +204,8 @@ Chapter 1–12의 Pass 1–3, Pass 4+, 작문과 개인 답안이 포함됩니�
 녹음은 백업에 포함되지 않습니다. 저장 공간 부족이나 다른 탭 변경 시 경고를 표시합니다.
 경고가 뜨면 현재 기록을 다운로드한 뒤 복구하세요. Web Locks를 지원하는 보안 컨텍스트가 필요합니다.
 
-기록은 해당 브라우저와 주소에만 저장됩니다. 집 컴퓨터와 다른 컴퓨터 사이에는 공유되지 않습니다.
+기본 로컬 모드의 기록은 해당 브라우저와 주소에만 저장되며 다른 컴퓨터와 공유되지 않습니다.
+계정 동기화를 켠 경우에는 같은 Google 계정으로 로그인하고 동기화를 활성화하여 이어서 사용합니다.
 `localhost`와 `127.0.0.1`, 서로 다른 포트도 별도 기록이므로 같은 주소로 접속해주세요.
 브라우저 사이트 데이터를 삭제하면 학습 기록도 삭제됩니다.
 

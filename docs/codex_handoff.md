@@ -1,5 +1,30 @@
 # Codex Handoff — Textbook Mastery Web App
 
+## Latest — hosted connection verified from local app (2026-10-04)
+
+See current_task.md for the active connection state. Branch `codex/supabase-live-connection`
+is based on origin/main `5f58e65`; user approved the seven-document commit/push/PR/merge release.
+Deployment remains unapproved. Verify the actual PR merge result before treating this branch as main.
+Seoul project `ihvmcxluaiyisncebtqk` now has all three local migration definitions applied manually
+in one transaction (not recorded through the CLI migration ledger). Do not reapply CREATE statements.
+Google is enabled; Site URL is `http://127.0.0.1:5173/` and exact redirects also allow
+`http://localhost:5173/`. Local ignored configuration uses a publishable key only.
+User completed Google consent. Real callback, reload, account save/read and bidirectional sync between
+the two separate storage origins passed. They share one browser profile: not actual two-device proof.
+One origin signed out without signing out the other. Real backup download/preview/restore passed,
+with pre-restore recovery copies retained. No original anonymous progress was imported or uploaded.
+Hosted different-subject RLS/RPC read simulation sees no other user's rows; transaction rolled back.
+320px connected overview and storage/sync controls fit; full verify passed 411 tests and build.
+Existing anonymous/local records remain under their original key; account records use a separate namespace.
+If the signed-in view looks empty, do not erase/reset either namespace; use a reviewed backup/import flow.
+User postponed student allowlist and community-publication decision. No new access restriction is implied.
+Connection and this document release are approved; deployment/billing are not.
+No automatic install or additional source implementation is required for this verified connection.
+Next: finish the approved Git release, then obtain separate deployment approval. Before hosting,
+confirm exact URL/audience and explain textbook assets are not protected by frontend Google login.
+Do not add the deferred student allowlist. Production callback, physical devices, another real account
+and hosted concurrency/load remain unverified. Detailed evidence: docs/verification.md.
+
 ## Latest local work — bounded server recovery (2026-10-04)
 
 PR #30 merged as `b06da28`; new local branch `codex/bounded-recovery-history` starts there.
