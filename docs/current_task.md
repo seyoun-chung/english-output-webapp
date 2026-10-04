@@ -14,8 +14,12 @@ Active branch `codex/deployment-security` starts from merged origin/main `210afd
 This change excludes repository-only/source/reference files from Vercel uploads and adds
 `nosniff`, frame denial, strict referrer policy and a permissions policy that allows only
 same-origin microphone access while disabling camera and geolocation. The focused config
-test, full verification (46 files / 416 tests) and local Vercel production build pass. Git safety publication,
-merge and protected redeployment are the remaining approved steps.
+test, full verification (46 files / 416 tests) and local Vercel production build pass. PR #35
+merged as `c08ce27`. Protected production deployment `dpl_FTogGnUWRwXNV6QXaXg5pRbFo5Wr`
+is Ready and aliased to the stable URL. Unauthenticated access still redirects to Vercel
+authentication; authenticated responses contain all four configured headers and HSTS. A fresh
+production Google login restored the existing Pass 4+ position and logout completed normally.
+Only a physical second-device continuation check remains for the first-product acceptance evidence.
 
 ## Account header cleanup — 2026-10-04
 

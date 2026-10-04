@@ -8,9 +8,9 @@
 - 조치: 실제 업로드 전에 `.vercelignore`로 문서·Source·환경설정·녹음·로그·검증 산출물을
   제외했다. `vercel.json`에는 `nosniff`, `DENY`, strict referrer와 same-origin microphone만
   허용하는 정책을 추가하고 구성 회귀 테스트를 만들었다.
-- 상태: `수정됨·추가 검증 필요` — 업로드 dry-run에서 금지 파일 0개, 집중 테스트와 로컬
-  Vercel production build를 통과했다. 승인된 Git 병합·재배포 뒤 실제 응답 헤더를 확인하면
-  `해결 확인`으로 전환한다.
+- 상태: `해결 확인` — 업로드 dry-run에서 금지 파일 0개, 집중 테스트와 로컬 Vercel
+  production build를 통과했다. PR #35 병합 뒤 보호된 운영 주소를 재배포했고, 인증된 실제
+  응답에서 네 헤더와 HSTS를 확인했다. 미인증 요청도 계속 Vercel 인증으로 이동한다.
 
 ## 2026-10-04 · 로그인 안내 간격과 Pass 4+ 내부 용어
 

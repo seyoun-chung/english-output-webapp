@@ -17,8 +17,14 @@
   Vercel exclusions passed. `vercel build --prod` compiled the same headers into the route config.
 - [x] Full regression: `npm run verify`, 46 files / 416 tests, client/server TypeScript,
   repository safety and production Vite build passed.
-- [ ] The new response headers are not marked live until the approved Git merge, protected
-  redeployment and response-header recheck finish.
+- [x] PR #35 merged as `c08ce27`; production deployment
+  `dpl_FTogGnUWRwXNV6QXaXg5pRbFo5Wr` is Ready and the stable alias points to it.
+- [x] Authenticated live response: `X-Content-Type-Options: nosniff`,
+  `X-Frame-Options: DENY`, `Referrer-Policy: strict-origin-when-cross-origin`,
+  `Permissions-Policy: camera=(), geolocation=(), microphone=(self)` and HSTS. An unauthenticated
+  request still returns 302 to Vercel authentication.
+- [x] Post-deployment browser check: fresh production Google login returned to the stable URL,
+  restored the existing Pass 4+ position and logged out normally.
 - [ ] A physical phone or second computer using the same Google account remains required for
   true device-to-device continuation evidence.
 
