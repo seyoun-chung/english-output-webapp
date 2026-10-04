@@ -1,5 +1,22 @@
 # Local verification
 
+## Public OAuth readiness — 2026-10-05
+
+- [x] Vercel Deployment Protection changed to Standard; an unauthenticated request to the stable
+  production URL returned 200 without a Vercel authentication redirect. Preview protection remains.
+- [x] Google OAuth Data Access lists no sensitive or restricted scopes; source and regression tests
+  limit sign-in to `openid email profile`.
+- [x] Local root shows the requested Korean login copy, one factual app-description sentence and
+  visible privacy/terms links. Google CTA and both links have at least 44px interaction height.
+- [x] Direct `/privacy` and `/terms` navigation renders the correct document titles, semantic
+  headings and contact link. Exact Vercel rewrites cover only these two routes.
+- [x] Responsive browser checks at 375×812 and 320×740 found no horizontal overflow. The legal
+  text uses a maximum 70-character line length and the 320px view keeps 44px navigation targets.
+- [x] Keyboard order from the Google button reaches Privacy and then Terms.
+- [ ] Production deploy, live-route/header recheck, Google OAuth production publication and a
+  post-publication sign-in/continuation check remain in this approved workflow. Until OAuth is
+  published, non-test Google accounts may be blocked by Google's Testing audience.
+
 ## Hamster favicon — 2026-10-05
 
 - User approved the final design: lime background, v2 hamster geometry (small ears,

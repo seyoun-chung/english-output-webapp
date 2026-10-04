@@ -5,6 +5,7 @@ import { accountStorage } from './accountStorage';
 import { accountConfig, makeAccountClient, supabaseSyncTransport, type AccountConfig } from './supabaseAccount';
 import './account.css';
 import { finishGoogleLogin, googleLoginUrl, loginFailure } from './googleLogin';
+import { LegalLinks } from './PublicInfoPages';
 
 const loginVerificationFailure = '로그인 상태를 확인하지 못했어요. 인터넷 연결 후 다시 시도해 주세요.';
 
@@ -35,6 +36,9 @@ export function AccountShell({ client, config, initialMessage = '' }: { client: 
     });
     return () => { alive = false; data.subscription.unsubscribe(); };
   }, [client, retry]);
+  useEffect(() => {
+    if (!checking && !user) document.title = 'English Output';
+  }, [checking, user]);
   const account = useMemo(() => {
     if (!user) return null;
     try { return { storage: accountStorage(localStorage, config.url, user.id), transport: supabaseSyncTransport(client, config, user.id) }; }
@@ -62,8 +66,10 @@ export function AccountShell({ client, config, initialMessage = '' }: { client: 
     {account ? <App key={user.id} storage={account.storage} syncTransport={account.transport} registerFlush={value => { flush.current = value; }} /> : <p role="alert">Browser storage is unavailable. Allow storage and reload.</p>}
   </>;
   return <main className="account-card">
+    <p className="account-brand">English Output</p>
     <h1>어디서든 학습하세요</h1>
     <p>Google 계정으로 로그인 하기</p>
+    <p className="account-description">교재에서 배운 영어를 반복해서 말하고 쓰며 복습하는 학습 앱입니다.</p>
     <button className="primary" disabled={busy} onClick={async () => {
       if (busy) return; setBusy(true); setMessage('');
       try {
@@ -75,6 +81,7 @@ export function AccountShell({ client, config, initialMessage = '' }: { client: 
     {(message === loginFailure || message === loginVerificationFailure) &&
       <button className="secondary" onClick={() => { setChecking(true); setRetry(n => n + 1); }}>로그인 상태 다시 확인</button>}
     <p className="account-help">공용 기기에서는 사용 후 로그아웃 하세요.</p>
+    <LegalLinks />
   </main>;
 }
 

@@ -2,7 +2,10 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
 type Header = { key: string; value: string };
-type VercelConfig = { headers: Array<{ source: string; headers: Header[] }> };
+type VercelConfig = {
+  headers: Array<{ source: string; headers: Header[] }>;
+  rewrites: Array<{ source: string; destination: string }>;
+};
 
 describe('deployment safety configuration', () => {
   it('keeps the browser protections required by the hosted app', () => {
@@ -30,5 +33,13 @@ describe('deployment safety configuration', () => {
     expect(ignored).not.toContain('src/');
     expect(ignored).not.toContain('index.html');
     expect(ignored).not.toContain('package.json');
+  });
+
+  it('serves the two public information routes without adding a broad SPA rewrite', () => {
+    const config = JSON.parse(readFileSync('vercel.json', 'utf8')) as VercelConfig;
+    expect(config.rewrites).toEqual([
+      { source: '/privacy', destination: '/index.html' },
+      { source: '/terms', destination: '/index.html' },
+    ]);
   });
 });

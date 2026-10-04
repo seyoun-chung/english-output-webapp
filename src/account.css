@@ -1,6 +1,8 @@
 .account-card { max-width: 480px; margin: 6vh auto; padding: 24px; background: white; border: 1px solid #dce4f2; border-radius: 16px; overflow-wrap: anywhere; }
 .account-card h1 { font-size: 28px; line-height: 1.25; }
 .account-card p { line-height: 1.6; }
+.account-card .account-brand { color: #2965eb; font-size: 13px; font-weight: 800; letter-spacing: .12em; margin: 0 0 8px; text-transform: uppercase; }
+.account-card .account-description { color: #536987; font-size: 15px; margin: 8px 0 16px; }
 .account-card form { display: grid; gap: 12px; margin: 24px 0; }
 .account-card input { min-width: 0; width: 100%; min-height: 48px; font: inherit; font-size: 16px; border: 1px solid #7890ad; border-radius: 8px; padding: 10px; }
 .account-card button { min-height: 44px; white-space: normal; }

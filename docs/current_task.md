@@ -1,5 +1,22 @@
 # Current Task
 
+## Public operator-review release — 2026-10-05
+
+The user approved making the stable Vercel production URL accessible without Vercel
+authentication so community operators can review it. Vercel Deployment Protection is now
+Standard: production is public and preview deployments remain protected. The GitHub repository
+stays private. Google OAuth is still in Testing until the public app description, privacy policy
+and terms are deployed and entered in Google Cloud.
+
+Active branch `codex/public-oauth-readiness` starts from current `origin/main` at `0f4f2f9`.
+The signed-out page keeps the user's concise Korean login copy and adds one factual app-description
+line plus privacy/terms links. `/privacy` documents the actual Google/Supabase/Vercel roles,
+stored learning data, browser copies, non-uploaded recordings, retention and deletion contact.
+`/terms` limits use and redistribution without claiming that community-operator permission exists.
+Only these two exact SPA routes are rewritten by Vercel. Local focused tests, build and browser
+checks pass; Git publication, production redeployment and Google OAuth publication follow in the
+same explicitly approved release workflow.
+
 ## Physical cross-device continuation verified — 2026-10-05
 
 The user opened Chapter 12 from a physical phone using the same Google account.
