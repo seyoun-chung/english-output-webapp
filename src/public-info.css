@@ -1,0 +1,108 @@
+.legal-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  margin-top: 20px;
+}
+
+.legal-links a,
+.public-info-home {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  color: #536987;
+  font-size: 14px;
+  font-weight: 700;
+  text-underline-offset: 3px;
+}
+
+.legal-links a:focus-visible,
+.public-info-home:focus-visible,
+.public-info-page article a:focus-visible {
+  border-radius: 4px;
+  outline: 3px solid #7aa7ff;
+  outline-offset: 2px;
+}
+
+.account-card > .legal-links {
+  border-top: 1px solid #e5ebf5;
+  justify-content: center;
+  padding-top: 12px;
+}
+
+.public-info-page {
+  box-sizing: border-box;
+  margin: 0 auto;
+  max-width: 760px;
+  padding: 24px 24px 48px;
+}
+
+.public-info-page article {
+  background: #fff;
+  border: 1px solid #dce4f2;
+  border-radius: 16px;
+  margin-top: 12px;
+  padding: 32px;
+}
+
+.public-info-page header {
+  border-bottom: 1px solid #e5ebf5;
+  margin-bottom: 28px;
+  padding-bottom: 24px;
+}
+
+.public-info-label {
+  color: #2965eb;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: .12em;
+  margin: 0 0 8px;
+  text-transform: uppercase;
+}
+
+.public-info-page h1 {
+  color: #102d55;
+  font-size: clamp(30px, 6vw, 42px);
+  line-height: 1.2;
+  margin: 0;
+}
+
+.public-info-date {
+  color: #6a7e9b;
+  font-size: 14px;
+  margin: 12px 0 0;
+}
+
+.public-info-page section + section {
+  border-top: 1px solid #edf1f7;
+  margin-top: 24px;
+  padding-top: 20px;
+}
+
+.public-info-page h2 {
+  color: #17335d;
+  font-size: 20px;
+  line-height: 1.4;
+  margin: 0 0 8px;
+}
+
+.public-info-page section p {
+  color: #405777;
+  line-height: 1.75;
+  margin: 8px 0;
+  max-width: 70ch;
+  overflow-wrap: anywhere;
+}
+
+.public-info-page section a {
+  align-items: center;
+  color: #1859da;
+  display: inline-flex;
+  font-weight: 700;
+  min-height: 44px;
+}
+
+@media (max-width: 600px) {
+  .public-info-page { padding: 12px 16px 40px; }
+  .public-info-page article { padding: 24px 20px; }
+}

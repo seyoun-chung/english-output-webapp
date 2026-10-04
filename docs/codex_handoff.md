@@ -1,5 +1,18 @@
 # Codex Handoff — Textbook Mastery Web App
 
+## Latest — public operator-review release in progress (2026-10-05)
+
+The user approved making the stable production URL public for community-operator review while
+keeping the GitHub repository private and Vercel previews protected. Vercel now uses Standard
+Protection and the unauthenticated stable URL returns 200. Google OAuth remains in Testing pending
+this release. Branch `codex/public-oauth-readiness` adds a one-line public app description,
+`/privacy`, `/terms`, exact Vercel rewrites and regression coverage. Local focused tests, build,
+375px/320px rendering and keyboard order pass. Next: full verification, approved Git release,
+production deploy, live verification, then fill Google Branding URLs and publish the External
+OAuth audience. Do not claim community-operator permission; the user will decide whether to share
+the public URL after showing it to the operator. GitHub must remain private. Preview deployments
+must remain protected. The home-computer safe-resync gate below still applies.
+
 ## Latest — physical cross-device verification complete (2026-10-05)
 
 The user opened Chapter 12 on a physical phone with the same Google account. A fresh protected
