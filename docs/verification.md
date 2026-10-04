@@ -20,6 +20,17 @@
 - User approved commit/push/PR/merge/protected production deployment. Release execution
   follows this pre-release record; actual production outcome is reported after deployment.
 
+## Physical phone → hosted account → STA Track — 2026-10-05
+
+- [x] Starting server state on the STA Track production browser was Pass 4+.
+- [x] The user opened Chapter 12 from a physical phone with the same Google account.
+- [x] A fresh production login on STA Track loaded `Chapter 12 · Pass 1 · Overview`, including
+  the Chapter 12 title and navigation. This was a real server round trip, not viewport simulation.
+- [x] STA Track returned the account to Pass 4+, signed out, then signed in again; the new session
+  loaded Pass 4+ from the hosted record. The account was logged out after verification.
+- [x] Only navigation position was used for the check. Ratings, writing and personal answers were
+  not intentionally changed.
+
 ## Protected production and deployment security — 2026-10-05
 
 - [x] Stable protected URL: `https://english-output-webapp.vercel.app/`. Unauthenticated
@@ -45,8 +56,7 @@
   request still returns 302 to Vercel authentication.
 - [x] Post-deployment browser check: fresh production Google login returned to the stable URL,
   restored the existing Pass 4+ position and logged out normally.
-- [ ] A physical phone or second computer using the same Google account remains required for
-  true device-to-device continuation evidence.
+- [x] Physical phone and STA Track continuation passed; see the physical-device section above.
 
 ## Login spacing and plain-language review copy — 2026-10-04
 

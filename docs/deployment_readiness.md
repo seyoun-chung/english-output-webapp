@@ -4,7 +4,7 @@ The existing Vercel project now hosts a protected first-product build at
 `https://english-output-webapp.vercel.app/`. Protection is configured for all deployments,
 so this is not a community publication. The user will separately decide whether to share the
 address after asking the community operator. A hosted Seoul Supabase project is connected and
-the production Google callback works. Physical second-device verification still remains.
+the production Google callback works. Physical phone → STA Track continuation is verified.
 
 ## Current verified connection
 
@@ -15,7 +15,8 @@ Real local Google callback, server save/read, two-storage-origin sync, backup re
 passed. Full verify passed 411 tests/build. See verification.md for methods and remaining limits.
 The stable HTTPS URL, exact auth return URL and protected deployment have been verified. The current
 security release merged in PR #35 and protected deployment `dpl_FTogGnUWRwXNV6QXaXg5pRbFo5Wr`
-is Ready. Live headers and a fresh production login were verified. One physical second-device check remains.
+is Ready. Live headers and a fresh production login were verified. The physical-device check also
+passed: phone Chapter 12 was loaded on STA Track, then Pass 4+ was restored and confirmed by a new login.
 Do not introduce a student-approval feature without a new request. Community publication is a later
 user decision and is not implied by this protected deployment.
 Original local records require explicit reviewed backup/import if needed; never silently overwrite them.
