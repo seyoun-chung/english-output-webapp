@@ -7,7 +7,7 @@ const AccountRoot = lazy(() => import('./AccountRoot'));
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     {import.meta.env.VITE_ACCOUNT_SYNC_ENABLED === '1'
-      ? <Suspense fallback={<p role="status">Loading account…</p>}><AccountRoot /></Suspense>
+      ? <Suspense fallback={<p role="status">로그인 화면을 불러오고 있어요…</p>}><AccountRoot /></Suspense>
       : <App />}
   </StrictMode>,
 );

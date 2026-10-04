@@ -30,6 +30,21 @@ describe('two-device sync session', () => {
     await b.check(app('three'));
     expect((await a.check(app('two'))).action).toBe('download');
   });
+  it('automatically resumes an account record on an untouched new browser', async () => {
+    const transport = service();
+    await new SyncSession(transport).check(app('studied chapter'));
+    const fresh = new SyncSession(transport);
+    const result = await fresh.check(initialAppProgress());
+    expect(result.action).toBe('download');
+    expect(result.snapshot.progress?.automatic.writingDraft).toBe('studied chapter');
+    expect((await transport.read()).progress?.automatic.writingDraft).toBe('studied chapter');
+  });
+  it('still asks before choosing between independently studied records', async () => {
+    const transport = service();
+    await new SyncSession(transport).check(app('account work'));
+    await expect(new SyncSession(transport).check(app('device work'))).rejects.toBeInstanceOf(SyncConflict);
+    expect((await transport.read()).progress?.automatic.writingDraft).toBe('account work');
+  });
   it('preserves both offline edits and rejects a stale conflict choice', async () => {
     const transport = service(), a = new SyncSession(transport), b = new SyncSession(transport);
     await a.check(app('base')); await b.check(app('base'));

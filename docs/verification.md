@@ -1,5 +1,36 @@
 # Local verification
 
+## Automatic account continuation — 2026-10-04
+
+- [x] `npm run verify`: 45 files / 414 tests, identity/safety checks and client/server build passed.
+- [x] Untouched new-browser account download and independent-edit conflict are covered by unit tests;
+  existing records remain unchanged in conflict tests.
+- [x] Local rendered signed-out page has the four requested Korean strings, one 44px Google CTA,
+  and 375px document width with no horizontal overflow.
+- [x] Local rendered signed-in overview hides normal Backup & restore / Account sync controls;
+  375px viewport had no horizontal overflow. These were browser observations, not a physical phone.
+- [ ] Actual sign-out then sign-in on a second device and cloud-resume position: not run; no
+  user record was deliberately changed merely for this UI check. Production URL remains undeployed.
+
+## Korean login screen — 2026-10-04
+
+- [x] Follow-up minimal copy: 3 suites / 14 tests + client/server build passed. At 1280px and 320px,
+  normal page has one Google button and no horizontal overflow; mobile button height 44px.
+  Synthetic cancellation exposes error/retry only in failure state; retry rechecks account.
+  Restored normal URL and reset viewport. Older two-button normal-page evidence below is superseded.
+  First check tab stopped responding; fresh tab in the same browser completed visual checks.
+
+- [x] Related Google login/account storage/sync/transport: 4 files / 20 tests passed.
+- [x] Client/server TypeScript and Vite build passed.
+- [x] Rendered login headings, helper text and both buttons are Korean.
+- [x] 320x740: document scroll width 320; buttons x=36.8..283.2, both height 44px.
+  Screenshot checked wrapping; desktop 1280px also has no horizontal overflow.
+- [x] Login-state retry returns to signed-out page; Tab from Google button reaches retry.
+- [x] Synthetic callback cancellation shows Korean retry message and removes error query from URL.
+  No provider error details shown. Normal page restored and temporary viewport reset.
+- Copy-only change: no storage/auth behavior or learning target change. Real Google consent,
+  physical-device/microphone and full curriculum interaction were not repeated.
+
 ## Live Seoul connection — 2026-10-04
 
 - [x] Four focused suites (`supabaseDatabase`, `supabaseTransport`, `accountSync`, `accountStorage`): 22 tests passed.

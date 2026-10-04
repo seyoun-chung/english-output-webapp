@@ -1,4 +1,6 @@
 import type { AppProgress } from './appProgress';
+import { initialAppProgress } from './appProgress';
+import { sameProgress } from './progressBackup';
 import { decideSync, parseSyncSnapshot, type SyncSnapshot, type SyncWrite } from './syncProtocol';
 
 export interface SyncTransport {
@@ -25,14 +27,17 @@ export const localSyncTransport: SyncTransport = {
   },
 };
 
-// No background upload until explicitly connected. Baselines are session-scoped:
-// reopening never silently chooses between two independently changed devices.
+// An untouched browser may safely resume an existing account record. Two
+// independently edited records still require an explicit choice.
 export class SyncSession {
   private baseline: AppProgress | null = null;
   constructor(private transport: SyncTransport, baseline: AppProgress | null = null) { this.baseline = baseline; }
   getBaseline(): AppProgress | null { return this.baseline; }
   async check(local: AppProgress): Promise<{ action: 'same' | 'download'; snapshot: SyncSnapshot }> {
     const remote = await this.transport.read();
+    if (this.baseline === null && remote.progress && sameProgress(local, initialAppProgress())) {
+      return { action: 'download', snapshot: remote };
+    }
     const decision = decideSync(local, this.baseline, remote.progress);
     if (decision === 'conflict') throw new SyncConflict(remote);
     if (decision === 'upload') {

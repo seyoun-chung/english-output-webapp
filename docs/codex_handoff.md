@@ -1,5 +1,20 @@
 # Codex Handoff — Textbook Mastery Web App
 
+## Latest local work — automatic account continuation (2026-10-04)
+
+Active branch `codex/korean-login-copy` starts from merged PR #32 main
+`2c64330174499b6e1e37ee5acc4d6be7da8c7d17`. Normal signed-in learning no longer
+shows manual Backup & restore / Account sync controls. Google login now checks and
+saves account progress automatically; an untouched new browser downloads the account
+record, while two independently edited records still require an explicit choice.
+Sign-out first confirms the account save and remains signed in on failure. Storage
+errors still expose recovery tools. Anonymous records remain separate and are not
+silently uploaded. The signed-out page uses the requested short Korean copy.
+Full verify passes 45 files / 414 tests; local signed-in and signed-out browser views
+were checked at desktop and 375px. Physical second-device resume and production URL
+remain unverified. Changes are local only: commit, push, PR, merge and deployment are
+not approved. Deployment remains the final separate gate.
+
 ## Latest — hosted connection verified from local app (2026-10-04)
 
 See current_task.md for the active connection state. Branch `codex/supabase-live-connection`
