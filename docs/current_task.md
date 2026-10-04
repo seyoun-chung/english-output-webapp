@@ -1,5 +1,38 @@
 # Current Task
 
+## Account header cleanup — 2026-10-04
+
+After PR #33 merged, the user requested that the signed-in email address not be
+shown and that the sign-out action no longer resemble the All chapters card.
+Branch `codex/account-header-cleanup` starts from origin/main merge `3a13152`.
+The header now contains only a compact text-style Korean logout action; its visual
+box is removed while the 44px keyboard/touch target and focus outline remain.
+Full verify passes 45 files / 414 tests. Signed-in desktop and 375px browser checks
+confirm no email text, a roughly 64x44px borderless transparent logout action and
+no horizontal overflow; the narrow check is responsive browser evidence, not a
+physical phone test.
+Commit/push/PR/merge/deployment are not approved for this follow-up yet.
+
+Follow-up usability feedback adds 16px separation below the Google button for
+the shared-device note and signed-out feedback. Learner-facing library and Pass 4+
+descriptions replace internal terms (`Source`, `Recall`, `Pattern`) with direct
+Korean explanations of selecting chapters, mixed review and random review.
+The same plain-language pass also covers the Pass 4+ hero, Smart Review, empty,
+setup and writing-card explanations so the removed jargon does not reappear one
+step later.
+The full verify passes 45 files / 414 tests and the production build. Browser
+verification confirms a 16px gap below the Google button, the revised Library and
+Pass 4+ copy, and no horizontal overflow at a 375px responsive viewport. This is
+responsive browser verification, not a physical-phone test.
+Pre-publish identity inspection: `check:publishable` passes all 72 uploadable
+commits with the approved noreply identity. The broader `check:history` audit still
+reports three pre-rewrite commits reachable only from the preserved recovery stash;
+they are not uploadable refs and the stash was not deleted.
+Latest user-copy follow-up removes the normal logout confirmation and the redundant
+`새로운 문장은 나오지 않아요` sentence. The disabled Pronunciation row now explains
+that it will be a listen, repeat, pronunciation and intonation practice area while
+remaining marked `Coming later`. Full verification still passes 414 tests.
+
 ## Automatic account continuation and login copy — 2026-10-04
 
 User requested a one-action learning journey: Google sign-in, automatic account
