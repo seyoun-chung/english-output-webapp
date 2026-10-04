@@ -90,13 +90,13 @@ function ChapterLibrary({ progress, onOpen, onAutomatic }: { progress: AppProgre
         <header className="library-heading">
           <p className="eyebrow">MY TEXTBOOK</p>
           <h1 tabIndex={-1}>Choose a chapter</h1>
-          <p>Source가 검증된 Chapter부터 학습할 수 있어요. 각 Chapter의 진행 기록은 따로 보관됩니다.</p>
+          <p>학습할 Chapter를 선택하세요. 각 Chapter의 진도는 따로 저장돼요.</p>
         </header>
         <section className="automatic-library-entry">
           <div>
             <p className="eyebrow">PASS 4+ · AUTOMATIC</p>
             <h2>Mixed review across chapters</h2>
-            <p>학습한 Source 문장으로 Mixed, Smart, All Random Review와 Multi-Chapter Writing을 진행해요.</p>
+            <p>여러 Chapter의 복습 문제를 섞어 풀고, 배운 표현으로 글을 써요.</p>
           </div>
           <button className="primary" onClick={onAutomatic}>Open Pass 4+ <span aria-hidden="true">→</span></button>
         </section>
@@ -505,7 +505,7 @@ function Overview({ progress, dispatch, hasPass2 }: ScreenProps & { hasPass2: bo
               <span className="section-link-arrow" aria-hidden="true">{core.find((item) => item.id === screen)?.completed || (screen === "grammar" && progress.grammar.studied) || (screen === "about" && progress.about.completedQuestionIds.length > 0) ? "✓" : "↗"}</span>
             </button>
           ))}
-          <button className="section-row" disabled><span className="section-number">08</span><span className="section-info"><strong>Pronunciation</strong></span><span className="later-tag">Coming later</span></button>
+          <button className="section-row" disabled><span className="section-number">08</span><span className="section-info"><strong>Pronunciation</strong><small>듣고 따라 말하며 발음과 억양을 연습해요.</small></span><span className="later-tag">Coming later</span></button>
           <button className="secondary full-width chapter-progress-link" onClick={() => dispatch({ type: "navigate", screen: "complete" })}>Chapter progress <span aria-hidden="true">→</span></button>
         </section>
         <aside className="overview-aside">

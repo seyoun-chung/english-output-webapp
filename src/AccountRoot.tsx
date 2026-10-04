@@ -42,8 +42,9 @@ export function AccountShell({ client, config, initialMessage = '' }: { client: 
   }, [client, config, user?.id]);
   if (checking) return <main className="account-card"><p role="status">로그인 상태를 확인하고 있어요…</p></main>;
   if (user) return <>
-    <header className="account-bar"><span>Signed in as {user.email ?? 'your account'}</span>
-      <button className="secondary" disabled={busy} onClick={async () => {
+    <header className="account-bar">
+      {message && <p role="status">{message}</p>}
+      <button className="account-signout" disabled={busy} onClick={async () => {
         setBusy(true);
         try {
           if (!flush.current || !(await flush.current())) {
@@ -53,11 +54,10 @@ export function AccountShell({ client, config, initialMessage = '' }: { client: 
           setChecking(true);
           const { error } = await client.auth.signOut({ scope: 'local' });
           if (error) { setMessage('Sign out failed. Reconnect and retry before sharing this device.'); }
-          else { setUser(null); setMessage('로그아웃했어요. 이 브라우저에 저장된 기록 사본은 남아 있어요.'); }
+          else { setUser(null); setMessage(''); }
         } catch { setMessage('Sign out failed. Reconnect and retry before sharing this device.'); }
         finally { setChecking(false); setBusy(false); }
-      }}>Sign out</button>
-      {message && <p role="status">{message}</p>}
+      }}>로그아웃</button>
     </header>
     {account ? <App key={user.id} storage={account.storage} syncTransport={account.transport} registerFlush={value => { flush.current = value; }} /> : <p role="alert">Browser storage is unavailable. Allow storage and reload.</p>}
   </>;
@@ -71,10 +71,10 @@ export function AccountShell({ client, config, initialMessage = '' }: { client: 
       } catch { setMessage(loginFailure); }
       finally { setBusy(false); }
     }}>{busy ? 'Google로 연결 중…' : 'Google로 계속하기'}</button>
-    {message && <p role="alert">{message}</p>}
+    {message && <p className="account-feedback" role="alert">{message}</p>}
     {(message === loginFailure || message === loginVerificationFailure) &&
       <button className="secondary" onClick={() => { setChecking(true); setRetry(n => n + 1); }}>로그인 상태 다시 확인</button>}
-    <p>공용 기기에서는 사용 후 로그아웃 하세요.</p>
+    <p className="account-help">공용 기기에서는 사용 후 로그아웃 하세요.</p>
   </main>;
 }
 

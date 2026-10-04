@@ -15,15 +15,15 @@ type Props = {
 const modeCopy: Record<AutomaticMode, { title: string; description: string }> = {
   mixed: {
     title: "Mixed Chapters",
-    description: "학습한 Chapter를 두 개 이상 골라 Source 문장을 섞어 Recall해요.",
+    description: "두 개 이상의 Chapter에서 복습할 문제를 섞어서 풀어요.",
   },
   smart: {
     title: "Smart Review",
-    description: "다시 볼 항목, Hint를 많이 쓴 항목, 오래된 항목부터 먼저 만나요.",
+    description: "어렵게 느꼈거나 힌트를 많이 본 문제, 오래전에 공부한 문제부터 풀어요.",
   },
   "all-random": {
     title: "All Random",
-    description: "Chapter와 Pattern 단서 없이 학습한 Source 문장을 무작위로 Recall해요.",
+    description: "Chapter나 표현 힌트 없이, 배운 문제를 무작위로 풀어요.",
   },
 };
 
@@ -123,7 +123,7 @@ export function AutomaticScreen({ progress, dispatch }: Props) {
             {automatic.writingCompletedAt && <p className="writing-saved" role="status">Writing complete ✓</p>}
             <button className="primary" disabled={!canComplete} onClick={() => send({ type: "completeWriting" })}>Complete writing</button>
           </section>
-        </> : <section className="panel automatic-empty"><h2>학습 기록이 더 필요해요</h2><p>두 Chapter 이상에서 Recall 자기평가를 남기면 사용할 수 있어요.</p></section>}
+        </> : <section className="panel automatic-empty"><h2>학습 기록이 더 필요해요</h2><p>두 Chapter 이상에서 문제를 풀고 자기평가를 남기면 사용할 수 있어요.</p></section>}
       </main>
     </div>;
   }
@@ -144,8 +144,8 @@ export function AutomaticScreen({ progress, dispatch }: Props) {
         {needsSelection && learnedChapterIds.length >= 2 && <ChapterChoices ids={learnedChapterIds} selected={automatic.selectedChapterIds} onToggle={(chapterId) => send({ type: "toggleChapter", chapterId })} />}
         <section className="panel automatic-start">
           <h2>{candidates.length} learned items</h2>
-          <p>{automatic.mode === "all-random" ? "Hint와 Source 정보는 정답을 연 뒤에만 보여요." : "정답을 확인한 뒤 스스로 평가하면 다음 항목으로 이동해요."}</p>
-          {!canStart && <p className="automatic-warning">{learned.length === 0 ? "먼저 Chapter에서 Recall 자기평가를 남겨주세요." : "학습 기록이 있는 Chapter를 두 개 이상 선택해주세요."}</p>}
+          <p>{automatic.mode === "all-random" ? "힌트와 어느 Chapter의 문제인지는 정답을 본 뒤에만 보여요." : "정답을 확인한 뒤 스스로 평가하면 다음 항목으로 이동해요."}</p>
+          {!canStart && <p className="automatic-warning">{learned.length === 0 ? "먼저 Chapter에서 문제를 풀고 자기평가를 남겨주세요." : "학습 기록이 있는 Chapter를 두 개 이상 선택해주세요."}</p>}
           <button className="primary" disabled={!canStart} onClick={() => send({ type: "start", learned })}>Start review</button>
         </section>
       </main>
@@ -158,7 +158,7 @@ export function AutomaticScreen({ progress, dispatch }: Props) {
       <header className="library-heading">
         <p className="eyebrow">PASS 4+ · AUTOMATIC</p>
         <h1>Use it without chapter clues</h1>
-        <p>이미 학습하고 자기평가한 Source 문장만 다시 꺼내요. 새로운 학습 문장은 추가하지 않습니다.</p>
+        <p>이미 공부하고 자기평가한 문장만 다시 복습해요.</p>
       </header>
       <div className="automatic-overview-stats">
         <span><strong>{learnedChapterIds.length}</strong> learned chapters</span>
@@ -171,7 +171,7 @@ export function AutomaticScreen({ progress, dispatch }: Props) {
           <button className="primary" onClick={() => send({ type: "choose", mode })}>Open <span aria-hidden="true">→</span></button>
         </article>)}
         <article className="chapter-card is-available automatic-writing-card">
-          <div><span className="eyebrow">OUTPUT MODE</span><h2>Multi-Chapter Writing</h2><p>두 개 이상의 Chapter 표현을 한 글에서 다시 활용해요.</p></div>
+          <div><span className="eyebrow">OUTPUT MODE</span><h2>Multi-Chapter Writing</h2><p>두 개 이상의 Chapter에서 배운 표현을 한 글에 써봐요.</p></div>
           <button className="primary" onClick={() => send({ type: "openWriting" })}>Open <span aria-hidden="true">→</span></button>
         </article>
       </div>

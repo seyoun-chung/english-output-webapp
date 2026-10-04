@@ -1,5 +1,32 @@
 # Local verification
 
+## Login spacing and plain-language review copy — 2026-10-04
+
+- 구현: Google 버튼 아래 안내/피드백 16px 간격, Library 및 Pass 4+ 설명의
+  `Source`/`Recall`/`Pattern` 내부 용어 제거. Hero, Smart Review, 준비/빈 상태,
+  작문 카드 설명도 같은 쉬운 한국어 기준으로 통일.
+- [x] `npm run verify` — 45개 테스트 파일, 414개 테스트와 production build 통과.
+- [x] 로그인 화면 — 실제 렌더링에서 Google 버튼과 공용 기기 안내 사이 16px 확인.
+  로그아웃 피드백에도 같은 전용 16px 규칙을 적용했다.
+- [x] Chapter Library와 Pass 4+ — 변경 문구를 실제 브라우저에서 확인하고,
+  375px viewport에서 문서 가로 Overflow 없음(375px viewport / 360px scroll width) 확인.
+- [x] `AutomaticScreen.tsx`의 사용자 설명에서 `Source`, `Pattern`, `Hint` 용어 제거 확인.
+  `Recall from memory`는 설명 문구가 아니라 학습 모드의 기존 영어 제목이므로 유지했다.
+- 실제 모바일 기기 시험이 아닌 반응형 웹 검증이다.
+- [x] 후속 문구 정리 — 정상 로그아웃 성공 문구를 표시하지 않도록 하고, Pass 4+
+  소개에서 `새로운 문장은 나오지 않아요`를 삭제했다. Chapter Overview의 비활성
+  Pronunciation 행에는 `듣고 따라 말하며 발음과 억양을 연습해요.`를 표시했다.
+- [x] 후속 전체 회귀 — `npm run verify`, 45개 파일·414개 테스트와 production build 통과.
+- [x] 실제 브라우저 Chapter 1 Overview에서 Pronunciation 설명과 `Coming later` 상태 확인.
+
+## Account header cleanup — 2026-10-04
+
+- 구현: 이메일 주소 비표시, 텍스트형 `로그아웃`, 44px 조작 영역과 포커스 표시 유지.
+- [x] `npm run verify`: 45 files / 414 tests, identity/safety 및 build 통과.
+- [x] 실제 로그인 상태의 1280px·375px 브라우저: 이메일 문자열 없음, `로그아웃`
+  약 64×44px, border 없음, 투명 배경, 문서 가로 넘침 없음.
+- [ ] 물리 모바일 기기의 실제 터치 감각은 미검증. 375px 결과는 반응형 브라우저 점검이다.
+
 ## Automatic account continuation — 2026-10-04
 
 - [x] `npm run verify`: 45 files / 414 tests, identity/safety checks and client/server build passed.
