@@ -890,7 +890,7 @@ function ChapterCompletion({ progress, dispatch, hasPass2, hasPass3 }: ScreenPro
   );
 }
 
-export default function App({ storage, syncTransport }: { storage?: Storage; syncTransport?: SyncTransport } = {}) {
+export default function App({ storage, syncTransport, registerFlush }: { storage?: Storage; syncTransport?: SyncTransport; registerFlush?: (flush: (() => Promise<boolean>) | null) => void } = {}) {
   const progressStorage = storage ?? {
     getItem: (key: string) => localStorage.getItem(key), setItem: (key: string, value: string) => localStorage.setItem(key, value),
   };
@@ -900,6 +900,7 @@ export default function App({ storage, syncTransport }: { storage?: Storage; syn
     getItem: key => progressStorage.getItem(key), setItem: (key, value) => progressStorage.setItem(key, value),
   }));
   const [storageWarning, setStorageWarning] = useState<string | null>(boot.message);
+  const [accountReady, setAccountReady] = useState(!syncTransport);
   const protectedRecord = useRef(boot.protected);
   const originalRecord = useRef(boot.original);
   const [appProgress, appDispatch] = useReducer(
@@ -948,8 +949,9 @@ export default function App({ storage, syncTransport }: { storage?: Storage; syn
         appDispatch({ type: 'restoreBackup', progress: result.progress });
       });
     };
-  const safetyPanel = <><ProgressBackupPanel progress={appProgress} original={originalRecord.current} warning={storageWarning} onRestore={restore} storage={storage} />
-    {syncTransport && <AccountSyncPanel progress={appProgress} disabled={Boolean(storageWarning)} onRestore={restore} transport={syncTransport} storage={storage} />}
+  const safetyPanel = <>
+    {storageWarning && <ProgressBackupPanel progress={appProgress} original={originalRecord.current} warning={storageWarning} onRestore={restore} storage={storage} />}
+    {syncTransport && <AccountSyncPanel progress={appProgress} disabled={Boolean(storageWarning)} onRestore={restore} transport={syncTransport} storage={storage} onReady={() => setAccountReady(true)} registerFlush={registerFlush ?? (() => {})} />}
     {import.meta.env.DEV && import.meta.env.VITE_LOCAL_SYNC_TEST === '1' && <LocalSyncPanel progress={appProgress} disabled={Boolean(storageWarning)} onRestore={restore} />}</>;
   const progress = activePassProgress(chapterProgress);
   const chunkId = progress.queue[progress.queueIndex];
@@ -963,6 +965,7 @@ export default function App({ storage, syncTransport }: { storage?: Storage; syn
   const rated = Object.values(progress.chunkRatings).filter(Boolean).length;
   const sectionTitle = chapterSections.find((section) => section.screen === progress.currentScreen)?.title;
   const locationParts = breadcrumbParts(progress, activeContent.metadata);
+  if (!accountReady) return <>{safetyPanel}<main className="account-card"><p role="status">학습 기록을 불러오고 있어요…</p></main></>;
   if (appProgress.view === "library") {
     return <>{safetyPanel}<ChapterLibrary progress={appProgress} onOpen={(chapterId) => appDispatch({ type: "selectChapter", chapterId })} onAutomatic={() => appDispatch({ type: "showAutomatic" })} /></>;
   }

@@ -3,6 +3,9 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import { finishGoogleLogin, googleLoginUrl, loginFailure } from '../src/googleLogin';
 const config = {url:'https://example.supabase.co',key:'sb_publishable_localtest'};
 describe('Google PKCE login boundary', () => {
+  it('provides a concise Korean recovery message without provider details', () => {
+    expect(loginFailure).toBe('Google 로그인을 완료하지 못했어요. 다시 시도해 주세요.');
+  });
   it('uses only Google basic identity scopes and a fixed same-origin return URL', async () => {
     const signInWithOAuth = vi.fn().mockResolvedValue({data:{url:config.url+'/auth/v1/authorize?provider=google'},error:null});
     const client = {auth:{signInWithOAuth}} as unknown as SupabaseClient;

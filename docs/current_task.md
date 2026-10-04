@@ -1,5 +1,43 @@
 # Current Task
 
+## Automatic account continuation and login copy — 2026-10-04
+
+User requested a one-action learning journey: Google sign-in, automatic account
+record load/save, sign-out, and later continuation at the saved position; users
+remain free to choose another chapter. Normal learner UI no longer shows the
+five manual backup/sync controls. An untouched new browser downloads its existing
+account record; two independently edited records still require an explicit choice.
+Sign-out checks the pending account save and stays signed in if it cannot confirm
+the save. A storage warning still exposes recovery controls. Existing anonymous
+browser records are preserved but not silently uploaded into an account.
+Login copy now uses the user's requested heading, Google sign-in line, blue CTA,
+and shared-device sign-out reminder. Current work is local on
+`codex/korean-login-copy`; commit/push/PR/merge/deployment remain unapproved.
+`npm run verify`: 45 test files / 414 tests, identity/safety, and build passed.
+Read-only local browser checks: signed-out copy at localhost, one 44px CTA and
+no 375px overflow; signed-in 127.0.0.1 overview shows no normal management panels.
+Real second-device/logout-and-return validation and production deployment remain
+unverified. Do not call the first-product goal complete.
+
+## Korean login copy — 2026-10-04
+
+Follow-up: user requested less text. Normal login now contains only a short heading, one same-account
+hint and Google button. Retry appears only for login/callback verification failures. Removed verbose
+first-page record/audio/security paragraphs, not the underlying protections or backup/privacy guidance.
+Related 3 suites / 14 tests and build passed; 1280px/320px render has one normal-state button and no
+horizontal overflow. Synthetic cancellation shows Korean error and retry; normal URL restored.
+
+User requested Korean for the login first page and approved a fresh branch from latest main.
+`codex/korean-login-copy` starts at PR #32 merge `2c64330174499b6e1e37ee5acc4d6be7da8c7d17`.
+Login title, explanatory/security text, buttons, loading/verification/callback error and signed-out
+messages are Korean. Learning UI and the signed-in account bar remain unchanged.
+No auth scopes, callback destinations, sync/storage logic, learning content or CSS were changed.
+Related 4 suites / 20 tests and client/server build passed. Rendered signed-out page at 1280px/320px:
+no horizontal overflow, both mobile buttons 44px high, retry returns to login page, keyboard Tab
+reaches retry, synthetic cancellation renders Korean error and removes error from URL.
+No real Google consent or physical mobile test was repeated for this copy-only change.
+Current changes are local only; commit/push/PR/merge/deployment are not approved for this branch.
+
 ## Live connection verified locally — 2026-10-04
 
 User explicitly approved branch creation, Seoul Supabase storage/auth configuration and local

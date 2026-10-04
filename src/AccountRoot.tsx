@@ -6,12 +6,15 @@ import { accountConfig, makeAccountClient, supabaseSyncTransport, type AccountCo
 import './account.css';
 import { finishGoogleLogin, googleLoginUrl, loginFailure } from './googleLogin';
 
+const loginVerificationFailure = '로그인 상태를 확인하지 못했어요. 인터넷 연결 후 다시 시도해 주세요.';
+
 export function AccountShell({ client, config, initialMessage = '' }: { client: SupabaseClient; config: AccountConfig; initialMessage?: string }) {
   const [user, setUser] = useState<User | null>(null);
   const [checking, setChecking] = useState(true);
   const [busy, setBusy] = useState(false), [message, setMessage] = useState(initialMessage);
   const [retry, setRetry] = useState(0);
   const verifiedUser = useRef<string | null>(null);
+  const flush = useRef<(() => Promise<boolean>) | null>(null);
   useEffect(() => {
     let alive = true, generation = 0;
     const { data } = client.auth.onAuthStateChange((_event, session) => {
@@ -25,9 +28,9 @@ export function AccountShell({ client, config, initialMessage = '' }: { client: 
         if (!alive || generation !== captured) return;
         verifiedUser.current = result.error ? null : result.data.user?.id ?? null;
         setUser(result.error ? null : result.data.user); setChecking(false);
-        setMessage(result.error ? 'Could not verify your login. Reconnect and try again.' : '');
+        setMessage(result.error ? loginVerificationFailure : '');
       }).catch(() => {
-        if (alive && generation === captured) { setUser(null); setChecking(false); setMessage('Could not verify your login. Reconnect and try again.'); }
+        if (alive && generation === captured) { setUser(null); setChecking(false); setMessage(loginVerificationFailure); }
       });
     });
     return () => { alive = false; data.subscription.unsubscribe(); };
@@ -37,36 +40,41 @@ export function AccountShell({ client, config, initialMessage = '' }: { client: 
     try { return { storage: accountStorage(localStorage, config.url, user.id), transport: supabaseSyncTransport(client, config, user.id) }; }
     catch { return null; }
   }, [client, config, user?.id]);
-  if (checking) return <main className="account-card"><p role="status">Checking your account…</p></main>;
+  if (checking) return <main className="account-card"><p role="status">로그인 상태를 확인하고 있어요…</p></main>;
   if (user) return <>
     <header className="account-bar"><span>Signed in as {user.email ?? 'your account'}</span>
       <button className="secondary" disabled={busy} onClick={async () => {
-        setBusy(true); setChecking(true);
+        setBusy(true);
         try {
+          if (!flush.current || !(await flush.current())) {
+            setMessage('계정에 기록을 저장하지 못했어요. 인터넷 연결을 확인하고 다시 로그아웃해 주세요. 이 기기의 기록은 남아 있어요.');
+            return;
+          }
+          setChecking(true);
           const { error } = await client.auth.signOut({ scope: 'local' });
           if (error) { setMessage('Sign out failed. Reconnect and retry before sharing this device.'); }
-          else { setUser(null); setMessage('Signed out. Local account copies remain on this browser.'); }
+          else { setUser(null); setMessage('로그아웃했어요. 이 브라우저에 저장된 기록 사본은 남아 있어요.'); }
         } catch { setMessage('Sign out failed. Reconnect and retry before sharing this device.'); }
         finally { setChecking(false); setBusy(false); }
       }}>Sign out</button>
       {message && <p role="status">{message}</p>}
     </header>
-    {account ? <App key={user.id} storage={account.storage} syncTransport={account.transport} /> : <p role="alert">Browser storage is unavailable. Allow storage and reload.</p>}
+    {account ? <App key={user.id} storage={account.storage} syncTransport={account.transport} registerFlush={value => { flush.current = value; }} /> : <p role="alert">Browser storage is unavailable. Allow storage and reload.</p>}
   </>;
   return <main className="account-card">
-    <h1>Your learning, anywhere</h1>
-    <p>Use the same Google account on each device.</p>
-    <p>Your progress and writing stay separate from other accounts. Audio is not uploaded.</p>
+    <h1>어디서든 학습하세요</h1>
+    <p>Google 계정으로 로그인 하기</p>
     <button className="primary" disabled={busy} onClick={async () => {
       if (busy) return; setBusy(true); setMessage('');
       try {
         window.location.assign(await googleLoginUrl(client, config, window.location.origin));
       } catch { setMessage(loginFailure); }
       finally { setBusy(false); }
-    }}>{busy ? 'Opening Google…' : 'Continue with Google'}</button>
+    }}>{busy ? 'Google로 연결 중…' : 'Google로 계속하기'}</button>
     {message && <p role="alert">{message}</p>}
-    <button className="secondary" onClick={() => { setChecking(true); setRetry(n => n + 1); }}>Check login again</button>
-    <p>On a shared device, sign out when finished. Browser copies are not encrypted.</p>
+    {(message === loginFailure || message === loginVerificationFailure) &&
+      <button className="secondary" onClick={() => { setChecking(true); setRetry(n => n + 1); }}>로그인 상태 다시 확인</button>}
+    <p>공용 기기에서는 사용 후 로그아웃 하세요.</p>
   </main>;
 }
 
@@ -83,7 +91,7 @@ export default function AccountRoot() {
   const [result, setResult] = useState<string | null>(null);
   useEffect(() => { let active = true; void callback.then(message => { if (active) setResult(message); }); return () => { active = false; }; }, []);
   if (!setup) return <App />;
-  if (setup.error || !('client' in setup)) return <main className="account-card"><h1>Account setup unavailable</h1><p role="alert">No connection was made. Check the approved account configuration.</p></main>;
-  if (result === null) return <main className="account-card"><p role="status">Finishing sign-in…</p></main>;
+  if (setup.error || !('client' in setup)) return <main className="account-card"><h1>로그인 연결을 설정해 주세요</h1><p role="alert">연결하지 못했어요. 승인된 계정 연결 설정을 확인해 주세요.</p></main>;
+  if (result === null) return <main className="account-card"><p role="status">로그인을 마무리하고 있어요…</p></main>;
   return <AccountShell client={setup.client} config={setup.config} initialMessage={result} />;
 }

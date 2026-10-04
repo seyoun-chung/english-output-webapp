@@ -1,7 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { AccountConfig } from './supabaseAccount';
 
-export const loginFailure = 'Google sign-in did not finish. Please try again.';
+export const loginFailure = 'Google 로그인을 완료하지 못했어요. 다시 시도해 주세요.';
 export async function googleLoginUrl(client: SupabaseClient, config: AccountConfig, origin: string) {
   const destination = new URL('/', origin);
   if (destination.protocol !== 'https:' && !(destination.protocol === 'http:' && ['localhost', '127.0.0.1'].includes(destination.hostname))) throw new Error(loginFailure);
