@@ -1,5 +1,19 @@
 # Codex Handoff — Textbook Mastery Web App
 
+## Latest — protected Vercel release hardening (2026-10-05)
+
+The existing Vercel project hosts the app at `https://english-output-webapp.vercel.app/`.
+Vercel authentication protects all deployments; this is not community publication. Production
+Google login, logout/relogin continuation and bidirectional sync with a local origin passed.
+The latter is one browser profile, so a physical second device remains unverified.
+
+Branch `codex/deployment-security` starts from origin/main `210afde`. It adds a strict Vercel
+upload allow/exclude boundary, basic browser security headers and a regression test. The focused
+test and local Vercel production build pass. After the approved PR/merge and redeployment, verify
+the live headers and protected login again. Do not remove recovery stash refs. On the home computer,
+do not run an ordinary pull: apply the home-computer safe-resync gate below because remote history
+was previously rewritten.
+
 ## Latest local work — automatic account continuation (2026-10-04)
 
 Active branch `codex/korean-login-copy` starts from merged PR #32 main

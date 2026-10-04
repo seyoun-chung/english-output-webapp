@@ -1,0 +1,28 @@
+# Local, source-reference, and verification files are not part of the web app.
+.git/
+.githooks/
+.vercel/
+.env*
+docs/
+tests/
+scripts/
+supabase/
+skills/
+tmp/
+dist/
+build/
+node_modules/
+
+# Repository-only guidance and work records.
+AGENTS.md
+README.md
+작업일지.md
+
+# Never upload source documents or local media artifacts.
+*.pdf
+*.docx
+*.mp3
+*.wav
+*.m4a
+*.mp4
+*.log

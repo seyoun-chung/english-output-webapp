@@ -1,5 +1,27 @@
 # Local verification
 
+## Protected production and deployment security — 2026-10-05
+
+- [x] Stable protected URL: `https://english-output-webapp.vercel.app/`. Unauthenticated
+  requests redirect to Vercel authentication; project protection applies to all deployments.
+- [x] Supabase Site URL and redirects use exact production/local URLs with no wildcard.
+- [x] Production Google OAuth callback, logout/relogin continuation and existing account
+  progress load passed in the hosted app.
+- [x] Production → local and local → production navigation changes synchronized in both
+  directions; the original Pass 4+ position was restored afterward. This used two origins in
+  one browser profile, not two physical devices.
+- [x] `npm audit --omit=dev` reported 0 vulnerabilities.
+- [x] Vercel upload dry-run after `.vercelignore`: no PDFs, source documents, audio, logs,
+  environment files, tests or repository work records in the upload set.
+- [x] `tests/deploymentConfig.test.ts`: required four response-header values and required
+  Vercel exclusions passed. `vercel build --prod` compiled the same headers into the route config.
+- [x] Full regression: `npm run verify`, 46 files / 416 tests, client/server TypeScript,
+  repository safety and production Vite build passed.
+- [ ] The new response headers are not marked live until the approved Git merge, protected
+  redeployment and response-header recheck finish.
+- [ ] A physical phone or second computer using the same Google account remains required for
+  true device-to-device continuation evidence.
+
 ## Login spacing and plain-language review copy — 2026-10-04
 
 - 구현: Google 버튼 아래 안내/피드백 16px 간격, Library 및 Pass 4+ 설명의
