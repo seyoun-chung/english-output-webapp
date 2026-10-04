@@ -1,5 +1,22 @@
 # Current Task
 
+## Protected production deployment hardening — 2026-10-05
+
+The app is deployed at `https://english-output-webapp.vercel.app/` on the existing
+Vercel Hobby account and remains protected by Vercel authentication for all deployments.
+This is a private first-product verification deployment, not community publication.
+Supabase Site URL and the redirect allowlist use the exact production URL plus the two
+local development URLs; no wildcard redirect is allowed. Production Google login,
+logout/relogin continuation and bidirectional hosted sync between the production and
+local origins passed. This is still one computer/browser profile, not physical second-device proof.
+
+Active branch `codex/deployment-security` starts from merged origin/main `210afde`.
+This change excludes repository-only/source/reference files from Vercel uploads and adds
+`nosniff`, frame denial, strict referrer policy and a permissions policy that allows only
+same-origin microphone access while disabling camera and geolocation. The focused config
+test, full verification (46 files / 416 tests) and local Vercel production build pass. Git safety publication,
+merge and protected redeployment are the remaining approved steps.
+
 ## Account header cleanup — 2026-10-04
 
 After PR #33 merged, the user requested that the signed-in email address not be

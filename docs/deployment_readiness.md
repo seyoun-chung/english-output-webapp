@@ -1,9 +1,10 @@
-# Deployment readiness — 2026-10-04
+# Deployment readiness — 2026-10-05
 
-This is a runbook, NOT deployment authorization. A hosted Seoul Supabase project is connected
-to the local app; there is still no deployed production web URL.
-The first-product goal includes real hosted login/sync and final deployed verification;
-local tests alone do not complete that goal.
+The existing Vercel project now hosts a protected first-product build at
+`https://english-output-webapp.vercel.app/`. Protection is configured for all deployments,
+so this is not a community publication. The user will separately decide whether to share the
+address after asking the community operator. A hosted Seoul Supabase project is connected and
+the production Google callback works. Physical second-device verification still remains.
 
 ## Current verified connection
 
@@ -12,14 +13,11 @@ Google identity and account progress storage were approved; student allowlist is
 All three reviewed migrations were manually applied in one transaction without a CLI ledger entry.
 Real local Google callback, server save/read, two-storage-origin sync, backup restore and 320px panels
 passed. Full verify passed 411 tests/build. See verification.md for methods and remaining limits.
-At preparation, no deployment or paid change was performed. User approved the seven-document
-commit/push/PR/merge release; confirm its actual merged PR before deployment.
-
-Remaining release sequence: finish approved Git publication; separately approve exact Vercel target,
-audience and textbook asset exposure; configure exact HTTPS auth return URL; deploy; verify that URL,
-second real user/devices and recovery. Existing Google login is not static textbook asset protection.
+The stable HTTPS URL, exact auth return URL and protected deployment have been verified. The current
+approved release sequence is Git publication of the deployment exclusions and browser headers,
+protected redeployment, live header/login verification, then one physical second-device check.
 Do not introduce a student-approval feature without a new request. Community publication is a later
-user decision, not implied by service connection. No automatic production/preview deployment permitted.
+user decision and is not implied by this protected deployment.
 Original local records require explicit reviewed backup/import if needed; never silently overwrite them.
 
 ## Prepared locally

@@ -20,9 +20,10 @@ Learn → Memorize → Recall → Output → Write → Review → Repeat
 ## Current Scope
 
 현재 Chapter 1–12의 Pass 1–3과 전역 Pass 4+ 혼합·랜덤 복습/작문을 구현했습니다.
-기록 백업·복원과 저장 보호를 사용할 수 있습니다. 아직 고정 웹 주소에 배포하지 않았고,
-Google 로그인·계정별 Supabase 저장은 구현됐고, 승인된 서울 프로젝트를 로컬 앱에 연결하여
-실제 로그인/저장과 독립 origin 간 동기화를 확인했습니다. 실제 기기·배포 환경 검증은 남았습니다.
+기록 백업·복원과 저장 보호를 사용할 수 있습니다. 보호된 고정 웹 주소에 배포했고,
+Google 로그인·계정별 Supabase 저장과 운영 주소의 로그인/이어하기를 확인했습니다.
+현재 배포는 Vercel 로그인으로 보호되며 커뮤니티에 공개하지 않았습니다. 실제 두 번째
+기기에서의 이어하기 검증은 남았습니다.
 전체 완료 기준은
 [`docs/product_v1_completion_plan.md`](./docs/product_v1_completion_plan.md)를 참조하세요.
 
@@ -150,11 +151,11 @@ IP 주소나 포트가 달라지면 브라우저의 학습 기록은 별개입�
 
 ## Progress Storage
 
-### Account sync (live local connection verified; not deployed)
+### Account sync (protected production connection verified)
 
 Supabase용 Google 로그인과 사용자별 자동 동기화 코드가 추가됐습니다.
-설정 없는 기본 실행은 로컬 모드입니다. 현재 STA Track에서는 사용자 승인으로 서울 Free
-프로젝트를 연결했고, 실제 Google 로그인·저장·독립 origin 간 동기화를 확인했습니다.
+설정 없는 기본 실행은 로컬 모드입니다. 현재 STA Track과 보호된 Vercel 운영 앱에는 사용자
+승인으로 서울 Free 프로젝트를 연결했고, 실제 Google 로그인·저장·독립 origin 간 동기화를 확인했습니다.
 새 서비스·지역·유료 전환·전송 범위 변경은 별도 승인이 필요합니다.
 
 연결 설정 항목(현재 컴퓨터 설정 완료, clone에는 포함하지 않음):
@@ -171,7 +172,7 @@ Supabase용 Google 로그인과 사용자별 자동 동기화 코드가 추가�
 - Google 승인된 redirect URI는 해당 Supabase 프로젝트의 `/auth/v1/callback`; Supabase Site URL/redirect allowlist는 실제 Vercel 앱의 정확한 origin + `/`로 설정한다. 로컬 시험 주소는 별도 등록하며 광범위한 wildcard는 쓰지 않는다.
 - Google scope는 기본 identity인 openid/email/profile만 사용한다. 메일함/Drive 접근이나 offline provider access를 요청하지 않는다. 동의 화면, 개인정보 안내, 테스터/공개 audience 설정은 실제 연결 전에 확인한다.
 - 브라우저 PKCE로 로그인 시작→같은 브라우저 복귀→일회용 code 교환. 실패/취소 시 재시도 가능하며 code/provider error를 URL에서 지우고 원문을 화면·로그에 노출하지 않는다.
-- 공식 설정: https://supabase.com/docs/guides/auth/social-login/auth-google 및 https://supabase.com/docs/guides/auth/sessions/pkce-flow . 실제 로컬 앱의 외부 로그인 시험은 완료했으며 배포 URL의 시험은 남았다.
+- 공식 설정: https://supabase.com/docs/guides/auth/social-login/auth-google 및 https://supabase.com/docs/guides/auth/sessions/pkce-flow . 실제 로컬 앱과 보호된 운영 URL의 외부 로그인 시험을 완료했다.
 - 공개 가입/테스터 허용 범위, 익명 로그인 비활성화, 인증 요청 rate limit과 abuse 보호 확인.
 
 Google 로그인 후 별도 설정 없이 계정 기록을 확인하고 진도 변경 뒤 자동 저장합니다.
@@ -189,7 +190,7 @@ Google 로그인 후 별도 설정 없이 계정 기록을 확인하고 진도 �
 
 로컬 PostgreSQL 및 격리 브라우저 시험 외에 실제 Google callback·Supabase 저장/read,
 서로 다른 저장 origin의 양방향 동기화·백업 복원과 hosted RLS read 격리를 확인했습니다.
-실제 다른 기기·다른 Google 계정·배포 주소·서버 동시 부하는 미검증입니다.
+운영 주소까지 확인했지만 실제 다른 기기·다른 Google 계정·서버 동시 부하는 미검증입니다.
 로그인 메일/SMTP는 이 Google 로그인 흐름에 사용하지 않습니다.
 
 진행 위치·본문 보기 방식·자기평가·힌트 사용·Full Recall 완료 여부·마지막 학습 시각은

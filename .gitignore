@@ -22,3 +22,6 @@ tmp/
 
 # Logs
 *.log
+
+# Vercel local link metadata
+.vercel/
