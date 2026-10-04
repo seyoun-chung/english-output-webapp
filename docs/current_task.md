@@ -1,5 +1,39 @@
 # Current Task
 
+## Live connection verified locally — 2026-10-04
+
+User explicitly approved branch creation, Seoul Supabase storage/auth configuration and local
+connection verification. User subsequently approved this seven-document commit/push/PR/merge release.
+Deployment and billing changes remain excluded.
+Branch `codex/supabase-live-connection` starts from verified origin/main `5f58e65` (PR #31 merged).
+Target is `english-output-webapp-seoul`, project `ihvmcxluaiyisncebtqk`; do not touch the saju project.
+Google provider is Enabled. Site URL is `http://127.0.0.1:5173/`; exact redirects are that URL
+and `http://localhost:5173/`. No wildcard or production redirect is configured.
+All three reviewed SQL migrations were applied together through the dashboard SQL editor in one
+transaction after checking the learning tables/functions were absent. This was manual SQL application,
+not a Supabase CLI migration-ledger update; do not blindly apply the same create statements again.
+Hosted catalog checks confirm RLS, own-record SELECT policies, denied anonymous/table writes,
+authenticated RPC grants and the retention trigger. Anonymous HTTP read RPC returned 401.
+The ignored `.env.local` contains only the account feature flag, project URL and publishable key.
+Google secret/service-role credentials are not in the app. Original local progress namespace is untouched.
+User completed Google selection/consent. Real PKCE callback, reload persistence and authenticated
+save/read succeeded. Independent 127.0.0.1 / localhost storage origins exchanged navigation state
+bidirectionally; first connection explicitly selected the account copy. Signing out of localhost
+left the 127 session signed in. This is not a physical second device or separate browser profile.
+Hosted authenticated-role isolation check with a different synthetic subject sees zero progress/history
+rows and empty read RPCs; it rolled back without creating a user or record. Not a second real Google user.
+Actual downloaded backup was selected, previewed and restored; previous record remains a recovery copy.
+320px login/connected overview, backup and sync controls have no document horizontal overflow.
+Full `npm run verify`: 45 files / 411 tests, client/server build and identity/safety passed.
+Four focused suites / 22 tests also passed. No source or learning-content change in this increment.
+Next gate after the approved Git publication of these connection/verification documents: separately approve
+final Vercel deployment and its audience/content exposure. Fixed HTTPS URL, production callback,
+real-device/second-real-user and hosted load verification remain unexecuted. Overall goal is not complete.
+Check the app's actual GOAL status before claiming it is active; Git approval does not itself prove
+the goal status changed. Do not repeatedly ask for the approved connection scope.
+Student approval/allowlist is deferred by the user; community publication decision comes at the end.
+Older entries below describe past approval gates and are superseded by this entry where they conflict.
+
 ## Bounded server recovery — local implementation (2026-10-04)
 
 사용자가 사이드 대화를 통해 합리적 보관 정책의 선택·로컬 구현·검증을 위임했다.

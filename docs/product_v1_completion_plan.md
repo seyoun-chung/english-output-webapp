@@ -9,15 +9,22 @@
 
 ## Acceptance ledger
 
+Latest evidence (2026-10-04): learning/backup/login/sync implementation is on merged PR #30/#31,
+origin/main `5f58e65`. Live Seoul connection is now verified from the local app; 411 tests/build pass.
+This supersedes older unconnected/approval-pending notes below. Google/Free Seoul storage approval
+is complete, student allowlist deferred, deployment and community publication remain separate gates.
+Current connection documents use `codex/supabase-live-connection`; their Git release is approved.
+Use the actual PR state as evidence of publication/merge, not this preparation note alone.
+
 | ID | 완료 조건 | 현재 근거 / 상태 | 남은 확인 |
 |---|---|---|---|
 | V1-1 | Chapter 1–12 Pass 1–3 학습·완료·저장 | 공통 엔진과 12개 Source 묶음, fullCurriculumFlow 테스트 존재. 이전 347개 테스트 통과 | 최종 저장·배포 변경 뒤 전체 회귀; 테스트의 완료 fixture를 실제 조작 완료와 혼동하지 않음 |
 | V1-2 | Pass 4+ 혼합·랜덤 복습·작문 | automaticProgress, AutomaticScreen 및 관련 테스트 구현 | 동기화·복원 뒤 기록 유지 및 공개 정답/힌트 정책 회귀 |
-| V1-3 | 주요 오류 안정화·수정 반영 | Review 클리어는 사용자 확인·PR #29 병합. 영어 문구는 로컬 수정 | 영어 문구 Git 반영, 저장 오류 보호, 최신 운영 문서 정리 |
+| V1-3 | 주요 오류 안정화·수정 반영 | Review/영어 문구/저장 보호 및 Git 안전장치 반영, 전체 411 tests/build 통과 | 현재 연결 검증 문서 Git 반영, 배포 환경 회귀 |
 | V1-4 | 학습 기록 백업·복원 | 로컬 구현·검증 완료: 파일·미리보기·원본 사본·재복구·version 1–5 migration | 운영 배포 후 회귀 |
 | V1-5 | 고정 HTTPS 주소에서 사용 | 로컬 Vite만 실행 | 비공개 접근·교재 자산 보호, 호스팅/비용 승인, 실제 배포 확인 |
-| V1-6 | 휴대폰·노트북 등에서 이어서 학습 | Supabase용 로그인·계정별 저장·자동 동기화 구현, 모의 API 두 브라우저 왕복 및 로컬 PostgreSQL 권한 검사 완료; 실제 서비스 미연결 | 실제 연결/개인정보/비용 승인, 운영 인증·DB·이메일 및 실제 배포 검증 |
-| V1-7 | 통합 검증 | 기존 학습/Review 검사 완료; 배포·동기화 미실행 | 기록 이관→학습→동기화→복원→재접속, 권한 분리, 반응형, 실패 복구 |
+| V1-6 | 휴대폰·노트북 등에서 이어서 학습 | 실제 Google callback/서울 DB 저장, 독립 origin 양방향 sync 및 서버 role read 격리 확인 | 실제 다른 기기/다른 Google 사용자, 운영 HTTPS callback·서버 부하 확인 |
+| V1-7 | 통합 검증 | 411 tests/build, 실제 연결/백업 파일 복원/재접속/320px 패널 확인 | 최종 배포 주소의 통합 회귀 및 실제 기기 확인; simulation을 실제 기기로 표현하지 않음 |
 
 각 완료 판정은 구현·자동 시험·브라우저·배포 환경 증거를 분리해 기록한다.
 실제 다른 컴퓨터를 사용하지 않은 검사는 두 브라우저 환경 시뮬레이션으로 표시한다.

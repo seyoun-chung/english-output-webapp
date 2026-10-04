@@ -1,5 +1,21 @@
 # 문제·오류 기록
 
+## 2026-10-04 · Google 설정 후 실제 앱 연결 누락
+
+- 확인: Google provider Enabled만으로 연결 완료가 아니다. Site URL은 localhost:3000,
+  redirect 목록은 비어 있었고 로컬 연결 설정과 서버 학습 테이블도 없었다.
+- 조치: 승인된 새 브랜치에서 실제 127.0.0.1:5173 복귀 주소, ignored 공개키 설정,
+  서버 저장 구조/RLS/RPC/복구 제한을 적용했다. 기존 학습 기록과 다른 프로젝트는 보존했다.
+- 검증: 실제 Google callback/재접속, 서버 저장/read, 독립 origin 간 양방향 동기화와 한쪽 로그아웃,
+  다운로드 파일의 미리보기/복원/이전 사본 보존 확인. 서버 다른 subject의 RLS read 격리 확인.
+  전체 411 tests/build/identity/safety 통과. 320px 연결 화면/백업/동기화 버튼과 가로 overflow 확인.
+- 상태: 로컬 앱→실제 서비스 연결 누락 해결 확인. 실제 다른 기기·다른 Google 사용자·배포 주소·
+  서버 동시 부하는 미검증이며 브라우저 origin 시험이나 DB role simulation으로 대체 완료 처리하지 않음.
+- 점검 도구의 download 이벤트 대기는 timeout이었지만 실제 파일 저장을 metadata로 확인하고
+  그 파일을 앱으로 복원했다. 도구 timeout을 제품 다운로드 실패로 오판하지 않는다.
+- 재발 방지: provider 활성화, 앱 설정, 서버 schema, callback, authenticated sync를 별도 완료 항목으로
+  판정한다. 설명만 하고 실행 종료하지 않으며, 승인된 연결 범위를 다시 묻지 않는다.
+
 ## 2026-10-04 · 서버 자동저장 복구 사본 무제한 누적
 
 - 확인: 성공한 sync마다 전체 progress를 history에 추가하고 보관 개수 제한이 없었다.

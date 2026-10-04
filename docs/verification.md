@@ -1,5 +1,46 @@
 # Local verification
 
+## Live Seoul connection — 2026-10-04
+
+- [x] Four focused suites (`supabaseDatabase`, `supabaseTransport`, `accountSync`, `accountStorage`): 22 tests passed.
+- [x] Dashboard: Google Enabled; public Auth settings endpoint independently returns Google enabled.
+- [x] Site URL http://127.0.0.1:5173/; exact redirects for it and http://localhost:5173/, no wildcard.
+- [x] Before application: both learning tables and read RPC absent. Applied all three reviewed SQL definitions
+  in one explicit transaction; dashboard returned Success. No rows returned. No CLI migration ledger written.
+- [x] Hosted catalog: both tables have RLS and one own-record policy; anon SELECT denied; authenticated direct
+  INSERT/UPDATE/DELETE denied; authenticated read/write/conditional RPC grants present; retention trigger enabled.
+- [x] Anonymous HTTP read RPC with publishable key returns 401. Saved-record count at schema audit: 0.
+- [x] Ignored local configuration contains publishable key, not Google secret/admin key. Dev server starts on 5173.
+- [x] Real app Continue with Google reaches Google account chooser for the correct Supabase project.
+- [x] User completed real Google consent; PKCE callback and signed-in reload succeeded.
+- [x] Enable sync returned Synced to your account; hosted SQL confirmed one version-6 record,
+  revision 1/history 1. Navigation change and Sync now produced revision 2/history 2 with library view.
+- [x] Independent localhost origin initially had no account session. Routine login to the same selected
+  account and Enable sync offered first-connection choice; Use account copy downloaded library state.
+  Localhost navigation then synced back to 127.0.0.1. Signing out of localhost left 127 signed in.
+  These are distinct storage origins in one browser profile, not two actual devices/profiles.
+- [x] Hosted transaction with authenticated role and a different synthetic JWT subject returned
+  zero visible progress/history and empty normal/conditional reads. Rolled back; no test user created.
+  Actual second-Google-user login/write isolation is not covered by this role simulation.
+- [x] Backup download produced a 3,457-byte JSON file in Downloads (2026-10-04T13-09-39-648Z).
+  Download-event waiter timed out, but filesystem metadata confirmed the actual saved file.
+  Selected that file through the app: preview showed one chapter; Restore this backup succeeded and
+  reported previous record kept as a recovery copy. Recovery-copy controls remained available.
+- [x] Actual 320x740 viewport: signed-out login document width 320; connected overview/storage panels
+  scroll width 305, no horizontal document overflow. Download backup / Sync now / Pause sync button
+  bounds were x=16..288.8; screenshot checked text wrapping and file input. Viewport reset afterward.
+  This is responsive simulation, not physical mobile verification. Hidden desktop navigation is not
+  counted as visible-control overflow.
+- [x] Full npm run verify: 45 files / 411 tests, client/server TypeScript/build, effective noreply identity
+  and 140-file safety scan passed. No GitHub CI claim; no source/content/audio changes in this increment.
+- [ ] Actual second-device use, second real Google account, hosted concurrency/load and deployed URL:
+  not executed. Production URL/redirects and final deployment remain separately approval-gated.
+- Original anonymous progress namespace is preserved and was not imported. The newly signed-in account's
+  current record was uploaded only within the approved connection test. Download/recovery copies retained.
+- Input issue caught during setup: accidental extra character on redirect URL removed and exact value rechecked.
+  Monaco editor uses a partial textarea view: use Control+A/Backspace before replacing multi-line SQL and inspect
+  query boundaries before Run. A stale-SQL warning was cancelled before execution; migration succeeded once only.
+
 ## Bounded history — local-only (2026-10-04)
 
 - [x] Release recheck: 45 files / 411 tests, client/server build, identity and 140-file safety passed.

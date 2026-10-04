@@ -1,8 +1,26 @@
 # Deployment readiness — 2026-10-04
 
-This is a runbook, NOT deployment authorization. No production environment is connected.
+This is a runbook, NOT deployment authorization. A hosted Seoul Supabase project is connected
+to the local app; there is still no deployed production web URL.
 The first-product goal includes real hosted login/sync and final deployed verification;
 local tests alone do not complete that goal.
+
+## Current verified connection
+
+Approved project: `english-output-webapp-seoul` / `ihvmcxluaiyisncebtqk`, Free, Seoul.
+Google identity and account progress storage were approved; student allowlist is deferred.
+All three reviewed migrations were manually applied in one transaction without a CLI ledger entry.
+Real local Google callback, server save/read, two-storage-origin sync, backup restore and 320px panels
+passed. Full verify passed 411 tests/build. See verification.md for methods and remaining limits.
+At preparation, no deployment or paid change was performed. User approved the seven-document
+commit/push/PR/merge release; confirm its actual merged PR before deployment.
+
+Remaining release sequence: finish approved Git publication; separately approve exact Vercel target,
+audience and textbook asset exposure; configure exact HTTPS auth return URL; deploy; verify that URL,
+second real user/devices and recovery. Existing Google login is not static textbook asset protection.
+Do not introduce a student-approval feature without a new request. Community publication is a later
+user decision, not implied by service connection. No automatic production/preview deployment permitted.
+Original local records require explicit reviewed backup/import if needed; never silently overwrite them.
 
 ## Prepared locally
 
@@ -14,9 +32,13 @@ local tests alone do not complete that goal.
   Current progress is separate. Installation does not delete old history; future successful writes prune
   that account only. Downloaded backups/browser copies are untouched. This limits recovery depth.
 - Default app stays local; account sync is opt-in configuration and per-user enablement.
-- Tests use isolated/synthetic records. No real learner data is uploaded for verification.
+- Local tests use isolated/synthetic records. The approved live connection test uploaded the signed-in
+  account's current record, not its old anonymous namespace; no audio uploaded.
 
 ## Decisions that cannot be inferred
+
+Items 1–2 below were approved for the named Free Seoul project and Google connection. They must not
+be asked again unchanged. Audience/content exposure and final deployment still require the final gate.
 
 1. External storage authorization: Google login identity (email/profile) and Supabase storage of
    progress, ratings, writing and personal answers. No recordings, Gmail or Drive access.
