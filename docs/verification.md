@@ -18,8 +18,15 @@
 - [x] GA account `English Output`, property `English Output` and web stream `English Output Web`
   were created for `https://english-output-webapp.vercel.app`; Measurement ID is `G-238VVFM49R`.
 - [x] The stream detail page confirms Enhanced Measurement is disabled.
-- [ ] Vercel environment configuration, deployment and hosted data-collection verification are not
-  complete. Google currently reports that data collection is waiting for the tag.
+- [x] `VITE_GA_MEASUREMENT_ID` is configured for Vercel Production and deployment
+  `dpl_DwJMbCZkCZWS19c5HbiZ6QAjYDtf` is READY and aliased to the canonical app URL.
+- [x] Hosted production check found zero GA scripts before consent and after refusal, then exactly one
+  script for `G-238VVFM49R` after consent. The privacy page showed the saved opt-out state after the
+  user choice was changed back to refusal.
+- [x] Hosted privacy and consent UI had no horizontal overflow at a 375px responsive viewport. This is
+  browser-responsive evidence, not a physical phone test.
+- [ ] GA report ingestion is not yet confirmed. Google states that initial collection can take up to
+  48 hours after tag installation.
 
 ## Usage data foundation — 2026-10-05
 

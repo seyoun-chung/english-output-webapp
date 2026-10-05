@@ -10,9 +10,12 @@ page/screen flow. It must not receive Google/account identity, Supabase analytic
 answers, writing or recordings. Supabase remains the source of truth for signed-in learning behavior.
 The separate GA4 account, property and web stream are now created. The web stream is named
 `English Output Web`, targets `https://english-output-webapp.vercel.app`, uses Measurement ID
-`G-238VVFM49R`, and has Enhanced Measurement disabled. Google reports that data collection is
-waiting for the tag and may take up to 48 hours after deployment. Commit, push, Vercel environment
-configuration and deployment are not yet approved.
+`G-238VVFM49R`, and has Enhanced Measurement disabled. Commit `60adec2` is pushed to
+`origin/codex/ga4-integration`. The Production Vercel environment contains the Measurement ID and
+deployment `dpl_DwJMbCZkCZWS19c5HbiZ6QAjYDtf` is READY on the canonical app URL. Hosted verification
+confirmed zero GA scripts before consent and after refusal, one correctly identified script after
+consent, a working opt-out control, and no horizontal overflow at 375px. GA report ingestion may take
+up to 48 hours. PR creation and merge remain outside the approval used for this deployment.
 
 ## Usage data foundation — 2026-10-05
 
