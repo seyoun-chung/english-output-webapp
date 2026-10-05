@@ -2,6 +2,7 @@ import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { sameProgress, validateCurrentProgress } from './progressBackup';
 import { parseSyncSnapshot, type SyncSnapshot } from './syncProtocol';
 import { SyncConflict, type SyncTransport } from './syncClient';
+import type { FirstTouch, UsageEvent, UsageTransport } from './usageTracking';
 
 export type AccountConfig = { url: string; key: string };
 const boundedFetch: typeof fetch = (input, init) => fetch(input, {
@@ -58,6 +59,22 @@ export function supabaseSyncTransport(client: SupabaseClient, config: AccountCon
       if (result?.status === 'conflict') throw new SyncConflict(snapshot);
       if (result?.status !== 'saved' || !sameProgress(snapshot.progress, request.progress)) throw new Error('Sync response did not match your record.');
       return snapshot;
+    },
+  };
+}
+
+export function supabaseUsageTransport(client: SupabaseClient, config: AccountConfig, userId: string): UsageTransport {
+  return {
+    write: async (firstTouch: FirstTouch, events: UsageEvent[]) => {
+      if (!events.length) return;
+      const before = await client.auth.getSession();
+      if (before.error || before.data.session?.user.id !== userId) throw new Error('Account changed. Usage data was not sent.');
+      const token = before.data.session.access_token;
+      const scoped = createClient(config.url, config.key, { accessToken: async () => token, global: { fetch: boundedFetch } });
+      const { error } = await scoped.rpc('record_usage_events', { first_touch: firstTouch, events });
+      const after = await client.auth.getSession();
+      if (after.error || after.data.session?.user.id !== userId) throw new Error('Account changed. Usage data was not confirmed.');
+      if (error) throw new Error('Usage data is queued for retry.');
     },
   };
 }

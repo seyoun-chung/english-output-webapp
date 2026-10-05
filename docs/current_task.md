@@ -1,5 +1,23 @@
 # Current Task
 
+## Usage data foundation — 2026-10-05
+
+The user approved local implementation and verification of a vendor-neutral usage-data foundation on
+`codex/usage-data-foundation`, based on merged `origin/main` `531a644`. Current progress sync remains the
+learning source of truth. A separate append-only schema records app open, learning start, evaluated
+practice, section/chapter completion and review completion with idempotent event IDs, schema/content/app
+versions and first-touch UTM. The event boundary excludes email/profile fields, writing text, answers,
+recordings and textbook sentence text. `analytics_profiles.is_test` is privileged/operator-controlled.
+
+The browser queue retries failed batches without blocking learning or sign-out. The privacy page includes
+the exact user-approved analysis/statistics wording and states that writing and recordings are excluded
+from analytics events. Detailed definitions and the hosted gate are in `usage_data_foundation.md`.
+
+The approved usage migration was applied once to the Seoul Supabase project after confirming that its
+two tables and RPC did not exist. Hosted verification confirmed RLS, denied direct authenticated table
+reads and allowed only the authenticated RPC. The client is not deployed yet and no production event has
+been created. Do not rerun this migration or the earlier three hosted migrations.
+
 ## Login-card center alignment — 2026-10-05
 
 After reviewing the refreshed public login card, the user requested centered alignment for the
