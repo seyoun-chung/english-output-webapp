@@ -1,5 +1,15 @@
 # Local verification
 
+## Legal-page display polish — 2026-10-05
+
+- [x] Official Google OAuth policy checked: the public homepage/privacy disclosure and Cloud
+  Console support contact remain; a visible email address in the policy body is not listed as a
+  requirement.
+- [x] Focused tests and production build pass. Rendered root links are 12px/400 weight with 44px
+  interaction height; Privacy and Terms contain no `mailto:` link or Gmail address.
+- [x] Desktop and 320×740 responsive browser checks found no horizontal overflow. This is a
+  responsive browser check, not a physical mobile-device test.
+
 ## Public OAuth readiness — 2026-10-05
 
 - [x] Vercel Deployment Protection changed to Standard; an unauthenticated request to the stable
