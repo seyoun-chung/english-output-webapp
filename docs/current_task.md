@@ -1,5 +1,13 @@
 # Current Task
 
+## Legal-page display polish — 2026-10-05
+
+After reviewing the public deployment, the user requested smaller regular-weight privacy/terms
+links and removal of the visible contact email from both legal pages. Google OAuth still keeps the
+support and developer email in Cloud Console; Google's published requirements require the public
+privacy link and data-handling disclosure but do not require rendering that email in the policy.
+Branch `codex/legal-copy-polish` starts from merged `origin/main` at `87e0fcd`.
+
 ## Public operator-review release — 2026-10-05
 
 The user approved making the stable Vercel production URL accessible without Vercel

@@ -59,12 +59,11 @@ export function PrivacyPolicyPage() {
       </section>
       <section>
         <h2>이용자의 선택</h2>
-        <p>언제든 로그아웃하거나 브라우저의 사이트 데이터를 삭제할 수 있습니다. 서버의 학습 기록과 계정 데이터 삭제는 아래 이메일로 요청해 주세요.</p>
+        <p>언제든 로그아웃하거나 브라우저의 사이트 데이터를 삭제할 수 있습니다. 서버의 학습 기록과 계정 데이터 삭제는 Google 로그인 화면의 지원 연락처로 요청해 주세요.</p>
       </section>
       <section>
-        <h2>보호 조치와 문의</h2>
+        <h2>보호 조치</h2>
         <p>HTTPS와 사용자별 데이터 접근 제한을 적용합니다. 다만 인터넷 서비스의 완전한 보안을 보장할 수는 없습니다.</p>
-        <p>문의 및 삭제 요청: <a href="mailto:seyonieeee@gmail.com">seyonieeee@gmail.com</a></p>
       </section>
     </PublicPage>
   );
@@ -93,10 +92,6 @@ export function TermsPage() {
       <section>
         <h2>콘텐츠 권리</h2>
         <p>교재와 강의 콘텐츠의 권리는 각 권리자에게 있습니다. 이 앱의 이용은 해당 콘텐츠를 다시 배포할 권리를 부여하지 않습니다.</p>
-      </section>
-      <section>
-        <h2>문의</h2>
-        <p><a href="mailto:seyonieeee@gmail.com">seyonieeee@gmail.com</a></p>
       </section>
     </PublicPage>
   );

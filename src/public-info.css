@@ -16,6 +16,11 @@
   text-underline-offset: 3px;
 }
 
+.legal-links a {
+  font-size: 12px;
+  font-weight: 400;
+}
+
 .legal-links a:focus-visible,
 .public-info-home:focus-visible,
 .public-info-page article a:focus-visible {

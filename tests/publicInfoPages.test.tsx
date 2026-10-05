@@ -15,10 +15,10 @@ describe('public information pages', () => {
     const html = renderToStaticMarkup(<PrivacyPolicyPage />);
     for (const text of [
       'Google 로그인', '학습 위치', 'Supabase 서울 지역', 'Vercel',
-      '녹음은 서버에 업로드하지 않습니다', '최대 10개', '삭제 요청',
-      'seyonieeee@gmail.com',
+      '녹음은 서버에 업로드하지 않습니다', '최대 10개', '지원 연락처',
     ]) expect(html).toContain(text);
     expect(html).not.toContain('완전한 보안을 보장합니다');
+    expect(html).not.toContain('@gmail.com');
   });
 
   it('states learning-use and content-redistribution limits without claiming permission', () => {
@@ -27,5 +27,6 @@ describe('public information pages', () => {
       expect(html).toContain(text);
     }
     expect(html).not.toContain('운영진의 허락을 받았습니다');
+    expect(html).not.toContain('@gmail.com');
   });
 });

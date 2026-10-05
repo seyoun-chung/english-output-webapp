@@ -1,5 +1,13 @@
 # Codex Handoff — Textbook Mastery Web App
 
+## Latest — legal-page display polish (2026-10-05)
+
+After the user reviewed the public pages, branch `codex/legal-copy-polish` reduces legal-nav links
+to 12px regular weight while preserving 44px targets and removes the visible Gmail address from
+Privacy and Terms. Google Cloud retains the support/developer contact. Do not publish the OAuth
+audience until this follow-up is verified and redeployed, then obtain the required final action-time
+confirmation for `Publish app`.
+
 ## Latest — public operator-review release in progress (2026-10-05)
 
 The user approved making the stable production URL public for community-operator review while
