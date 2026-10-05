@@ -17,10 +17,13 @@
   responsive-browser evidence, not a physical phone test.
 - [x] Hosted Seoul preflight found no existing usage tables/RPC; the approved migration was applied once.
   Both tables exist with RLS, direct authenticated reads are denied and authenticated RPC execution is allowed.
-- [ ] Real production event delivery is unexecuted until the verified client is deployed. No production
-  analytics SaaS was added.
-- [ ] Known test profiles are not yet marked because no production usage event has created a profile.
-  Mark the test profile immediately after the production login/start check and before reporting metrics.
+- [x] PR #43 was merged and Vercel production deployment `dpl_J4eNZa7BGNBwnJHRFyTU4gCAMHjV` reached
+  `READY`; the public privacy page shows the approved disclosure.
+- [x] A known test login created one `app_open` and one `learning_started` event. Its first-touch UTM was
+  stored as `codex / verification / usage_foundation / production_check` and the profile is `is_test = true`.
+- [x] Replaying an existing production event ID returned `accepted: 0`; the event count stayed at two.
+  Hosted schema inspection found zero email, writing-text, answer-text, audio or recording columns.
+- [x] No production analytics SaaS was added.
 
 ## Login-card center alignment — 2026-10-05
 
