@@ -2,10 +2,11 @@
 
 ## Status
 
-- Implementation is on `codex/usage-data-foundation`.
+- The implementation was merged through PR #43.
 - The hosted Seoul Supabase project received the usage-events migration once on 2026-10-05 after explicit approval and a preflight existence check.
 - No GA4, Bitly API, Tableau, Looker Studio or other analytics SaaS is connected.
-- The production client has not yet been deployed with event recording.
+- Vercel production deployment `dpl_J4eNZa7BGNBwnJHRFyTU4gCAMHjV` is live with event recording.
+- A known test profile is marked `is_test = true`; its production verification events must remain excluded from real-user metrics.
 
 ## Purpose
 
@@ -112,15 +113,13 @@ After excluding `is_test = true`, this foundation can support:
 Use these as product usage, repetition and completion evidence. Do not convert self-rating movement
 into a claim that English ability improved without a separately designed learning-outcome study.
 
-## Hosted apply record and deployment gate
+## Hosted apply and deployment record
 
 `202610050001_usage_events.sql` was applied once to the Seoul project after confirming the two tables
 and RPC were absent. Do not run it again. Hosted checks confirmed both tables exist with RLS, direct
 `authenticated` table reads are denied, and the authenticated role can execute the RPC.
 
-Before deploying the client:
-
-1. Commit, review and merge the verified client change.
-2. Deploy the client that calls the RPC and run a production login/start/completion check.
-3. Mark the resulting known test profile with privileged access before reporting real-user metrics.
-4. Verify the stored event excludes writing text, email and audio fields and that a duplicate event ID is idempotent.
+PR #43 was merged and the verified client was deployed to production. A known test login stored one
+`app_open` and one `learning_started` event with the intended first-touch UTM, after which the profile
+was marked `is_test = true`. Replaying an existing event ID returned `accepted: 0`, and the hosted
+`usage_events` schema contains no email, writing-text, answer-text, audio or recording column.

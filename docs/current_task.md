@@ -15,8 +15,10 @@ from analytics events. Detailed definitions and the hosted gate are in `usage_da
 
 The approved usage migration was applied once to the Seoul Supabase project after confirming that its
 two tables and RPC did not exist. Hosted verification confirmed RLS, denied direct authenticated table
-reads and allowed only the authenticated RPC. The client is not deployed yet and no production event has
-been created. Do not rerun this migration or the earlier three hosted migrations.
+reads and allowed only the authenticated RPC. PR #43 was merged and Vercel production deployment
+`dpl_J4eNZa7BGNBwnJHRFyTU4gCAMHjV` was verified. A known test login produced `app_open` and
+`learning_started`, preserved its test UTM, and was marked `is_test = true`. Do not rerun this migration
+or the earlier three hosted migrations.
 
 ## Login-card center alignment — 2026-10-05
 
