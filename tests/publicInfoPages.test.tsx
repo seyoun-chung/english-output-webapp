@@ -19,6 +19,8 @@ describe('public information pages', () => {
       '최초 유입 경로(UTM)', '분석 기록에는 작문 원문과 녹음을 포함하지 않습니다',
       '서비스 운영, 품질 개선, 이용 현황 분석, 통계·연구, 서비스 성과 확인 및 자료 작성',
       '개인을 식별할 수 없도록 집계하거나 가공합니다',
+      'Google Analytics 방문 분석', '방문 분석은 선택 사항',
+      '이메일, Google 프로필, 학습 문장, 답변·작문 원문 또는 녹음을 보내지 않습니다',
     ]) expect(html).toContain(text);
     expect(html).not.toContain('완전한 보안을 보장합니다');
     expect(html).not.toContain('@gmail.com');

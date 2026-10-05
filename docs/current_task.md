@@ -1,5 +1,19 @@
 # Current Task
 
+## Consent-gated GA4 acquisition and page flow — 2026-10-05
+
+The user approved creating a separate English Output Analytics account/property under the currently
+signed-in `seyonieeee@gmail.com` Google account and preparing the app integration. The unrelated
+existing property remains unchanged. Local branch `codex/ga4-integration` starts from clean
+`origin/main` at `be69c4e`. GA4 is limited to opt-in anonymous UTM acquisition, sessions and logical
+page/screen flow. It must not receive Google/account identity, Supabase analytics IDs, Source text,
+answers, writing or recordings. Supabase remains the source of truth for signed-in learning behavior.
+The separate GA4 account, property and web stream are now created. The web stream is named
+`English Output Web`, targets `https://english-output-webapp.vercel.app`, uses Measurement ID
+`G-238VVFM49R`, and has Enhanced Measurement disabled. Google reports that data collection is
+waiting for the tag and may take up to 48 hours after deployment. Commit, push, Vercel environment
+configuration and deployment are not yet approved.
+
 ## Usage data foundation — 2026-10-05
 
 The user approved local implementation and verification of a vendor-neutral usage-data foundation on
