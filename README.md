@@ -164,7 +164,8 @@ Supabase용 Google 로그인과 사용자별 자동 동기화 코드가 추가�
 - `VITE_ACCOUNT_SYNC_ENABLED=1`
 - `VITE_SUPABASE_URL`: 승인한 HTTPS Supabase 프로젝트 origin
 - `VITE_SUPABASE_PUBLISHABLE_KEY`: publishable key만 사용. secret/service_role 키는 금지.
-- SQL migration은 `supabase/migrations/`의 파일명 순서대로 적용한다(현재 3개). 승인된 서울 프로젝트에는 이미 수동 적용했다. CLI 이력에 기록하지 않았으므로 CREATE 구문을 중복 적용하지 않는다.
+- 기존 진도·복구용 SQL migration 3개는 승인된 서울 프로젝트에 이미 수동 적용했다. CLI 이력에 기록하지 않았으므로 CREATE 구문을 중복 적용하지 않는다.
+- `202610050001_usage_events.sql`은 익명 분석 ID, 최초 UTM과 최소 학습 이벤트를 위한 migration이다. 2026-10-05 승인 후 서울 프로젝트에 한 번 수동 적용했으며 중복 실행하지 않는다. 상세 경계는 `docs/usage_data_foundation.md`를 따른다.
 - 변경 없는 기록은 revision만 받아 통신량을 줄인다. 서버 복구 사본은 최근 저장 3개와 최근 저장일 7일의 첫 기록을 합쳐 사용자당 최대 10개다(날짜 기준 UTC, 저장하지 않은 날은 제외).
 - 현재 학습 기록은 이 제한과 별도로 유지한다. 브라우저 복구 사본과 다운로드한 백업은 이 정책으로 삭제하지 않는다. 오래된 서버 사본으로 돌아갈 수 있는 범위는 제한된다.
 - 보관 제한 migration 설치 자체는 기존 데이터를 삭제하지 않는다. 승인 후 실제 적용 시 각 사용자의 다음 저장 성공과 같은 트랜잭션에서 그 사용자의 오래된 서버 사본만 정리한다. 무료 용량/영구 복구를 보장하지 않으며 실제 운영 사용량 확인이 필요하다.

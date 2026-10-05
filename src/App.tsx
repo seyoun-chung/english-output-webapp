@@ -32,6 +32,7 @@ import { AccountSyncPanel } from './AccountSyncPanel';
 import type { SyncTransport } from './syncClient';
 import { ChapterContentProvider, useChapterContent } from "./ChapterContentContext";
 import { AutomaticScreen } from "./AutomaticScreen";
+import { usageEventsForTransition, type UsageRecorder } from "./usageTracking";
 
 const storySteps: { screen: Screen; title: string; description: string }[] = [
   {
@@ -890,7 +891,7 @@ function ChapterCompletion({ progress, dispatch, hasPass2, hasPass3 }: ScreenPro
   );
 }
 
-export default function App({ storage, syncTransport, registerFlush }: { storage?: Storage; syncTransport?: SyncTransport; registerFlush?: (flush: (() => Promise<boolean>) | null) => void } = {}) {
+export default function App({ storage, syncTransport, usageRecorder, registerFlush }: { storage?: Storage; syncTransport?: SyncTransport; usageRecorder?: UsageRecorder; registerFlush?: (flush: (() => Promise<boolean>) | null) => void } = {}) {
   const progressStorage = storage ?? {
     getItem: (key: string) => localStorage.getItem(key), setItem: (key: string, value: string) => localStorage.setItem(key, value),
   };
@@ -903,10 +904,21 @@ export default function App({ storage, syncTransport, registerFlush }: { storage
   const [accountReady, setAccountReady] = useState(!syncTransport);
   const protectedRecord = useRef(boot.protected);
   const originalRecord = useRef(boot.original);
-  const [appProgress, appDispatch] = useReducer(
-    (state: AppProgress, action: AppAction | { type: 'restoreBackup'; progress: AppProgress }) =>
-      action.type === 'restoreBackup' ? action.progress : updateAppProgress(state, action),
+  const [appProgress, internalDispatch] = useReducer(
+    (state: AppProgress, action: AppAction | { type: 'restoreBackup'; progress: AppProgress } | { type: 'applyProgress'; progress: AppProgress }) =>
+      action.type === 'restoreBackup' || action.type === 'applyProgress' ? action.progress : updateAppProgress(state, action),
     boot.progress);
+  const latestProgress = useRef(appProgress);
+  latestProgress.current = appProgress;
+  const appDispatch: Dispatch<AppAction> = (action) => {
+    const previous = latestProgress.current;
+    const next = updateAppProgress(previous, action);
+    if (next === previous) return;
+    latestProgress.current = next;
+    internalDispatch({ type: 'applyProgress', progress: next });
+    const events = usageEventsForTransition(previous, next, action);
+    if (events.length) usageRecorder?.record(events);
+  };
   const activeContent = chapterContentById[appProgress.activeChapterId] ?? chapterContentById[3]!;
   const chapterProgress = appProgress.chapters[appProgress.activeChapterId] ?? initialProgress(activeContent);
   const currentChapterName = chapterName(activeContent.metadata);
@@ -916,6 +928,13 @@ export default function App({ storage, syncTransport, registerFlush }: { storage
   useEffect(() => {
     document.title = appProgress.view === "library" ? "Chapter Library · English Output" : appProgress.view === "automatic" ? "Pass 4+ Automatic · English Output" : `${currentChapterName} · English Output`;
   }, [appProgress.view, currentChapterName]);
+  useEffect(() => {
+    if (!accountReady || !usageRecorder) return;
+    usageRecorder.recordOnce('app-open', {
+      eventName: 'app_open', chapterId: appProgress.activeChapterId,
+      pass: activePassProgress(appProgress.chapters[appProgress.activeChapterId] ?? initialProgress(activeContent)).pass,
+    });
+  }, [accountReady, usageRecorder]);
   useEffect(() => {
     if (protectedRecord.current) return;
     let cancelled = false;
@@ -935,8 +954,6 @@ export default function App({ storage, syncTransport, registerFlush }: { storage
     }).catch(() => setStorageWarning('Saving failed. Download a backup before leaving.'));
     return () => { cancelled = true; };
   }, [appProgress]);
-  const latestProgress = useRef(appProgress);
-  latestProgress.current = appProgress;
   const restore = async (text: string, expected?: string) => {
       if (!navigator.locks) throw new Error('Use a browser with safe storage support to restore a backup.');
       await navigator.locks.request(STORAGE_KEY, () => {
@@ -946,7 +963,8 @@ export default function App({ storage, syncTransport, registerFlush }: { storage
         originalRecord.current = result.saved;
         protectedRecord.current = false;
         setStorageWarning(null);
-        appDispatch({ type: 'restoreBackup', progress: result.progress });
+        latestProgress.current = result.progress;
+        internalDispatch({ type: 'restoreBackup', progress: result.progress });
       });
     };
   const safetyPanel = <>

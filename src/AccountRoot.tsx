@@ -2,12 +2,14 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import type { SupabaseClient, User } from '@supabase/supabase-js';
 import App from './App';
 import { accountStorage } from './accountStorage';
-import { accountConfig, makeAccountClient, supabaseSyncTransport, type AccountConfig } from './supabaseAccount';
+import { accountConfig, makeAccountClient, supabaseSyncTransport, supabaseUsageTransport, type AccountConfig } from './supabaseAccount';
 import './account.css';
 import { finishGoogleLogin, googleLoginUrl, loginFailure } from './googleLogin';
 import { LegalLinks } from './PublicInfoPages';
+import { captureFirstTouch, createUsageRecorder } from './usageTracking';
 
 const loginVerificationFailure = '로그인 상태를 확인하지 못했어요. 인터넷 연결 후 다시 시도해 주세요.';
+try { captureFirstTouch(window.sessionStorage, window.location.href); } catch { /* Authentication remains available without analytics storage. */ }
 
 export function AccountShell({ client, config, initialMessage = '' }: { client: SupabaseClient; config: AccountConfig; initialMessage?: string }) {
   const [user, setUser] = useState<User | null>(null);
@@ -41,7 +43,19 @@ export function AccountShell({ client, config, initialMessage = '' }: { client: 
   }, [checking, user]);
   const account = useMemo(() => {
     if (!user) return null;
-    try { return { storage: accountStorage(localStorage, config.url, user.id), transport: supabaseSyncTransport(client, config, user.id) }; }
+    try {
+      return {
+        storage: accountStorage(localStorage, config.url, user.id),
+        transport: supabaseSyncTransport(client, config, user.id),
+        usage: createUsageRecorder({
+          transport: supabaseUsageTransport(client, config, user.id),
+          queueStorage: localStorage,
+          sessionStorage,
+          scope: `${new URL(config.url).hostname}:${user.id}`,
+          firstTouch: captureFirstTouch(sessionStorage, window.location.href),
+        }),
+      };
+    }
     catch { return null; }
   }, [client, config, user?.id]);
   if (checking) return <main className="account-card"><p role="status">로그인 상태를 확인하고 있어요…</p></main>;
@@ -51,6 +65,7 @@ export function AccountShell({ client, config, initialMessage = '' }: { client: 
       <button className="account-signout" disabled={busy} onClick={async () => {
         setBusy(true);
         try {
+          void account?.usage.flush();
           if (!flush.current || !(await flush.current())) {
             setMessage('계정에 기록을 저장하지 못했어요. 인터넷 연결을 확인하고 다시 로그아웃해 주세요. 이 기기의 기록은 남아 있어요.');
             return;
@@ -63,7 +78,7 @@ export function AccountShell({ client, config, initialMessage = '' }: { client: 
         finally { setChecking(false); setBusy(false); }
       }}>로그아웃</button>
     </header>
-    {account ? <App key={user.id} storage={account.storage} syncTransport={account.transport} registerFlush={value => { flush.current = value; }} /> : <p role="alert">Browser storage is unavailable. Allow storage and reload.</p>}
+    {account ? <App key={user.id} storage={account.storage} syncTransport={account.transport} usageRecorder={account.usage} registerFlush={value => { flush.current = value; }} /> : <p role="alert">Browser storage is unavailable. Allow storage and reload.</p>}
   </>;
   return <main className="account-card">
     <p className="account-brand">English Output</p>

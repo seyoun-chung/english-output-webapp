@@ -1,5 +1,27 @@
 # Local verification
 
+## Usage data foundation — 2026-10-05
+
+- [x] Pure tracking tests cover first-touch preservation, direct traffic, queued retry with a stable
+  event ID, meaningful learning/rating/completion transitions and exclusion of writing text.
+- [x] PGlite executes the new migration and verifies pseudonymous profile creation, first-touch
+  immutability, duplicate-event idempotency, operator-only `is_test`, authenticated direct-table denial,
+  account separation and malformed/anonymous rejection.
+- [x] Supabase transport tests bind batches to a captured account access token and reject account changes.
+- [x] Privacy-page regression covers UTM/usage disclosure, the approved statistics wording and explicit
+  exclusion of writing text and recordings from analytics events.
+- [x] Full regression: `npm run verify`, 49 test files / 429 tests, Git identity and repository safety,
+  client/server TypeScript and production Vite build passed.
+- [x] Local browser renders the revised privacy page with the approved wording and no console error.
+  DevTools device metrics report document width equal to viewport width at 320px and 390px; this is
+  responsive-browser evidence, not a physical phone test.
+- [x] Hosted Seoul preflight found no existing usage tables/RPC; the approved migration was applied once.
+  Both tables exist with RLS, direct authenticated reads are denied and authenticated RPC execution is allowed.
+- [ ] Real production event delivery is unexecuted until the verified client is deployed. No production
+  analytics SaaS was added.
+- [ ] Known test profiles are not yet marked because no production usage event has created a profile.
+  Mark the test profile immediately after the production login/start check and before reporting metrics.
+
 ## Login-card center alignment — 2026-10-05
 
 - [x] Rendered signed-out heading and shared-device reminder report `text-align: center` at desktop

@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { initialAppProgress } from '../src/appProgress';
-import { supabaseSyncTransport } from '../src/supabaseAccount';
+import { supabaseSyncTransport, supabaseUsageTransport } from '../src/supabaseAccount';
 import { SyncConflict } from '../src/syncClient';
 
 const mocks = vi.hoisted(() => ({ rpc: vi.fn(), factory: vi.fn() }));
@@ -58,5 +58,23 @@ describe('Supabase sync transport account binding', () => {
     mocks.rpc.mockResolvedValue({data:{},error:null}); await expect(transport.read()).rejects.toThrow();
     mocks.rpc.mockResolvedValue({data:null,error:{message:'private database details'}});
     await expect(transport.read()).rejects.toThrow('Sync unavailable. Your local record is safe. Try again after signing in.');
+  });
+  it('binds usage batches to the captured account token and sends only the reviewed RPC payload', async () => {
+    const client = { auth: { getSession: vi.fn().mockResolvedValue(session('a')) } } as unknown as SupabaseClient;
+    const transport = supabaseUsageTransport(client, config, 'a');
+    mocks.rpc.mockResolvedValue({ data: { accepted: 1 }, error: null });
+    const firstTouch = { capturedAt: '2026-10-05T00:00:00.000Z', source: 'bootcamp', medium: 'community', campaign: 'launch', content: 'notice' };
+    const events = [{ eventId: '20000000-0000-4000-8000-000000000001', occurredAt: '2026-10-05T01:00:00.000Z', sessionId: '30000000-0000-4000-8000-000000000001', eventName: 'app_open' as const, appVersion: '0.1.0', contentVersion: 'chapters-2026-10-05', eventSchemaVersion: 1 as const }];
+    await transport.write(firstTouch, events);
+    expect(mocks.rpc).toHaveBeenCalledWith('record_usage_events', { first_touch: firstTouch, events });
+    expect(await mocks.factory.mock.calls[0][2].accessToken()).toBe('test-session-a');
+  });
+  it('retains a usage batch for retry when identity changes or the RPC fails', async () => {
+    const switched = { auth: { getSession: vi.fn().mockResolvedValueOnce(session('a')).mockResolvedValueOnce(session('b')) } } as unknown as SupabaseClient;
+    mocks.rpc.mockResolvedValue({ data: null, error: null });
+    await expect(supabaseUsageTransport(switched, config, 'a').write(
+      { capturedAt: '2026-10-05T00:00:00.000Z', source: null, medium: null, campaign: null, content: null },
+      [{ eventId: '20000000-0000-4000-8000-000000000001', occurredAt: '2026-10-05T01:00:00.000Z', sessionId: '30000000-0000-4000-8000-000000000001', eventName: 'app_open', appVersion: '0.1.0', contentVersion: 'chapters-2026-10-05', eventSchemaVersion: 1 }],
+    )).rejects.toThrow(/Account changed/);
   });
 });
