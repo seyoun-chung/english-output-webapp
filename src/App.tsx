@@ -33,6 +33,7 @@ import type { SyncTransport } from './syncClient';
 import { ChapterContentProvider, useChapterContent } from "./ChapterContentContext";
 import { AutomaticScreen } from "./AutomaticScreen";
 import { usageEventsForTransition, type UsageRecorder } from "./usageTracking";
+import { trackAnalyticsPage } from './googleAnalytics';
 
 const storySteps: { screen: Screen; title: string; description: string }[] = [
   {
@@ -921,6 +922,7 @@ export default function App({ storage, syncTransport, usageRecorder, registerFlu
   };
   const activeContent = chapterContentById[appProgress.activeChapterId] ?? chapterContentById[3]!;
   const chapterProgress = appProgress.chapters[appProgress.activeChapterId] ?? initialProgress(activeContent);
+  const analyticsProgress = activePassProgress(chapterProgress);
   const currentChapterName = chapterName(activeContent.metadata);
   const currentChapterCode = chapterCode(activeContent.metadata);
   const dispatch: Dispatch<Action> = (action) => appDispatch({ type: "chapter", action });
@@ -928,6 +930,24 @@ export default function App({ storage, syncTransport, usageRecorder, registerFlu
   useEffect(() => {
     document.title = appProgress.view === "library" ? "Chapter Library · English Output" : appProgress.view === "automatic" ? "Pass 4+ Automatic · English Output" : `${currentChapterName} · English Output`;
   }, [appProgress.view, currentChapterName]);
+  useEffect(() => {
+    if (!accountReady) return;
+    if (appProgress.view === 'library') {
+      trackAnalyticsPage({ screen: 'chapter_library', title: 'Chapter Library · English Output', path: '/app/chapters' });
+      return;
+    }
+    if (appProgress.view === 'automatic') {
+      trackAnalyticsPage({ screen: 'automatic_review', title: 'Pass 4+ Automatic · English Output', path: '/app/automatic' });
+      return;
+    }
+    const pass = analyticsProgress.pass;
+    const screen = analyticsProgress.currentScreen;
+    trackAnalyticsPage({
+      screen: `chapter_${screen}`,
+      title: `${currentChapterName} · English Output`,
+      path: `/app/chapter/${appProgress.activeChapterId}/pass/${pass}/${screen}`,
+    });
+  }, [accountReady, appProgress.activeChapterId, appProgress.view, analyticsProgress.currentScreen, analyticsProgress.pass, currentChapterName]);
   useEffect(() => {
     if (!accountReady || !usageRecorder) return;
     usageRecorder.recordOnce('app-open', {

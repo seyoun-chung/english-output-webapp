@@ -4,7 +4,11 @@
 
 - The implementation was merged through PR #43.
 - The hosted Seoul Supabase project received the usage-events migration once on 2026-10-05 after explicit approval and a preflight existence check.
-- No GA4, Bitly API, Tableau, Looker Studio or other analytics SaaS is connected.
+- GA4 account `English Output`, property `English Output`, and web stream `English Output Web` were
+  created under `seyonieeee@gmail.com` on 2026-10-05. The stream targets
+  `https://english-output-webapp.vercel.app`, uses Measurement ID `G-238VVFM49R`, and has Enhanced
+  Measurement disabled. The consent-gated app integration was deployed to production in Vercel
+  deployment `dpl_DwJMbCZkCZWS19c5HbiZ6QAjYDtf`.
 - Vercel production deployment `dpl_J4eNZa7BGNBwnJHRFyTU4gCAMHjV` is live with event recording.
 - A known test profile is marked `is_test = true`; its production verification events must remain excluded from real-user metrics.
 
@@ -16,6 +20,20 @@ reviews. It does not prove English proficiency and must not be described that wa
 
 Supabase remains the source for account learning and usage records. Future analytics tools may read
 aggregated exports, but this schema does not depend on a particular dashboard vendor.
+
+GA4 does not receive the Supabase `analytics_user_id`, account ID, email, Google profile, Source text,
+answers, writing or audio. Supabase remains the source of truth for signed-in learning actions; GA4
+is only for anonymous acquisition, sessions and high-level navigation. Short.io remains the planned
+source for shortened-link click counts.
+
+The browser integration reads the public GA4 Measurement ID from `VITE_GA_MEASUREMENT_ID`. Keep the
+real value in local/Vercel environment configuration rather than a repository `.env` file. The value
+must have the form `G-...`; without it, the consent UI and GA script remain disabled.
+
+Hosted verification confirms that the production site does not load GA before consent, loads the
+correct Measurement ID only after consent, and exposes an opt-out control on the privacy page. Google
+report ingestion can still take up to 48 hours; do not interpret a temporarily empty report as a
+deployment failure.
 
 ## Event definitions
 

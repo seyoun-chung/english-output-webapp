@@ -107,6 +107,17 @@
   min-height: 44px;
 }
 
+.analytics-preference {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.analytics-preference span { color: #405777; margin-right: auto; }
+.analytics-preference button { min-height: 44px; }
+
 @media (max-width: 600px) {
   .public-info-page { padding: 12px 16px 40px; }
   .public-info-page article { padding: 24px 20px; }

@@ -7,6 +7,7 @@ import './account.css';
 import { finishGoogleLogin, googleLoginUrl, loginFailure } from './googleLogin';
 import { LegalLinks } from './PublicInfoPages';
 import { captureFirstTouch, createUsageRecorder } from './usageTracking';
+import { trackAnalyticsPage } from './googleAnalytics';
 
 const loginVerificationFailure = '로그인 상태를 확인하지 못했어요. 인터넷 연결 후 다시 시도해 주세요.';
 try { captureFirstTouch(window.sessionStorage, window.location.href); } catch { /* Authentication remains available without analytics storage. */ }
@@ -39,7 +40,10 @@ export function AccountShell({ client, config, initialMessage = '' }: { client: 
     return () => { alive = false; data.subscription.unsubscribe(); };
   }, [client, retry]);
   useEffect(() => {
-    if (!checking && !user) document.title = 'English Output';
+    if (!checking && !user) {
+      document.title = 'English Output';
+      trackAnalyticsPage({ screen: 'login', title: 'English Output', path: '/' });
+    }
   }, [checking, user]);
   const account = useMemo(() => {
     if (!user) return null;

@@ -1,5 +1,33 @@
 # Local verification
 
+## Consent-gated GA4 acquisition and page flow — 2026-10-05
+
+- [x] Code boundary accepts only GA4 `G-...` IDs and builds controlled page-view payloads.
+- [x] URL sanitization preserves only bounded UTM source/medium/campaign/content/term and removes
+  OAuth codes, arbitrary query parameters and email-like query fields.
+- [x] GA loading is consent-gated; refusal does not block the app. Google Signals and ad
+  personalization signals are disabled in client configuration.
+- [x] Privacy copy names Google Analytics, its limited purpose, excluded data and the user's choice.
+- [x] `npm run verify` passed: identity, repository safety, 50 test files / 433 tests,
+  client/server TypeScript and the production Vite build.
+- [x] Browser check with a test-only Measurement ID found zero GA script tags before consent and
+  after refusal, then one `googletagmanager.com` script only after permission. The policy page
+  displayed the saved choice and both change controls.
+- [x] The consent banner and privacy controls had no horizontal overflow at a 375px responsive
+  viewport. This is browser-responsive evidence, not a physical phone test.
+- [x] GA account `English Output`, property `English Output` and web stream `English Output Web`
+  were created for `https://english-output-webapp.vercel.app`; Measurement ID is `G-238VVFM49R`.
+- [x] The stream detail page confirms Enhanced Measurement is disabled.
+- [x] `VITE_GA_MEASUREMENT_ID` is configured for Vercel Production and deployment
+  `dpl_DwJMbCZkCZWS19c5HbiZ6QAjYDtf` is READY and aliased to the canonical app URL.
+- [x] Hosted production check found zero GA scripts before consent and after refusal, then exactly one
+  script for `G-238VVFM49R` after consent. The privacy page showed the saved opt-out state after the
+  user choice was changed back to refusal.
+- [x] Hosted privacy and consent UI had no horizontal overflow at a 375px responsive viewport. This is
+  browser-responsive evidence, not a physical phone test.
+- [ ] GA report ingestion is not yet confirmed. Google states that initial collection can take up to
+  48 hours after tag installation.
+
 ## Usage data foundation — 2026-10-05
 
 - [x] Pure tracking tests cover first-touch preservation, direct traffic, queued retry with a stable

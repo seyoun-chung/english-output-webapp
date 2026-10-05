@@ -24,6 +24,27 @@
 body {
   margin: 0;
 }
+.analytics-consent {
+  position: fixed;
+  z-index: 100;
+  right: 18px;
+  bottom: 18px;
+  width: min(440px, calc(100vw - 36px));
+  padding: 16px;
+  border: 1px solid #bfd2f8;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 14px 40px rgba(23, 45, 77, .18);
+}
+.analytics-consent p { margin: 0; color: #405777; font-size: 13px; line-height: 1.65; }
+.analytics-consent strong { color: #172d4d; }
+.analytics-consent > div { display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px; }
+.analytics-consent button { min-height: 44px; }
+@media (max-width: 480px) {
+  .analytics-consent { right: 12px; bottom: 12px; width: calc(100vw - 24px); }
+  .analytics-consent > div { align-items: stretch; flex-direction: column-reverse; }
+  .analytics-consent button { width: 100%; }
+}
 button,
 a {
   -webkit-tap-highlight-color: transparent;

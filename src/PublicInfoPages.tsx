@@ -1,4 +1,6 @@
 import { useEffect } from 'react';
+import { AnalyticsPreferenceControl } from './AnalyticsConsent';
+import { trackAnalyticsPage } from './googleAnalytics';
 import './public-info.css';
 
 export function LegalLinks() {
@@ -13,6 +15,11 @@ export function LegalLinks() {
 function PublicPage({ title, children }: { title: string; children: React.ReactNode }) {
   useEffect(() => {
     document.title = `${title} · English Output`;
+    trackAnalyticsPage({
+      screen: title === '개인정보처리방침' ? 'privacy' : 'terms',
+      title: `${title} · English Output`,
+      path: title === '개인정보처리방침' ? '/privacy' : '/terms',
+    });
   }, [title]);
 
   return (
@@ -47,7 +54,8 @@ export function PrivacyPolicyPage() {
       </section>
       <section>
         <h2>저장 위치와 외부 서비스</h2>
-        <p>Google은 로그인에, Supabase 서울 지역은 계정과 학습 기록 저장에, Vercel은 웹 앱 제공에 사용됩니다.</p>
+        <p>Google은 로그인과 선택적 Google Analytics 방문 분석에, Supabase 서울 지역은 계정과 학습 기록 저장에, Vercel은 웹 앱 제공에 사용됩니다.</p>
+        <p>방문 분석을 허용하면 익명 방문·세션, UTM 유입 경로, 앱 안의 화면 이동과 브라우저·기기 관련 기술 정보가 Google에서 처리될 수 있습니다. Google Analytics에는 이메일, Google 프로필, 학습 문장, 답변·작문 원문 또는 녹음을 보내지 않습니다.</p>
         <p>빠른 복구를 위한 기록 사본이 사용 중인 브라우저에도 남을 수 있습니다. 공용 기기에서는 로그아웃하고 브라우저의 사이트 데이터를 삭제해 주세요.</p>
       </section>
       <section>
@@ -62,6 +70,8 @@ export function PrivacyPolicyPage() {
       <section>
         <h2>이용자의 선택</h2>
         <p>언제든 로그아웃하거나 브라우저의 사이트 데이터를 삭제할 수 있습니다. 서버의 학습 기록과 계정 데이터 삭제는 Google 로그인 화면의 지원 연락처로 요청해 주세요.</p>
+        <p>방문 분석은 선택 사항이며 허용하지 않아도 모든 학습 기능을 사용할 수 있습니다. 아래에서 언제든 설정을 바꿀 수 있습니다.</p>
+        <AnalyticsPreferenceControl />
       </section>
       <section>
         <h2>보호 조치</h2>
