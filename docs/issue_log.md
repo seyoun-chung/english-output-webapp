@@ -203,6 +203,20 @@
 
 상태: `해결 확인`은 실제 사용 환경에서 재시험을 통과한 경우, `수정됨·추가 검증 필요`는 일부 환경에서만 확인한 경우, `열림`은 조치 또는 사용자 결정이 남은 경우다. 코드의 배포 여부는 해당 PR의 병합 상태와 별도로 확인한다.
 
+## 2026-10-05 · 로그인 사용자의 Writing 저장 안내 불일치
+
+- **문제 정의:** Weekly Writing이 `Drafts stay in this browser.`라고 안내했지만, 로그인 사용자의 draft는 학습 진행 기록에 포함되어 계정 저장소에도 동기화된다.
+- **확인된 원인:** 계정 동기화 도입 전의 브라우저 전용 안내 문구가 공용 `WritingEditor`에 남아 있었다. 실제 저장 로직이나 계정 분리 문제는 확인되지 않았다.
+- **액션 아이템:** 로그인·비로그인 모두에 맞는 `Drafts are saved with your learning progress.`로 바꾸고 민감정보 주의 문구는 유지한다.
+- **해결 여부:** `수정됨·추가 검증 필요` — 문구 회귀 테스트, 420개 전체 테스트와 production build가 통과했다. 390px·320px 로컬 렌더링에서 새 문구와 가로 Overflow 없음, 콘솔 오류 없음을 확인했다. 아직 commit·배포하지 않았다.
+
+## 2026-10-05 · 모바일 보조 학습 탐색 버튼이 44px보다 작음
+
+- **문제 정의:** 390px·320px에서 Chapter 탭과 하위 학습 단계·Chapter progress 버튼 높이가 40~42px로 측정됐다. 핵심 Recall·평가 CTA는 44px 이상이었다.
+- **확인된 원인:** 모바일 media query가 데스크톱의 44px 최소 높이를 40px로 덮어썼다.
+- **액션 아이템:** `.chapter-nav-parent`, `.chapter-nav-mobile-steps button`, `.chapter-nav-progress`의 모바일 최소 높이를 44px로 통일한다.
+- **해결 여부:** `수정됨·추가 검증 필요` — 390px·320px 격리 Chrome에서 세 종류의 탐색 버튼 최소 높이 44px, 가로 Overflow 없음, 콘솔 오류 없음을 확인했다. 420개 전체 테스트와 production build도 통과했다. 실제 휴대폰 터치감과 배포본은 아직 재시험하지 않았다.
+
 ## 2026-10-02 · What About You 질문 출처가 고정 페이지로 표시됨
 
 - **문제 정의:** Chapter 7의 첫 `What About You?` 질문은 교재 p.152에 있지만 화면에는 `Let’s Have a Talk · p.154`로 표시됐다.
