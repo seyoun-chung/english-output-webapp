@@ -1,5 +1,5 @@
 .account-card { max-width: 480px; margin: 6vh auto; padding: 24px; background: white; border: 1px solid #dce4f2; border-radius: 16px; overflow-wrap: anywhere; }
-.account-card h1 { font-size: 28px; line-height: 1.25; }
+.account-card h1 { font-size: 28px; line-height: 1.25; text-align: center; }
 .account-card p { line-height: 1.6; }
 .account-card .account-brand { color: #2965eb; font-size: 13px; font-weight: 800; letter-spacing: .12em; margin: 0 0 8px; text-transform: uppercase; }
 .account-card .account-description { color: #536987; font-size: 15px; margin: 8px 0 16px; }
@@ -9,6 +9,7 @@
 .account-card > button { display: block; width: 100%; margin-top: 12px; }
 .account-card .account-feedback,
 .account-card .account-help { margin-top: 16px; }
+.account-card .account-help { text-align: center; }
 .account-bar { min-height: 52px; padding: 4px 24px; background: white; display: flex; gap: 12px; align-items: center; justify-content: flex-end; overflow-wrap: anywhere; }
 .account-bar p { flex: 1; margin: 0; font-size: 14px; }
 .account-signout { min-height: 44px; padding: 4px 8px; border: 0; background: transparent; color: #536987; font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }

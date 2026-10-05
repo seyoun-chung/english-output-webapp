@@ -1,5 +1,13 @@
 # Local verification
 
+## Login-card center alignment — 2026-10-05
+
+- [x] Rendered signed-out heading and shared-device reminder report `text-align: center` at desktop
+  and 320×740 responsive widths.
+- [x] Google CTA remains at least 44px high; legal links remain 12px/400 weight with 44px targets.
+  The 320px view has no horizontal overflow and both centered lines wrap within the card.
+- [ ] Merge and redeploy, repeat the live checks, then leave Google OAuth at the final publish gate.
+
 ## Legal-page display polish — 2026-10-05
 
 - [x] Official Google OAuth policy checked: the public homepage/privacy disclosure and Cloud
