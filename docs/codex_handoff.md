@@ -1,5 +1,12 @@
 # Codex Handoff — Textbook Mastery Web App
 
+## Latest — login-card center alignment (2026-10-05)
+
+Branch `codex/login-center-alignment` centers only the signed-out heading and shared-device reminder.
+After verification, merge and redeploy to the stable Vercel URL. Then navigate Google Cloud to the
+final `Publish app` action and stop without clicking it; the user explicitly requested preparation
+up to, not execution of, that security-sensitive action.
+
 ## Latest — legal-page display polish (2026-10-05)
 
 After the user reviewed the public pages, branch `codex/legal-copy-polish` reduces legal-nav links

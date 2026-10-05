@@ -1,5 +1,13 @@
 # Current Task
 
+## Login-card center alignment — 2026-10-05
+
+After reviewing the refreshed public login card, the user requested centered alignment for the
+`어디서든 학습하세요` heading and the shared-device sign-out reminder only. Branch
+`codex/login-center-alignment` starts from merged `origin/main` at `362edf0`. The remaining login
+copy and controls keep their existing alignment. This follow-up must be verified, merged and
+redeployed before returning Google Cloud to the final `Publish app` gate without clicking it.
+
 ## Legal-page display polish — 2026-10-05
 
 After reviewing the public deployment, the user requested smaller regular-weight privacy/terms
