@@ -20,7 +20,8 @@ describe('source-locked writing', () => {
     const writing = readFileSync(new URL('../src/WritingScreen.tsx', import.meta.url), 'utf8');
     const about = readFileSync(new URL('../src/AboutScreen.tsx', import.meta.url), 'utf8');
     expect(about).toContain('WritingEditor');
-    expect(writing).toContain('Drafts stay in this browser');
+    expect(writing).toContain('Drafts are saved with your learning progress');
+    expect(writing).not.toContain('Drafts stay in this browser');
     expect(writing + about).not.toMatch(/localStorage|fetch\(|dangerouslySetInnerHTML|XMLHttpRequest/);
   });
 });

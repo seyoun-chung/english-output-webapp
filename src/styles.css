@@ -1103,14 +1103,14 @@ progress::-moz-progress-bar {
   .chapter-nav-label { display: none; }
   .chapter-nav-list { display: flex; gap: 6px; margin-top: 8px; overflow-x: auto; scrollbar-width: thin; }
   .chapter-nav-group { flex: 0 0 auto; }
-  .chapter-nav-parent { width: auto; min-height: 40px; padding: 6px 9px; border: 1px solid var(--line); background: white; }
+  .chapter-nav-parent { width: auto; min-height: 44px; padding: 6px 9px; border: 1px solid var(--line); background: white; }
   .chapter-nav-parent small, .chapter-nav-children { display: none; }
   .chapter-nav-mobile-steps { display: flex; gap: 6px; margin-top: 8px; overflow-x: auto; scrollbar-width: thin; }
   .chapter-nav-mobile-steps li { flex: 0 0 auto; }
-  .chapter-nav-mobile-steps button { min-height: 40px; padding: 8px 12px; border: 1px solid var(--line); border-radius: 8px; background: white; color: var(--muted); font-size: 11px; }
+  .chapter-nav-mobile-steps button { min-height: 44px; padding: 8px 12px; border: 1px solid var(--line); border-radius: 8px; background: white; color: var(--muted); font-size: 11px; }
   .chapter-nav-mobile-steps button[aria-current] { background: #eaf1ff; color: var(--blue); border-color: #b8d0fc; }
   .chapter-nav-mobile-steps button small { display: none; }
-  .chapter-nav-progress { width: auto; min-height: 40px; margin-top: 8px; padding: 7px 11px; border: 1px solid var(--line); background: white; }
+  .chapter-nav-progress { width: auto; min-height: 44px; margin-top: 8px; padding: 7px 11px; border: 1px solid var(--line); background: white; }
   main {
     padding: 22px 18px 15px;
   }

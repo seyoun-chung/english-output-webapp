@@ -11,7 +11,7 @@ export function WritingEditor({ value, onChange, label = 'Your draft' }: { value
   return <div className="writing-editor">
     <label htmlFor={id}>{label}</label>
     <textarea id={id} value={value} onChange={event => onChange(event.target.value)} placeholder="Write here…" spellCheck lang="en" aria-describedby={`${id}-privacy`} />
-    <div className="writing-editor-foot"><span id={`${id}-privacy`}>Drafts stay in this browser. Avoid sensitive personal details.</span><span>{value.trim() ? value.trim().split(/\s+/u).length : 0} words</span></div>
+    <div className="writing-editor-foot"><span id={`${id}-privacy`}>Drafts are saved with your learning progress. Avoid sensitive personal details.</span><span>{value.trim() ? value.trim().split(/\s+/u).length : 0} words</span></div>
   </div>;
 }
 
