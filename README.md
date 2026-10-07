@@ -16,7 +16,7 @@
 
 **[▶ 소개 영상 보기 (55초)](./docs/submission/english-output-webapp-intro.mp4)** · MP4, 약 45.7MB
 
-썸네일을 클릭하면 영상 파일 페이지가 열립니다. 재생 미리보기가 표시되지 않으면 Download로 내려받아 볼 수 있습니다.
+썸네일을 클릭하면 영상 파일 페이지가 열립니다. GitHub에서는 파일 크기로 인해 재생 미리보기가 표시되지 않으므로 **Download raw file** 버튼으로 내려받아 시청해 주세요.
 
 운영 앱: <https://english-output-webapp.vercel.app/>
 저장소 공개·과제 제출·커뮤니티 공유는 각각 별도의 승인 및 확인 단계입니다.
