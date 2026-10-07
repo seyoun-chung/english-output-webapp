@@ -1,4 +1,5 @@
 import { createPortal } from "react-dom";
+import { ScrollAwareHeader } from './ScrollAwareHeader';
 import { createContext, useContext, useEffect, useLayoutEffect, useReducer, useRef, useState } from "react";
 import type { Dispatch, ReactNode } from "react";
 import { chapterCatalog, chapterCode, chapterLabel, chapterName, type ChapterId, type ChapterMetadata } from "./data/chapters";
@@ -106,7 +107,7 @@ function MobileLearningMenu({ activeId, onSelect, sectionLabel, children }: { ac
 function ChapterLibrary({ progress, onOpen, onAutomatic, onHome }: { progress: AppProgress; onOpen: (chapterId: ChapterId) => void; onAutomatic: () => void; onHome: () => void }) {
   return (
     <div className="library-shell">
-      <header className="topbar library-topbar">
+      <ScrollAwareHeader className="library-topbar" screenKey="library">
         <span className="brand" aria-label="English Output">
           <span className="brand-icon"><img src="/favicon.svg" alt="" /></span>
           English Output
@@ -114,7 +115,7 @@ function ChapterLibrary({ progress, onOpen, onAutomatic, onHome }: { progress: A
         </span>
         <span className="topbar-label">CHAPTER LIBRARY</span>
         <button className="topbar-library library-home" onClick={onHome} title={`Chapter ${progress.activeChapterId} Home으로 돌아가기`}><HomeIcon /><span>Home</span></button>
-      </header>
+      </ScrollAwareHeader>
       <main className="chapter-library" id="main-content">
         <header className="library-heading">
           <p className="eyebrow">MY TEXTBOOK</p>
@@ -1073,7 +1074,7 @@ export default function App({ storage, syncTransport, usageRecorder, registerFlu
       <a className="skip-link" href="#main-content">
         본문으로 건너뛰기
       </a>
-      <header className="topbar">
+      <ScrollAwareHeader screenKey={`${currentChapterCode}:${progress.pass}:${progress.currentScreen}`}>
         <button
           className="brand"
           onClick={() => dispatch({ type: "navigate", screen: "overview" })}
@@ -1086,9 +1087,10 @@ export default function App({ storage, syncTransport, usageRecorder, registerFlu
         </button>
         <span className="topbar-label">
           {currentChapterCode} <span>· PASS {progress.pass}</span>
+          <small className="header-section">{sectionTitle ?? (progress.currentScreen === 'overview' ? 'Home' : progress.currentScreen === 'complete' ? 'Chapter progress' : 'My Story')}</small>
         </span>
         <button className="topbar-library" onClick={() => appDispatch({ type: "showLibrary" })}>All chapters</button>
-      </header>
+      </ScrollAwareHeader>
       <div className="workspace">
         <aside className="sidebar">
           <div className="sidebar-overview-top">

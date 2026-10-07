@@ -1,0 +1,24 @@
+html:has(.scroll-aware-header) { --navigation-height: 88px; scroll-padding-top: calc(var(--navigation-height) + 12px); }
+body:has(.scroll-aware-header) { padding-top: var(--navigation-height); }
+:is(.study-cafe, .library-shell) > .scroll-aware-header {
+  position: fixed; inset: 0 0 auto; z-index: 30;
+  height: var(--navigation-height); transform: translateY(0);
+  transition: transform 180ms ease-out;
+}
+:is(.study-cafe, .library-shell) > .scroll-aware-header.is-scroll-hidden { transform: translateY(-100%); }
+:is(.study-cafe, .library-shell) > .scroll-aware-header:has(:focus-visible) { transform: translateY(0); transition: none; }
+.scroll-aware-header .header-section { display: block; margin-top: 4px; font-size: 11px; letter-spacing: 0; text-transform: none; }
+@media (max-width: 700px) {
+  html:has(.scroll-aware-header) { --navigation-height: 70px; }
+  :is(.study-cafe, .library-shell) > .scroll-aware-header {
+    display: grid; grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-rows: 33px 14px; row-gap: 2px; align-content: center;
+  }
+  .scroll-aware-header > .brand { grid-column: 1; grid-row: 1; }
+  .scroll-aware-header > .topbar-label { display: block; grid-column: 1; grid-row: 2; font-size: 9px; line-height: 14px; }
+  .scroll-aware-header > .topbar-library { grid-column: 2; grid-row: 1 / span 2; }
+  .scroll-aware-header .header-section { display: inline; font-size: 9px; margin: 0 0 0 6px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  :is(.study-cafe, .library-shell) > .scroll-aware-header { transition: none; }
+}

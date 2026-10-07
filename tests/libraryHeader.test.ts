@@ -1,21 +1,32 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
+import { headerVisibility } from '../src/ScrollAwareHeader';
 
-describe('chapter library sticky navigation', () => {
+describe('scroll-aware shared navigation', () => {
   const app = readFileSync('src/App.tsx', 'utf8');
-  const css = readFileSync('src/library-skin.css', 'utf8');
+  const css = readFileSync('src/scroll-aware-header.css', 'utf8');
 
-  it('limits the new sticky header class to the chapter library', () => {
-    expect(app.match(/className="topbar library-topbar"/g)).toHaveLength(1);
-    expect(app).toMatch(/<div className="library-shell">\s+<header className="topbar library-topbar">/);
+  it('shares behavior across library, learning and automatic screens', () => {
+    expect(app.match(/<ScrollAwareHeader /g)).toHaveLength(2);
+    expect(app).toContain('header-section');
+    expect(readFileSync('src/AutomaticScreen.tsx', 'utf8')).toContain('<ScrollAwareHeader');
   });
 
-  it('pins navigation without taking it out of document flow', () => {
-    expect(css).toMatch(/\.library-shell > \.library-topbar\s*\{[^}]*position:\s*sticky;[^}]*top:\s*0;[^}]*z-index:\s*10;/);
+  it('shows at the top and hides only after deliberate down-scroll', () => {
+    expect(headerVisibility(0, 200, false, 88).visible).toBe(true);
+    expect(headerVisibility(95, 0, true, 88).visible).toBe(true);
+    expect(headerVisibility(180, 95, true, 88).visible).toBe(false);
   });
 
-  it('reserves keyboard scroll clearance at desktop and mobile header sizes', () => {
-    expect(css).toContain('html:has(.library-topbar) { scroll-padding-top: 100px; }');
-    expect(css).toMatch(/@media \(max-width: 700px\)\s*\{\s*html:has\(\.library-topbar\) \{ scroll-padding-top: 82px; \}/);
+  it('reveals on up-scroll and ignores small scroll jitter', () => {
+    expect(headerVisibility(160, 180, false, 88).visible).toBe(true);
+    expect(headerVisibility(175, 180, false, 88)).toEqual({ visible: false, anchor: 180 });
+  });
+
+  it('reserves clearance, restores keyboard access and respects reduced motion', () => {
+    expect(css).toContain('position: fixed');
+    expect(css).toContain('padding-top: var(--navigation-height)');
+    expect(css).toContain(':has(:focus-visible)');
+    expect(css).toContain('prefers-reduced-motion');
   });
 });
