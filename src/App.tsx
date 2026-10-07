@@ -1120,7 +1120,7 @@ export default function App({ storage, syncTransport, usageRecorder, registerFlu
             </p>
           </div>
         </aside>
-        <main id="main-content" ref={main}>
+        <main id="main-content" ref={main} tabIndex={-1}>
           <nav className="breadcrumb" aria-label="현재 위치">
             {locationParts.map((part, index) => (
               <span className="breadcrumb-part" key={`${index}-${part}`}>
