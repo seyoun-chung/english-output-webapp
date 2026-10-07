@@ -14,7 +14,12 @@
 - [x] 51 files / 442 tests and production build passed with `npm test -- --maxWorkers=2`.
   The initial parallel run hit the existing identity fixture's 5s timeout (441 passed); no assertion
   was weakened and the full suite passed with fewer workers. Existing large-bundle warning remains.
-- Production recheck follows the approved merge/deploy. Physical phone/microphone, new real-account
+- [x] PR #51 merged as `61ff172`; production `dpl_HpQMDu5mActPMhyZLM9riV6etVay` READY and
+  aliased to the stable URL, which serves `/assets/index-yL6Vzxvc.css`. Root/privacy/terms return 200.
+- [x] Production 1440px and 375px Home: clipped/non-hit-testable while unfocused, keyboard display
+  at y=8, Enter transfers focus to main, scroll down/up hides/restores header with no link exposure.
+  Library and Pass 4+ navigation passed; 375px overflow absent, browser error log empty.
+- Physical phone/microphone, new real-account
   ratings/writing and an exhaustive whole-app flow audit are not part of this narrow repair.
 
 ## Scroll-aware header revision — 2026-10-07
