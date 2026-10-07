@@ -2,13 +2,18 @@
 
 ## Latest — skip-link exposure repair (2026-10-07)
 
+Repair PR #51 merged as `61ff172`. Production deployment `dpl_HpQMDu5mActPMhyZLM9riV6etVay`
+is READY at the stable URL. Live 1440px/375px clipping, pointer, focus, Enter, down/up scroll,
+Library and Pass 4+ navigation checks passed; no browser errors. Physical phone remains deferred.
+This follow-up record changes docs only; it does not require another app deployment.
+
 PR #50 merged as `f5b855a` and was deployed to the stable Vercel URL. User then reported
 an exposed edge under the header. Desktop/mobile-width production inspection reproduced a
 1.6px fragment of the unfocused skip link, caused by its absolute parent-relative negative offset.
 User approved repair, verification, commit/push/PR/merge and production deployment together.
 `codex/skip-link-visibility` starts at that main with clean tree; recovery stash/worktree preserved.
 The fix clips the unfocused link, retains keyboard visibility above the header and focuses the native
-main destination. See verification/issue log for executed local cases and pending live gate.
+main destination. See verification/issue log for executed local and production cases.
 Do not infer approval for privacy/history rewriting, Supabase deletion or external community posting.
 
 ## Latest — approved scroll-aware header revision (2026-10-07)
