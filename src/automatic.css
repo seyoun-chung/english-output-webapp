@@ -14,6 +14,7 @@
 .automatic-chapters input { width: 19px; height: 19px; accent-color: var(--blue); }
 .automatic-start, .automatic-empty, .automatic-summary, .automatic-writing { max-width: 850px; }
 .automatic-start button, .automatic-writing button { margin-top: 20px; }
+.automatic-writing .action-footer button { margin-top: 0; }
 .automatic-warning { color: #98571f; font-weight: 650; }
 .automatic-session-heading { max-width: 850px; margin: 0 auto 24px; }
 .automatic-session-heading h1 { margin-top: 6px; }

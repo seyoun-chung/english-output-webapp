@@ -1,4 +1,5 @@
 import type { Dispatch } from "react";
+import { ActionFooter } from "./ActionFooter";
 import { ScrollAwareHeader } from './ScrollAwareHeader';
 import { chapterById, chapterName, type ChapterId } from "./data/chapters";
 import { ExerciseCard } from "./ExerciseCard";
@@ -122,7 +123,10 @@ export function AutomaticScreen({ progress, dispatch }: Props) {
             <label htmlFor="automatic-writing">My writing</label>
             <textarea id="automatic-writing" value={automatic.writingDraft} onChange={(event) => send({ type: "writingDraft", value: event.target.value })} placeholder="Use expressions you already learned." />
             {automatic.writingCompletedAt && <p className="writing-saved" role="status">Writing complete ✓</p>}
-            <button className="primary" disabled={!canComplete} onClick={() => send({ type: "completeWriting" })}>Complete writing</button>
+            <ActionFooter
+              back={<button className="secondary" onClick={() => send({ type: "home" })}><span aria-hidden="true">← </span>Pass 4+ 홈으로 돌아가기</button>}
+              forward={<button className="primary" disabled={!canComplete} onClick={() => send({ type: "completeWriting" })}>Complete writing</button>}
+            />
           </section>
         </> : <section className="panel automatic-empty"><h2>학습 기록이 더 필요해요</h2><p>두 Chapter 이상에서 문제를 풀고 자기평가를 남기면 사용할 수 있어요.</p></section>}
       </main>

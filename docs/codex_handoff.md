@@ -1,5 +1,15 @@
 # Codex Handoff — Textbook Mastery Web App
 
+## Latest — local writing return button (2026-10-07)
+
+User approved a new `codex/writing-return-button` branch from main `ef3ff6c` and local implementation/
+verification only. Multi-Chapter Writing now has a bottom home return using ActionFooter, while
+retaining the top shortcut for the long editor. Draft and completion state are preserved.
+Desktop/narrow-browser checks, build and final full suite (52 files/447 tests) passed. Earlier
+repository safety fixture timeouts did not recur in the final unchanged-suite run; root cause is unconfirmed.
+User subsequently explicitly approved publication
+through PR merge of this change. Production deployment remains outside this approval.
+
 ## Latest — approved submission video package (2026-10-07)
 
 User approved the final v5 introduction video, confirmed the music is their own, and approved
