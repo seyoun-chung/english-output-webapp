@@ -1,5 +1,21 @@
 # Study village skin — 2026-10-06
 
+## Current release — 2026-10-07
+
+The approved shared skin was merged through PR #46 (design `5e6b75c`, main `bb73204`) and deployed
+to <https://english-output-webapp.vercel.app/> in READY deployment
+`dpl_8cKo2wQZf1Dbfnsr9J5Lckk6w16G`. Below are dated local implementation records, not today's Git state.
+
+- [x] Final 50-file / 435-test suite and production build passed. The two extra safety tests pin the
+  reviewed PNG bytes and reject modified bytes; content and completion rules are unchanged.
+- [x] Hosted JS/CSS and both artwork files return 200; new skin is visible after Google login.
+  Chapter 1 Recall/Read, hint/answer controls, reload and logout/relogin continuation passed.
+- [x] Hosted 375px study / 1196px 12-card library had no horizontal overflow. Home navigation passed;
+  error/warning logs empty. These are responsive browser checks, not physical-device evidence.
+- [ ] Physical phone touch/readability and real microphone/playback for the new skin: not rerun.
+- [ ] Classroom/park scenes and four-season switching: not implemented. Independent Pronunciation
+  Lab and AI/STT evaluation are not part of this release.
+
 ## Approved direction and current scope
 Original apricot/cream hamster (tiny ears, cream forehead spot, two front teeth) and ivory rabbit (bent ear, peach cheek dots). Eye-level illustrated environment. References inform mood only; original game screenshots and characters are not shipped.
 Current local implementation: Chapter Library, Chapters 1–12 and Pass 4+ use the shared walnut/olive/amber palette, parchment cards and lime buttons. Existing grid, source content, navigation and progress logic remain in use. Shared control colors target `.library-shell` and `.study-cafe`; all chapters now use `.study-cafe`. Cafe artwork fills the fixed background outside cards across all chapter screens; paper cards, headings and breadcrumb keep text readable. The existing Overview illustration remains.

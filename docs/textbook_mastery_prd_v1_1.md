@@ -1,13 +1,72 @@
-# Textbook Mastery PRD v1.1
+# Textbook Mastery PRD v1.2
 
 > 교재를 따라 읽게 하는 앱이 아니라, **교재 없이도 말할 수 있게 될 때까지 반복시키는 앱**
 
-- **문서 상태:** Draft
+- **문서 상태:** 현재 제품 v1 구현·운영 근거 반영 (2026-10-07), 향후 기능·Open Questions는 미확정
 - **플랫폼:** PC + Mobile Responsive Web App
 - **제품 유형:** 교재 기반 영어 회독·아웃풋 학습 Web App
 - **핵심 학습 루프:** Learn → Memorize → Recall → Output → Write → Review → Repeat
 - **콘텐츠 정책:** Main Textbook + Supplement Only
 - **학습 철학:** Completion > Perfection
+
+---
+
+## 0. 현재 제품 범위와 제출 기준 — 2026-10-07
+
+이 개정은 확정된 제품 원칙을 유지하면서 실제 구현·검증 상태를 반영한다. 파일명은 기존
+문서 링크 호환을 위해 유지한다. Chapter 3만 제공하던 초기 Prototype 제약은 과거 단계다.
+
+### 개발 배경과 대상
+
+같은 영어 교재를 공부하는 부트캠프 커뮤니티의 주간 회고에서 혼자 복습하며 아웃풋을
+연습하기 어렵다는 의견이 반복됐고, 제작자도 독학 중 같은 문제를 경험해 앱을 개발했다.
+교재를 이미 보유하고 적법하게 이용하는 학습자를 중심으로 설계한다. 운영진의 허락을
+받아 커뮤니티에 공유할 예정이며, 허락받지 못하면 개인용으로 사용한다.
+
+### 구현된 제품
+
+| 영역 | 현재 동작 |
+| --- | --- |
+| 플랫폼·범위 | PC·모바일 반응형 웹, Chapter 1–12, 챕터별 Pass 1–3 및 전체 Pass 4+ |
+| My Story | 한국어/영어/Both Read, Chunk Recall, Full Recall, Source 기반 힌트·정답, 자기평가 |
+| 대화·아웃풋 | Read, A/B 역할·Full Dialogue, Exact/Source Variation/No Hint |
+| 작문·선택 학습 | Free/Guided/Template Writing, Grammar Focus, What About You?; 회독별 기록 분리 |
+| 복습 | Chapter Review의 전체/어려운 항목, Pass 4+ Mixed/Smart/All Random 및 Multi-Chapter Writing |
+| 회독 완료 | Pass 1 Core 4개, Pass 2 Core 5개, Pass 3 Core 7개 충족 후 명시적 Finish; 구체 목록은 24절 |
+| 계정·저장 | Google 로그인, 서울 Supabase 계정별 진도·답변·작문, 자동 저장·복원과 로그아웃 후 이어하기 |
+| 기록 보호 | 손상 데이터 덮어쓰기 방지, 동시 수정 충돌 보호, 제한된 서버 recovery 사본; 정상 학습 화면에 수동 백업/동기화 설정을 노출하지 않음 |
+| 녹음 | 선택형 Record/Playback 자기 점검, 브라우저 임시 사용; 서버 업로드·STT·발음 채점 없음 |
+| 디자인 | 도서관/카페 일러스트, 월넛·올리브·종이색 스킨을 12챕터와 Pass 4+에 공통 적용 |
+| 운영·측정 | Vercel 고정 HTTPS 앱, 공개 정책 페이지, 동의 기반 GA4 유입/화면 흐름, 별도의 최소 학습 이용 기록 |
+
+로그인의 목적은 사용자별 기록 분리와 PC/모바일 이어하기다. 교재 라이선스 이용자를
+중심으로 한 이용 맥락을 지원하지만, 프론트 로그인만으로 교재 JS 자산의 접근권한이나
+콘텐츠 재배포 권리를 보장하지 않는다. 커뮤니티 계정 allowlist·가입 승인 기능은 계획에 넣지 않는다.
+
+2026-10-07 main `bb73204`와 Vercel `dpl_8cKo2wQZf1Dbfnsr9J5Lckk6w16G` 기준으로
+스킨 배포, Google 로그인과 기록 이어하기를 확인했다. 50파일/435테스트·빌드 및 로컬 전
+학습 흐름 검수는 verification·study_village_skin의 근거를 따른다. 이번 운영 검증은 대표
+학습 흐름/375px·1196px 확인이며 실제 휴대폰·마이크 재검증 또는 모든 운영 계정/부하 검사는 아니다.
+
+### 향후 고도화와 미구현 영역
+
+1. GA4와 앱 사용 기록을 대시보드로 시각화하여 사용성·중단 구간·반복 이용을 분석하고 개선한다.
+   대시보드와 커뮤니티 실사용 성과는 아직 만들어지거나 검증된 결과가 아니다.
+2. 교재 Source 범위 안에서 Recall·역할 연습·배운 표현 확인·약한 항목 복습·힌트 조절을
+   돕는 AI 에이전트를 연결한다. 현재 AI/STT 자동 평가·작문 교정 기능은 미구현이다.
+3. Pronunciation & Intonation Lab, Paragraph Recall 독립 단계, 계절별 배경 전환,
+   Native/PWA/알림은 현재 완료 범위에 포함하지 않는다. 미래 요구사항을 구현 완료로 쓰지 않는다.
+
+### 제출·공유 순서
+
+운영 배포·검증 → 주요 문서 최신화 및 main 반영 → 별도 세션의 A4 1~2장 Word
+기획서 → 사용자 검토·최종 승인 → PDF 제작·렌더 검증 → PDF/최종 문서
+commit·push·PR·merge → 최종 main의 개인정보·비밀정보·교재 원본·Git 이력 검사와
+필요 시 정리·재검사 → 별도 공개 승인 → **웹 앱과 PDF가 포함된 GitHub URL 과제 제출**
+→ 앱 링크의 운영진/커뮤니티 전달 여부 결정. 고정된 전체 12단계는 current_task.md에 기록한다.
+
+운영진/참여자 추적 링크는 이미 존재하며 같은 앱에 서로 다른 UTM을 붙인 링크다.
+별도 권한의 앱으로 설명하거나 삭제하지 않는다. 심사용 GitHub 제출처와 커뮤니티 게시처는 다르다.
 
 ---
 
@@ -301,7 +360,7 @@ Recall에서는 발음을 평가하지 않는다.
 - 주요 문장 구조
 - 본문 재현 정도
 
-AI는 보조 판정을 제공하되, 학습자의 체감도 함께 기록한다.
+현재는 자기평가를 기록한다. AI 보조 판정은 향후 계획이며 아직 제공하지 않는다.
 
 ---
 
@@ -556,6 +615,10 @@ Hard Lock은 하지 않고 “2~3회독 이상 추천” 정도로 안내한다.
 
 권장 기본값:
 
+아래 비율은 초기 기획 후보이며 현재 코드의 고정 출제 비율을 뜻하지 않는다.
+현재 Chapter Review는 해당 챕터·회독에서 실제 자기평가한 항목을 바탕으로 전체/어려운
+항목 복습을 제공한다. 과거 12문항 고정 세트와 새 콘텐츠 생성은 사용하지 않는다.
+
 | 회독 | Review 구성 |
 |---|---|
 | Pass 1 | 본문 Recall 70% / Output 30% |
@@ -683,6 +746,9 @@ Recommended:
 - Chapter Review
 - 새로운 Weekly Writing
 
+현재 완료 조건은 Full Recall, A/B/Full Dialogue, Source Variation, Chapter Review
+완료 세트, 해당 Pass Writing의 다섯 영역이다. 사용자가 명시적으로 Finish Pass 2를 누른다.
+
 ### Pass 3 — Complete
 
 목표: Chapter 전체 학습
@@ -695,6 +761,9 @@ Required:
 - Grammar Focus
 - What About You
 - Weekly Writing
+
+현재 Pass 3 완료 조건에는 위 여섯 영역과 Chapter Review가 포함된다. Output은 No Hint,
+What About You는 Source 질문 최소 한 개 완료를 확인하고 명시적 Finish Pass 3으로 마친다.
 
 ### Pass 4+ — Automatic
 
@@ -863,6 +932,8 @@ Review Pool 등록
 
 ## 30. AI 역할 정의
 
+이 절은 향후 AI 연결의 역할 경계다. 현재 운영 앱에 AI/STT 평가가 연결되어 있다는 뜻이 아니다.
+
 ### AI가 해야 하는 것
 
 - STT 결과와 교재 원문 비교
@@ -914,6 +985,9 @@ AI는 Content DB 안의 자료를 선택·평가·정리·추천하는 역할을
 ---
 
 ## 32. MVP Definition
+
+현재 제품 v1 범위는 0절을 따른다. 아래 Chapter 3 우선 구현 및 로그인/서버 DB 제외는
+초기 Prototype의 역사적 범위이며 현재 운영 제품에 적용하는 제한이 아니다.
 
 ### MVP 목적
 
@@ -975,6 +1049,9 @@ AI는 Content DB 안의 자료를 선택·평가·정리·추천하는 역할을
 ---
 
 ## 33. P1
+
+Mixed Review와 All Random은 현재 Pass 4+에 구현됐다. 아래 목록 중 아직 구현되지 않은
+Lab·고도화·음성 평가만 후속 범위이며 기존 기능을 다시 신규 개발로 분류하지 않는다.
 
 - Mixed Review
 - Smart Review 고도화
