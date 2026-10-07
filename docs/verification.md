@@ -25,8 +25,11 @@
   user choice was changed back to refusal.
 - [x] Hosted privacy and consent UI had no horizontal overflow at a 375px responsive viewport. This is
   browser-responsive evidence, not a physical phone test.
+- [x] PR #45 was merged into `main` as `651d918`; the STA Track checkout was fast-forwarded to that
+  merge on 2026-10-06 without touching the preserved stash.
 - [ ] GA report ingestion is not yet confirmed. Google states that initial collection can take up to
-  48 hours after tag installation.
+  48 hours after the first consented visit. The deployment verification visit is test traffic; real
+  operator or community data will begin only after those users visit and opt in.
 
 ## Usage data foundation — 2026-10-05
 

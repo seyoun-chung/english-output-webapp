@@ -4,6 +4,8 @@ import App from "./App";
 import { PrivacyPolicyPage, TermsPage } from "./PublicInfoPages";
 import { AnalyticsConsentBanner } from './AnalyticsConsent';
 import "./styles.css";
+import "./library-skin.css";
+import "./cafe-skin.css";
 const AccountRoot = lazy(() => import('./AccountRoot'));
 
 const path = window.location.pathname.replace(/\/+$/, '') || '/';

@@ -315,6 +315,139 @@
   클리어·전체 재연습·새로고침 및 완료 문구 확인.
 - **상태:** 수정됨·추가 검증 필요 — 변경 문구에 대한 사용자 확인 전.
 
+## 2026-10-06 · Library skin regression verification · 해결 확인 (자동 검사)
+
+- 문제 정의: 기본 병렬 테스트 실행에서 Git identity test가 기본 5000ms 제한에 걸림. 나머지 432개는 통과.
+- 확인된 사실: 오류는 timeout이며 identity assertion 실패가 아님. 원인 가설은 병렬 worker 실행 비용; 확정하지 않음.
+- 액션 및 결과: worker 4개와 timeout 15000ms로 전체 재실행. 50 files / 433 tests 통과. 검사 코드와 안전 기준은 수정하지 않음. 실제 기기 문제에 대한 검증은 아님.
+
+## 2026-10-06 · Chapter 1 cafe Overview · 해결 확인 (브라우저)
+
+- 문제 정의: 첫 카페 스킨 적용 후 큰 제목이 배경 햄스터 영역까지 겹침.
+- 원인: 기존 60px 제목 크기와 넓은 제목 영역을 이미지 위에 그대로 사용.
+- 액션 및 결과: 카페 범위에서만 제목 폭 55%, 크기 44px(모바일 30px)으로 조정. 데스크톱 재확인에서 겹침 제거, 375px 폭에서 가로 넘침 없음. 실제 휴대폰 검증은 미실행.
+
+## 2026-10-06 · Chapter 1 목록 배경·단계 번호 · 해결 확인 (브라우저)
+
+- 문제 정의: Overview의 일부 학습 행만 흰색/하늘색으로 남음. 사용자는 왼쪽 단계 번호에도 Home과 같은 올리브색 바탕을 요청함.
+- 확인된 원인: 기존 `.section-row.section-link`의 white 배경과 hover 색을 카페 스킨에서 덮어쓰지 않음.
+- 액션: Chapter 1 범위에서 일반 행을 종이색, hover를 은은한 올리브색으로 변경. 단계 번호 7개를 올리브 바탕·밝은 숫자로 변경.
+- 검증: 브라우저 계산 스타일에서 행 6개 #fff8e8, 번호 7개 #52633b/#fff8e8 확인. 화면 캡처 확인, 375px 가로 넘침 없음, production build 통과. hover 규칙은 코드 확인; 실제 포인터 hover 및 실제 휴대폰 검증은 미실행.
+
+## 2026-10-06 · Chapter 1 학습 화면 전반의 배색 누락 · 해결 확인 (브라우저)
+
+- 문제 정의: 사용자 코멘트 1–11의 녹음, 대화 탭·A/B 말풍선·역할 prompt, 문법/질문/작문 카드·입력창에 기존 파란색/흰색이 남음. 코멘트 12는 미선택 번호와 선택 번호 구분 요청.
+- 원인: styles.css, writing.css 및 모바일 navigation 규칙의 직접 지정 색상에 스킨 override가 없었음.
+- 액션: cafe-skin.css에 종이색/올리브/세이지/오트밀/클레이 토큰과 shared component 상태별 색상 적용. A/B는 세이지/오트밀, 선택 탭은 올리브, 미선택 번호/Home 아이콘은 오트밀. 녹음 중·오류는 클레이 상태색을 보존. 학습 콘텐츠·진행 정책·녹음 로직 변경 없음.
+- 브라우저 검증: My Story Read/Chunk Recall/힌트/정답/Full Recall, 대화 Read/Play A/Play B/Full Dialogue, Output 3모드, Grammar, What About You, Writing 3모드, 빈 Review/항목 있는 Review/정답/완료, Chapter progress, Home 방문 및 계산 스타일 점검. 각 실제 학습 화면에 남은 파란 색상 탐지 없음(Overview의 visibility:hidden 장식 제외).
+- 모바일: 375px에서 01–07 각 영역 및 Home 확인, 가로 넘침 없음. 모바일 하위 단계 선택에 남은 파란색을 추가 발견·수정하고 Guided Writing/Play A 재검증. 화면 캡처를 직접 확인함.
+- 08 Pronunciation은 기존 Coming later 비활성 항목만 존재하며 독립 페이지는 미구현. 해당 상태의 종이색·번호·라벨은 기존 스킨에 포함됨.
+- 자동 검사: 50 files / 433 tests, 최종 production build 및 git diff --check 통과. console errors 없음.
+- 제한: 실제 휴대폰·마이크·녹음 중 상태의 실제 실행은 미실행. 상태 CSS는 소스 확인. 로컬 검증 origin에서 기존 Source 1개를 자기평가하여 Review 상태를 확인함. 원격 배포 없음.
+
+## 2026-10-06 · 녹음 플레이어 네이티브 컨트롤 배색 · 해결 확인 (Chromium 렌더링)
+
+- 문제 정의: 녹음 후 Your recording 카드 안의 브라우저 기본 오디오 플레이어만 푸른 회색으로 남음.
+- 원인: audio의 UA shadow controls는 부모 voice-playback 배경을 상속하지 않아 이전 부모 스타일만으로는 해결되지 않음.
+- 액션: 카페 범위 audio 본체와 WebKit media enclosure/panel을 종이색으로 지정. 시간은 잉크색, 범위 컨트롤은 올리브 accent. 기본 select option/input accent와 백업 file-selector-button도 점검·배색 적용.
+- 검증: 프로젝트의 실제 styles.css/cafe-skin.css를 읽는 로컬 임시 렌더링 fixture에 1초 무음 WAV를 사용. Chromium 화면에서 내부 플레이어 종이색 확인. duration=1, readyState=4. 375×812에서 panel 327px, audio 260px, 가로 넘침 없음; 직접 캡처 확인. 실제 Output 화면 색상 재점검에서도 보이는 파란색 탐지 없음. 최종 build 및 diff check 통과.
+- 제한: 마이크 녹음이나 음질 검증이 아닌 재생 UI 렌더링 검증. Firefox/Safari의 네이티브 내부 컨트롤 렌더링은 미실행. 녹음/재생 로직 변경 없음.
+
+## 2026-10-06 · 카드 밖 카페 공간 스킨 · 해결 확인 (브라우저)
+
+- 문제 정의: Chapter 1 카페 그림이 상단 카드 안에만 들어가고 전체 공간 배경은 단색으로 남아 사용자 의도보다 좁게 적용됨.
+- 액션: 승인된 자체 제작 카페 이미지를 Chapter 1 fixed 배경에 적용. 밝기 overlay와 pointer-events:none을 사용. 제목·본문 카드·breadcrumb·footer는 불투명 종이색으로 유지하여 글자가 배경과 겹치지 않도록 조정.
+- 검증: 실제 Overview 및 Chunk Recall 데스크톱/375px 화면 직접 확인·캡처. 제목/학습 카드 배경 #fff8e8 확인, 가로 넘침 없음. 학습 데이터·진행 로직 변경 없음. 최종 build/diff check 통과. 실제 휴대폰은 미실행.
+
+## 2026-10-06 · 사이드바 카드 간격과 상단 정렬 · 해결 확인 (브라우저)
+
+- 문제 정의: sidebar-heading과 메뉴 카드가 맞붙고, 상단 카드가 오른쪽 Overview 제목 카드보다 위에서 시작함.
+- 액션: 상단 카드 내부 padding 16px, 메뉴와의 gap 24px. Desktop sidebar 시작점을 main 상단 padding + breadcrumb 38px + 아래 여백 30px에 맞춤. 1150px/1500px breakpoint에 맞춰 main inset 공유. 모바일 heading 숨김은 유지.
+- 검증: 1194px/872px 브라우저에서 sidebar-heading과 chapter-hero top 차이 0px, 카드 gap 24px. 375px에서 heading 숨김/가로 넘침 없음 직접 확인. build 및 diff check 통과; 실제 휴대폰 미실행.
+
+## 2026-10-06 · 스크롤 후 상단의 짙은 띠 · 해결 확인 (브라우저)
+
+- 문제 정의: 헤더가 스크롤되어 사라지면 화면 상단에 짙은 갈색 영역이 노출됨.
+- 원인: fixed 배경 pseudo-element의 top inset을 헤더 높이(88px/모바일 70px)만큼 비워 둔 반면 헤더 자체는 일반 문서 흐름에 있어 스크롤됨.
+- 액션: 카페와 동일 원인이 있는 도서관 배경 모두 inset:0으로 화면 전체를 채움. 모바일 inset override 제거. 헤더 위치·학습 기능은 변경 없음.
+- 검증: 카페 데스크톱 scrollY 약 734px, 헤더 화면 밖에서 background top 0px 및 상단 배경 표시 직접 확인·캡처. 도서관 scrollY 약 746px에서도 top 0px와 배경 확인. 375px 모바일 스크롤 캡처에서 상단 띠 없음 확인. build/diff check 통과; 실제 휴대폰은 미실행.
+
+## 2026-10-06 · 모바일 12개 챕터 선택 접근성 · 해결 확인 (브라우저)
+
+- 문제 정의: 모바일 가로 메뉴 01–07이 전체 챕터 목록처럼 보이지만 실제로는 현재 챕터의 학습 영역임. 전체 12개 챕터를 모바일 메뉴에서 직접 선택할 수 있어야 한다는 사용자 요청.
+- 액션: 모바일(700px 이하) 전용 접이식 챕터 선택 추가. chapterCatalog 원본 12개를 3열로 표시하고 기존 selectChapter 액션 사용. 현재 챕터 강조, 선택 후 접힘, 활성 챕터 변경 시 페이지 focus/scroll 복원. 기존 01–07 메뉴에는 현재 챕터 학습 영역 라벨 추가. Desktop 기존 메뉴/All chapters 유지.
+- [x] 375px에서 12개 표시·모두 enabled·버튼 높이 최소 60px 확인, 실제 화면 캡처 검토.
+- [x] Chapter 1–12 각각 클릭하여 실제 Chapter 변경·자동 접힘·가로 넘침 없음 확인. Chapter 12 새로고침 복원 후 Chapter 1로 복귀.
+- [x] 320px에서 Space 키로 펼침, 12개 표시, 번호 줄바꿈 개선 후 label/document 넘침 없음. 690px에서도 12개 표시.
+- [x] 1194px에서 picker 숨김·원래 메뉴 유지·sidebar/title top 차이 0px 확인. 접힌 picker 높이 60px, console errors 없음.
+- [x] 50 files / 433 tests, 최종 build와 diff check 통과.
+- [ ] 실제 휴대폰 터치 감각 검증 미실행. UI/viewport 검증은 데스크톱 브라우저 시뮬레이션.
+- 학습 Source와 완료 규칙 변경 없음. 로컬 브랜치 codex/study-village-skin에서만 구현, commit/push/deploy 미실행.
+
+## 2026-10-06 · 모바일 메뉴 중복과 카드 균형 · 해결 확인 (브라우저)
+
+- 문제 정의: 모바일 챕터 선택과 상시 표시된 학습 navigation이 겹쳐 보이며 공간을 많이 차지함. 응원 카드가 각지고 위 카드와 붙으며 왼쪽 진도 카드와 높이가 다름. 왼쪽 카드의 바깥 여백보다 본문 방향 간격이 큼.
+- 액션: 단일 모바일 메뉴에 챕터 선택/학습 영역 accordion을 배치해 한 목록만 펼침. 학습 위치 선택 후 접힘; 12개 챕터 유지. Desktop sidebar 폭과 padding을 조정해 바깥 여백 32px/본문 방향 간격 약 32px, 카드 폭 약 231px 확보. 응원 카드 radius 22px/최소 gap 24px. ResizeObserver로 nav/start-card 높이 변화에 맞춰 진도·응원 카드 시작선 정렬(900px 초과에만 적용).
+- [x] 1159px에서 응원/진도 top 차이 약 0.01px, 위 카드 gap 약 41px, 사이드 바깥 여백 32px/본문 간격 약 33px. 메뉴 펼침 후에도 정렬 유지 확인·캡처.
+- [x] 690px에서 챕터 12개와 학습 목록 상호 배타적 열기 확인. 학습 Read 이동 후 접힘, Chapter 12 이동/접힘, Chapter 1 복귀 확인.
+- [x] 375px 접힌 메뉴 높이 약 119px, 320px 가로 넘침 없음, Space 학습 메뉴 열기/Home 복귀 확인. Desktop 원래 navigation 유지.
+- [x] 추가 발견: 320px Both 읽기 영어 본문 배경의 잔존 하늘색을 종이 보조색으로 수정·computed style 확인.
+- [x] 50 files/433 tests, 최종 build와 diff check 통과. 최종 JS bundle이 500kB 기준을 조금 넘겨 Vite chunk size 경고 발생(실패 아님). Console errors 없음.
+- [ ] 실제 모바일 터치 감각은 미실행. 새로 배운 콘텐츠나 학습 정책 변경 없음. 로컬 구현만 완료, 커밋·푸시·배포 없음.
+
+## 2026-10-06 · 모바일 바로가기 정리 / All chapters Home · 해결 확인 (브라우저)
+
+- 문제 정의: 모바일 Home이 한 줄 전체를 차지하고 Chapter progress가 별도 줄에 있어 메뉴가 길어짐. All chapters에서 홈으로 바로 복귀하는 버튼이 없음(PC/모바일 공통).
+- 액션: 700px 이하에서 두 바로가기를 같은 폭의 2열로 배치하고 학습 목록은 그 아래 유지. All chapters 헤더에 올리브 Home 버튼 추가, 활성 챕터와 현재 Pass를 유지해 Overview로 직접 이동.
+- [x] 506px에서 두 탭 폭 각각 약 218px·높이 48px·시작선 동일. 375px에서도 동일 폭/48px, 320px에서는 동일 폭/54px이며 문구 및 페이지 가로 넘침 없음. Desktop 진도 버튼은 기존 목록 아래 유지.
+- [x] 모바일 Chapter progress 이동과 메뉴 자동 접힘, Home 복귀 확인. All chapters Home은 모바일 클릭 및 PC Space 키로 Chapter 1 Overview 직접 복귀 확인. Console errors 없음. 화면 캡처 저장.
+- [x] 50 files / 433 tests, build, diff check 통과. 기존 500kB bundle 경고 유지(빌드 실패 아님).
+- [ ] 실제 휴대폰 터치 검증 미실행. 브라우저 viewport 시뮬레이션으로 확인. 학습 콘텐츠·완료 기준 변경 없음. commit/push/deploy 미실행.
+
+## 2026-10-06 · 이어하기 좌측 이동과 Overview 균형 · 해결 확인 (브라우저)
+
+- 문제 정의: Overview 오른쪽 이어하기/응원 카드가 본문 폭을 줄임. 사용자는 이어하기를 MY LEARNING 아래로 이동하고, 하단을 챕터 Hero 끝선에 맞추며 왼쪽 폭도 확대하고 응원 카드를 제거하도록 요청.
+- 액션: Chapter 1 PC(901px 이상) Overview에서 동일한 이어하기 컴포넌트를 sidebar로 이동(복제하지 않음). Pass 1/2/3 카드 로직 유지. sidebar 열 340px, 실제 카드 폭 약 291px로 확대. 왼쪽 상단 묶음 최소 420px·ResizeObserver로 Hero 높이 정렬; 학습 메뉴와 In this chapter 시작선 동일. In this chapter는 본문 전체 폭 사용. Chapter 1 응원 카드 숨김. 모바일은 본문 안에 이어하기 한 개 유지. 이전 응원/진도 정렬 계산은 제거.
+- [x] 약 902·1159·1440px에서 좌우 상단 bottom 동일, 메뉴/학습 목록 top 동일, 페이지 넘침 없음. 1159px에서 카드 약 291px / 본문 약 756px. 화면 캡처 확인.
+- [x] 이어하기 버튼으로 마지막 Real Conversations Play A 복귀, Home으로 돌아온 뒤 카드 재배치 확인. 375px 전환 시 카드 한 개·sidebar 중복 없음·응원 카드 숨김·가로 넘침 없음. Console errors 없음.
+- [x] SSR 테스트에서 window 직접 접근 오류를 발견해 초기 viewport 판정에 window 존재 확인 추가. 재실행 50 files / 433 tests 통과. 최종 build 및 diff check 통과. 기존 bundle 경고 유지.
+- [ ] 실제 휴대폰 터치 검증 미실행. 완료/Pass 2/3 상태는 기존 자동 렌더/로직 회귀 검사로 검증했으며 이번 브라우저 확인은 Pass 1 이어하기 상태. 학습 콘텐츠·정책 변경 없음. commit/push/deploy 미실행.
+
+## 2026-10-06 · 상단 축소와 학습 메뉴 우선순위 · 해결 확인 (브라우저)
+
+- 문제 정의: Hero/이어하기가 과도하게 크고 왼쪽 핵심 학습 메뉴는 행과 폭이 좁음. Chapter progress의 클릭 가능성이 불명확함.
+- 액션: PC Overview 상단 최소 높이 332px, Hero 타이틀/여백 축소. MY LEARNING padding만 소폭 축소, 이어하기 중복 설명은 PC에서 숨김. sidebar 열 360px, 메뉴 안쪽 padding 10px, 01–07 행 64px·행 간격 6px. Chapter progress 52px, 올리브 보조 배경·전체 테두리·이동 화살표 추가. 모바일 기존 동등 폭 바로가기 유지.
+- [x] 1242px: Hero 약 333px(기존 420), 이어하기 196px(기존 약 271), MY LEARNING 약 125px(기존 약 133). 메뉴 실제 폭 약 311px·높이 677px, 7개 행 모두 64px. 좌우 상단 하단/아래 메뉴 시작선 일치.
+- [x] 약 902px에서도 상단 하단 동일·넘침 없음. PC Space로 진도 화면 이동/Home 복귀, 320px 클릭 이동/복귀·메뉴 접힘·동일 폭 버튼·페이지 넘침 없음. Console errors 없음. 새 검증 탭으로 연결 복구 후 확인, 임시 탭 닫음.
+- [x] 50 files / 433 tests, 최종 build·diff check 통과. 기존 bundle 경고 유지. 화면 캡처 저장.
+- [ ] 실제 모바일 터치 감각 미실행. Source·학습 정책 변경 없음. commit/push/deploy 미실행.
+
+## 2026-10-06 · 메뉴/학습 목록 글꼴 소폭 확대 · 해결 확인 (브라우저)
+
+- 문제 정의: 왼쪽 Chapter navigation과 In this chapter의 글자가 작음. 카드 크기를 유지하고 답답하지 않게 소폭 확대 요청.
+- 액션: Chapter 1 메뉴명 14px(모바일 13px), 단계 설명 11px, 번호 12px, 하위 메뉴/진도 13px. 학습 목록 제목 15px·설명 12px·체크리스트/진도 13px, PC 카드 제목 21px·badge 12px. 원래 폭·64px 행·간격 유지.
+- [x] 1196px 실제 computed font 확인, 7개 행 모두 64px, 행/문서 가로 넘침 없음. 긴 Real Conversations도 한 줄 유지. 메뉴/학습 목록 화면 캡처 확인.
+- [x] 320px에서 목록·설명·헤더·페이지 넘침 없음, Home/진도 동일 폭·높이 약 57px, Home 클릭/메뉴 접힘 확인. viewport 복구·임시 검증 탭 닫음.
+- [x] build·diff check 통과. CSS 글꼴 조정만으로 전체 학습 로직 테스트 재실행은 생략(직전 433 tests 통과). 기존 bundle 경고 유지.
+- [ ] 실제 휴대폰 가독성/터치 감각 미실행. 로컬 codex/study-village-skin 유지, 원격 main 기준 변경 없음. commit/push/deploy 미실행.
+
+## 2026-10-06 · 중간 화면 폭 메뉴 돌출 · 해결 확인 (브라우저)
+
+- 문제 정의: PC→모바일 중간 폭에서 학습 메뉴 행 배경과 화살표가 카드 우측 밖으로 돌출됨. 제목·단계 수·화살표의 한 줄 배치와 grid item 최소 콘텐츠 폭이 좁은 메뉴에 맞지 않음.
+- 액션: 메뉴 group/버튼의 min-width 0. 701px 이상에서 메뉴 자체 폭이 260px 이하이면 번호/제목/화살표 3열, 단계 수는 제목 아래로 배치하는 container query 추가. 카드 밖을 숨겨서 자르지 않고 내용 재배치. 넓은 PC와 모바일 가로 메뉴는 기존 flex 유지.
+- [x] 800px에서 메뉴 폭 약 203px, 모든 행의 카드 우측 돌출/내용 넘침 없음. 긴 Real Conversations는 높이 약 80px로 자연스럽게 늘어남. 약 702px에서도 행/문서 넘침 없음, conversation 펼침 확인.
+- [x] 1196px 및 320px 기존 flex 배치/문서 넘침 없음. 화면 캡처 저장, viewport 복구·임시 탭 닫음. build/diff check 통과. CSS만 변경해 학습 로직 테스트 재실행 생략.
+- [ ] 실제 모바일 기기 검증 미실행. 기존 bundle 경고 유지. commit/push/deploy 없음.
+
+## 2026-10-06 · Chapter 2–12 / Pass 4+ 공통 스킨 확장 · 해결 확인 (브라우저)
+
+- 문제 정의: 홈/Chapter 1 외 학습 화면 스킨 미적용. Pass 4+ stats·All chapters·빈 상태에 흰색/파란색 잔존.
+- 액션: Chapter 1 조건을 제거해 12개 챕터에 동일 cafe 스킨과 Overview 이어하기 배치 적용. 기록/재생·힌트·정답·자기평가·대화·Writing 컨트롤 색은 cafe/library가 공유. Pass 4+ panel/stats/chapter 선택·입력·비활성·warning·session heading에 종이/올리브/오트 팔레트 적용. library 배경 유지. Progress element 잔존 파란 배경도 수정.
+- [x] 1196px에서 Chapter 1–12 실제 진입, 모든 root 스킨·panel 종이색·document 넘침 없음 확인. Chapter 12 Read, Chunk/Full Recall, Conversation Read/A/B/Full, Output 3 modes, Grammar, About, Writing 3 modes, Review, Progress의 computed colors 점검. 추가 파란색 없음.
+- [x] Pass 4+ home stats·Mixed 빈 상태·Smart setup/session/answer/ratings·Writing 빈 상태·All Random setup/session 확인. 375px에서 chapter 진도·Automatic home/session 넘침 없음. 브라우저 오류 없음. 임시 탭 닫음/viewport 복구.
+- [x] 50 files / 433 tests, final build·diff check 통과. 완료/사용 가능한 multi-chapter writing 상태는 기존 state/render 회귀 검사·공유 CSS로 검증했고 실제 평가를 새로 생성하는 브라우저 검증은 미실행. Source/학습 정책 변경 없음.
+- [ ] 실제 모바일·마이크·스피커 확인 미실행. 기존 bundle size 경고 유지. codex/study-village-skin 로컬 변경만 유지, commit/push/deploy 미실행.
+
 ## 새 문제 기록 양식
 
 ```text
@@ -324,3 +457,19 @@
 액션 아이템: 담당할 수정/검증, 필요한 사용자 결정
 해결 여부: 자동 검증 결과, 실제 기기 재시험 결과, 관련 PR
 ```
+
+## 2026-10-06 — 헤더 챕터·회독 텍스트 정렬
+
+- 문제: 헤더의 좌우 요소 너비가 달라 `space-between`으로 배치된 챕터 표시가 실제 중앙보다 오른쪽에 위치했다.
+- 수정: PC 헤더를 동일 너비의 좌우 열과 가운데 라벨 열로 배치했다. 모바일에서는 로고 다음 일정 간격으로 라벨을 왼쪽 정렬하고 우측 이동 버튼을 끝에 배치했다.
+- [x] 내장 브라우저에서 Chapter 11, Chapter library, Pass 4+ 헤더를 1242/1159/1000/900/701/700/538/506/390/375px 폭으로 확인: 겹침·넘침 없음. 701px 이상 라벨 중심 오차 1px 미만.
+- [ ] 실제 모바일 기기에서의 검증은 미실행. 위 결과는 데스크톱 브라우저 viewport 검증이다.
+
+## 2026-10-06 — 스킨 전체 적용 검수 후속
+
+- 문제 정의: 대표 챕터 검사만으로 전체 검수라고 설명할 위험이 있었다.
+- 액션: Chapter 1–12/Pass 1–3와 Library/Pass 4+의 상태별 브라우저 fixture 검수 및 실제 버튼·저장·복원 검수로 범위를 확대했다. 상세 실행 항목과 한계는 docs/study_village_skin.md의 최신 검수 절에 기록했다.
+- 결과: 로컬 브라우저 스킨 검사 3,720회, 모바일 학습 버튼 504시나리오, PC 마지막 항목 84시나리오, 글쓰기 72개, 선택학습/완료 120개, Home/뒤로가기 44개에서 남은 실패 없음.
+- 테스트 fixture 문제: 마지막 대화에 앞선 턴의 평가가 빠진 데이터를 주입해 저장 보호 경고를 만들었다. 정상 선행 평가 상태로 fixture를 바로잡고 모바일 72개 및 PC 해당 항목을 재검증했다. 실제 학습 순서의 앱 오류로 분류하지 않는다.
+- [x] 데스크톱 브라우저 및 375px viewport 검수 완료.
+- [ ] 실제 모바일 기기·실제 마이크 검증은 미실행이며 해결 확인으로 표시하지 않는다.

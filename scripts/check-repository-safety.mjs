@@ -1,7 +1,7 @@
 import { execFileSync } from 'node:child_process'
 import { lstatSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
-import { fileRisk, remoteRisk, scanText } from './repository-safety.mjs'
+import { fileRisk, isApprovedBinary, remoteRisk, scanText } from './repository-safety.mjs'
 
 const args = process.argv.slice(2)
 if (args.some(arg => arg !== '--staged')) {
@@ -47,7 +47,10 @@ try {
       if (!staged && error.code === 'ENOENT') continue
       add(path, 'unreadable-file'); continue
     }
-    if (bytes.includes(0)) { add(path, 'binary-needs-manual-review'); continue }
+    if (bytes.includes(0)) {
+      if (!isApprovedBinary(path, bytes)) add(path, 'binary-needs-manual-review')
+      continue
+    }
     findings.push(...scanText(path, bytes.toString('utf8')))
     scanned++
   }
