@@ -1,5 +1,22 @@
 # Local verification
 
+## Skip-link clipping repair — 2026-10-07
+
+- Production PR #50 header release was deployed, but a 1.6px skip-link edge was reproduced
+  at 1440px and 375px on learning entry. Previous header verification missed this state.
+- [x] Local 1440×900 Writing / 375×667 Home: default clip inset(50%), pointer-events none,
+  DOM hit-test cannot reach the link; screenshot edges clean even with the preserved storage warning.
+- [x] Shift+Tab from brand: link visible at y=8 above header and hit-testable; Enter focuses
+  main-content and scrolls to clearance 100px desktop / 82px mobile. Link reclips after blur.
+- [x] Down-scroll hides header completely, up-scroll restores it; link stays clipped in both states.
+- [x] Library and Pass 4+ entry at 1440px/375px, Home at 667×375: no horizontal overflow.
+- CSS contract guards supplement, not replace, these live browser checks.
+- [x] 51 files / 442 tests and production build passed with `npm test -- --maxWorkers=2`.
+  The initial parallel run hit the existing identity fixture's 5s timeout (441 passed); no assertion
+  was weakened and the full suite passed with fewer workers. Existing large-bundle warning remains.
+- Production recheck follows the approved merge/deploy. Physical phone/microphone, new real-account
+  ratings/writing and an exhaustive whole-app flow audit are not part of this narrow repair.
+
 ## Scroll-aware header revision — 2026-10-07
 
 - [x] User-approved entry/show → down/hide → up/show behavior supersedes the sticky-only PR #49 result.

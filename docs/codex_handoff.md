@@ -1,5 +1,16 @@
 # Codex Handoff — Textbook Mastery Web App
 
+## Latest — skip-link exposure repair (2026-10-07)
+
+PR #50 merged as `f5b855a` and was deployed to the stable Vercel URL. User then reported
+an exposed edge under the header. Desktop/mobile-width production inspection reproduced a
+1.6px fragment of the unfocused skip link, caused by its absolute parent-relative negative offset.
+User approved repair, verification, commit/push/PR/merge and production deployment together.
+`codex/skip-link-visibility` starts at that main with clean tree; recovery stash/worktree preserved.
+The fix clips the unfocused link, retains keyboard visibility above the header and focuses the native
+main destination. See verification/issue log for executed local cases and pending live gate.
+Do not infer approval for privacy/history rewriting, Supabase deletion or external community posting.
+
 ## Latest — approved scroll-aware header revision (2026-10-07)
 
 After PR #49 merged as `d806a9c`, the user clarified and approved: show at the viewport top on

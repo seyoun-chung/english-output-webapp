@@ -29,4 +29,20 @@ describe('scroll-aware shared navigation', () => {
     expect(css).toContain(':has(:focus-visible)');
     expect(css).toContain('prefers-reduced-motion');
   });
+
+  it('keeps the unfocused skip link clipped and outside pointer hit testing', () => {
+    const styles = readFileSync('src/styles.css', 'utf8');
+    const hidden = styles.match(/\.skip-link\s*\{([^}]+)\}/)?.[1] ?? '';
+    const focused = styles.match(/\.skip-link:focus\s*\{([^}]+)\}/)?.[1] ?? '';
+    // CSS contract guard; actual clipping/stacking is verified in the rendered browser.
+    expect(hidden).toMatch(/clip-path:\s*inset\(50%\)/);
+    expect(hidden).toMatch(/pointer-events:\s*none/);
+    expect(focused).toMatch(/clip-path:\s*none/);
+    expect(focused).toMatch(/pointer-events:\s*auto/);
+  });
+
+  it('provides a programmatically focusable native skip destination', () => {
+    expect(app).toMatch(/<main\s+id="main-content"[^>]*tabIndex=\{-1\}/);
+    expect(app).toContain('href="#main-content"');
+  });
 });
