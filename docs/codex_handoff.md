@@ -1,5 +1,16 @@
 # Codex Handoff — Textbook Mastery Web App
 
+## Latest — library sticky header after submission (2026-10-07)
+
+The user confirmed assignment submission, then explicitly approved the Chapter Library header
+improvement through commit/push/PR/merge. Branch `codex/library-sticky-header` starts at main
+`fda117d` (PDF PR #48 merged). The 21-step current_task table supersedes older preparation statuses.
+Only the Library topbar becomes sticky; keyboard scrolling reserves its desktop/mobile height.
+Learning content, progress, authentication and PDF bytes are unchanged. Browser checks are local
+viewport checks, not physical-device checks. Existing stash and physical-sync worktree are preserved.
+Production has no Git auto-deployment connection: merge alone does not update the public app.
+Production deployment, privacy/history cleanup and repository visibility changes require separate approval.
+
 ## Submission PDF integration — 2026-10-07
 
 The separate Word session completed the user's FIX Word -> PDF request and the user approved

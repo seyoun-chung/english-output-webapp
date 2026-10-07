@@ -106,7 +106,7 @@ function MobileLearningMenu({ activeId, onSelect, sectionLabel, children }: { ac
 function ChapterLibrary({ progress, onOpen, onAutomatic, onHome }: { progress: AppProgress; onOpen: (chapterId: ChapterId) => void; onAutomatic: () => void; onHome: () => void }) {
   return (
     <div className="library-shell">
-      <header className="topbar">
+      <header className="topbar library-topbar">
         <span className="brand" aria-label="English Output">
           <span className="brand-icon"><img src="/favicon.svg" alt="" /></span>
           English Output

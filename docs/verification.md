@@ -1,5 +1,17 @@
 # Local verification
 
+## Chapter Library sticky header — 2026-10-07
+
+- [x] Scoped `.library-topbar` to the Chapter Library only; sticky top 0 and keyboard scroll clearance.
+- [x] In-app browser local verification at 812×670 and 375×667: header top 0 after scrolling,
+  height 88/70px respectively, no horizontal overflow; focused final chapter button stays below header.
+- [x] Chapter 12 entry, return to All chapters, and Home navigation work. No account-side fixture writes.
+- [x] Production build/TypeScript passed (existing >500 kB bundle warning remains non-blocking).
+- The first regression run exposed a CRLF-sensitive assertion in the new test, not an app failure;
+  the assertion now accepts platform-independent whitespace. Final regression: 51 files / 439 tests passed.
+- [ ] Physical mobile and production recheck not executed; no production deployment in this request.
+- Existing test-origin saved-progress warning is preserved and is not classified as a new sticky-header defect.
+
 ## Final PDF package — 2026-10-07
 
 - [x] User-approved final PDF from the separate Word session copied without modification into
