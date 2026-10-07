@@ -1,4 +1,5 @@
 import type { Dispatch } from "react";
+import { ScrollAwareHeader } from './ScrollAwareHeader';
 import { chapterById, chapterName, type ChapterId } from "./data/chapters";
 import { ExerciseCard } from "./ExerciseCard";
 import type { AppAction, AppProgress } from "./appProgress";
@@ -27,12 +28,12 @@ const modeCopy: Record<AutomaticMode, { title: string; description: string }> = 
   },
 };
 
-function Header({ onLibrary }: { onLibrary: () => void }) {
-  return <header className="topbar automatic-topbar">
+function Header({ onLibrary, screenKey }: { onLibrary: () => void; screenKey: string }) {
+  return <ScrollAwareHeader className="automatic-topbar" screenKey={screenKey}>
     <span className="brand">English Output <span className="brand-caption">배운 영어를, 내 영어로.</span></span>
     <span className="topbar-label">PASS 4+ · AUTOMATIC</span>
     <button className="topbar-library" onClick={onLibrary}>All chapters</button>
-  </header>;
+  </ScrollAwareHeader>;
 }
 
 function ChapterChoices({ ids, selected, onToggle }: { ids: ChapterId[]; selected: ChapterId[]; onToggle: (id: ChapterId) => void }) {
@@ -60,7 +61,7 @@ export function AutomaticScreen({ progress, dispatch }: Props) {
     const current = learned.find((item) => item.key === currentKey);
     if (!current) return null;
     return <div className="library-shell">
-      <Header onLibrary={() => dispatch({ type: "showLibrary" })} />
+      <Header screenKey={`session:${automatic.mode}`} onLibrary={() => dispatch({ type: "showLibrary" })} />
       <main className="automatic-main" id="main-content">
         <header className="automatic-session-heading">
           <button className="text-button" onClick={() => send({ type: "home" })}>← Pass 4+ home</button>
@@ -86,7 +87,7 @@ export function AutomaticScreen({ progress, dispatch }: Props) {
       count: Object.values(automatic.ratings).filter((value) => value === rating).length,
     }));
     return <div className="library-shell">
-      <Header onLibrary={() => dispatch({ type: "showLibrary" })} />
+      <Header screenKey={`complete:${automatic.mode}`} onLibrary={() => dispatch({ type: "showLibrary" })} />
       <main className="automatic-main" id="main-content">
         <section className="panel automatic-summary">
           <p className="eyebrow">SESSION COMPLETE</p>
@@ -107,7 +108,7 @@ export function AutomaticScreen({ progress, dispatch }: Props) {
   if (automatic.screen === "writing") {
     const canComplete = automatic.selectedChapterIds.length >= 2 && automatic.writingDraft.trim().length > 0;
     return <div className="library-shell">
-      <Header onLibrary={() => dispatch({ type: "showLibrary" })} />
+      <Header screenKey="writing" onLibrary={() => dispatch({ type: "showLibrary" })} />
       <main className="automatic-main" id="main-content">
         <header className="library-heading">
           <button className="text-button" onClick={() => send({ type: "home" })}>← Pass 4+ home</button>
@@ -133,7 +134,7 @@ export function AutomaticScreen({ progress, dispatch }: Props) {
     const candidates = needsSelection ? selectedItems : learned;
     const canStart = candidates.length > 0 && (!needsSelection || automatic.selectedChapterIds.length >= 2);
     return <div className="library-shell">
-      <Header onLibrary={() => dispatch({ type: "showLibrary" })} />
+      <Header screenKey={`setup:${automatic.mode}`} onLibrary={() => dispatch({ type: "showLibrary" })} />
       <main className="automatic-main" id="main-content">
         <header className="library-heading">
           <button className="text-button" onClick={() => send({ type: "home" })}>← Pass 4+ home</button>
@@ -153,7 +154,7 @@ export function AutomaticScreen({ progress, dispatch }: Props) {
   }
 
   return <div className="library-shell">
-    <Header onLibrary={() => dispatch({ type: "showLibrary" })} />
+    <Header screenKey="overview" onLibrary={() => dispatch({ type: "showLibrary" })} />
     <main className="automatic-main" id="main-content">
       <header className="library-heading">
         <p className="eyebrow">PASS 4+ · AUTOMATIC</p>

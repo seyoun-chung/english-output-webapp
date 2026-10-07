@@ -1,5 +1,19 @@
 # Local verification
 
+## Scroll-aware header revision — 2026-10-07
+
+- [x] User-approved entry/show → down/hide → up/show behavior supersedes the sticky-only PR #49 result.
+- [x] Local PC Library and Weekly Writing: entry top=0, down-scroll hidden, up-scroll visible.
+- [x] 375px Home, Library and Pass 4+ overview: visibility transitions, navigation and no horizontal overflow.
+- [x] 667×375 landscape: no horizontal overflow. Mobile header remains 70px with location label visible.
+- [x] Keyboard access restores hidden navigation; focus-visible skips the reveal transition. Screen keys reset visibility.
+- [x] Direction/jitter logic, shared wiring, body clearance and reduced-motion CSS regression tests.
+- [x] Final suite: 51 test files / 440 tests passed; TypeScript and production build passed.
+  Existing >500 kB bundle warning remains non-blocking. Identity/safety/publishable checks passed;
+  preserved recovery refs still fail the whole-ref historical identity audit (deferred, not erased).
+- No learning source, completion, authentication, progress or submission PDF changes. Existing fixture warning preserved.
+- [ ] Physical device and production deployment checks not executed. Reduced-motion is code-tested, not OS-emulated.
+
 ## Chapter Library sticky header — 2026-10-07
 
 - [x] Scoped `.library-topbar` to the Chapter Library only; sticky top 0 and keyboard scroll clearance.

@@ -1,5 +1,15 @@
 # Codex Handoff — Textbook Mastery Web App
 
+## Latest — approved scroll-aware header revision (2026-10-07)
+
+After PR #49 merged as `d806a9c`, the user clarified and approved: show at the viewport top on
+screen entry, hide during down-scroll, reveal during up-scroll. Implemented on the new
+`codex/scroll-aware-header` branch for Library, shared chapter learning and Pass 4+ headers.
+This supersedes the earlier sticky-only behavior. The shared component reserves top clearance,
+resets visibility on screen changes, handles keyboard focus and reduced motion, and displays
+Chapter/Pass/section at small mobile widths. Scope includes commit/push/PR/merge, not production deploy.
+Existing data, recovery refs, PDF bytes and unrelated policies remain unchanged.
+
 ## Latest — library sticky header after submission (2026-10-07)
 
 The user confirmed assignment submission, then explicitly approved the Chapter Library header
