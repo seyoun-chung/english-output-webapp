@@ -47,7 +47,8 @@ try {
       if (!staged && error.code === 'ENOENT') continue
       add(path, 'unreadable-file'); continue
     }
-    if (bytes.includes(0)) {
+    // PDF approval always checks the digest, even if a replacement contains only text.
+    if (/\.pdf$/i.test(path) || bytes.includes(0)) {
       if (!isApprovedBinary(path, bytes)) add(path, 'binary-needs-manual-review')
       continue
     }

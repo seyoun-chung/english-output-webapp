@@ -11,6 +11,7 @@ build/
 
 # Local verification artifacts
 tmp/
+output/
 
 # Environment variables
 .env

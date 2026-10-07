@@ -1,5 +1,23 @@
 # Local verification
 
+## Final PDF package — 2026-10-07
+
+- [x] User-approved final PDF from the separate Word session copied without modification into
+  `docs/submission/english-output-webapp-project-plan.pdf`; source and destination SHA256 match
+  `35433a8be0e0b3671ebf540aec38fee8998bb63f087fcbf2e1512411711ba825` (189,049 bytes).
+- [x] A4 two pages parsed and page renders inspected; no overlap/clipping, no textbook page images
+  or attachments. Reviewed text/metadata show no personal email/local computer path or recognized
+  credential patterns; regex checks are not a proof that all sensitive content is absent.
+- [x] Safety exception is restricted to that exact PDF path and digest. Other PDFs, mutated PDF bytes,
+  plain-text replacements, and a changed staged PDF masked by a clean working copy are rejected.
+- [x] Full regression: 50 test files / 436 tests passed; TypeScript and production build passed.
+  Existing large-chunk warning remains non-blocking. App learning/source/completion behavior unchanged.
+- [x] README links the final PDF. Generated `output/`, Word drafts and render intermediates are
+  excluded from Git and web deployment; final repository PDF is excluded from deployment by docs/PDF rules.
+- Git staging/identity/publishable checks and PR state must also be checked when integrating this
+  package. Step 10 final-main/history/privacy cleanup and separate public approval remain outstanding.
+
+
 ## Current release and submission preparation — 2026-10-07
 
 - [x] Step 7 documentation-only update: seven Markdown files reviewed; `git diff --check`,

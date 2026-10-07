@@ -1,5 +1,16 @@
 # Codex Handoff — Textbook Mastery Web App
 
+## Submission PDF integration — 2026-10-07
+
+The separate Word session completed the user's FIX Word -> PDF request and the user approved
+the main session's package preparation/commit/push/PR/merge. The reviewed A4 two-page PDF is
+`docs/submission/english-output-webapp-project-plan.pdf` (189,049 bytes; SHA256
+`35433a8be0e0b3671ebf540aec38fee8998bb63f087fcbf2e1512411711ba825`). Original Word and generated
+output are preserved, not uploaded. README links the final PDF. Only this exact path/digest may pass
+the PDF safety gate; other PDFs and byte changes remain blocked. Check this change's PR merge state
+before treating step 9 as complete. Step 10 final-main/privacy/history audit and separate public
+approval remain required. No application deployment or visibility change is included.
+
 ## Current handoff — final submission preparation (2026-10-07)
 
 Read the current PRD section 0 and the authoritative 12-step table at the top of current_task.md
