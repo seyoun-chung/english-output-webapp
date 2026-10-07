@@ -1,5 +1,29 @@
 # Product v1 completion
 
+## Current release and assignment handoff — 2026-10-07
+
+Current product scope follows PRD section 0; the fixed 12-step submission sequence is in current_task.md.
+Product v1 implementation is not the same as a completed assignment package. The final package must
+include the app and the user-approved PDF on main before the GitHub URL is submitted.
+Earlier implementation/security entries below are dated history, not today's external-connection gates.
+
+- Chapter 1–12 Pass 1–3 and global Pass 4+, Google login, automatic Seoul Supabase records,
+  bounded recovery and the walnut/olive library/cafe skin are implemented.
+- PR #46 main `bb73204`; approved READY production deployment `dpl_8cKo2wQZf1Dbfnsr9J5Lckk6w16G`
+  serves <https://english-output-webapp.vercel.app/>. 50 files / 435 tests and build passed.
+- Hosted login, position-save/reload/logout/relogin, hints/answer and responsive checks passed.
+  Initial GA4 report data is received. Prior physical continuation was verified on 2026-10-05;
+  actual phone/microphone checks were not rerun for this design release.
+- Normal users study without manually enabling sync or handling backup files. Backup/recovery tools
+  remain available for exceptional storage errors. Record protection does not guarantee against all loss.
+- GA4 consented acquisition/page flow and minimal Supabase usage events are implemented; dashboard,
+  community outcome metrics, AI agents/STT feedback and Pronunciation Lab remain future work.
+- Step 7 documentation is prepared on the approved final-submission branch; its commit/push/PR/merge
+  is user-approved. Confirm this change has reached main before the separate Word session writes
+  its A4 1–2-page draft. Final user Word approval precedes PDF.
+- Final PDF/document Git integration, final-main/history/source/privacy checks, separately approved
+  repository public visibility, assignment submission and community sharing decision remain outstanding.
+
 ## Authoritative goal — 2026-10-03
 
 사용자 확정: Chapter 1–12와 Pass 1–4+를 학습할 수 있고, 주요 오류 없이 진행되며,
@@ -9,20 +33,20 @@
 
 ## Acceptance ledger
 
-Latest evidence (2026-10-05): release baseline `8f46b62` contains the protected deployment release.
-The full suite passes 46 files / 416 tests and the production build. The fixed
-HTTPS deployment, Google callback, hosted account record, security headers and physical phone ↔
-STA Track continuation are verified. Community publication and beta enhancements remain separate.
+Latest evidence (2026-10-07): main `bb73204` includes PR #46. The full suite passes
+50 files / 435 tests and the production build. The fixed public HTTPS app, Google callback,
+hosted position save/reload/relogin and skin are verified. Physical phone ↔ STA Track continuation
+was verified on 2026-10-05, not rerun for the skin. Community publication remains a separate decision.
 
 | ID | 완료 조건 | 현재 근거 / 상태 | 남은 확인 |
 |---|---|---|---|
 | V1-1 | Chapter 1–12 Pass 1–3 학습·완료·저장 | **완료** — 12개 Source 묶음, 전체 Chapter Pass 1–3 완료·저장·백업 round trip 테스트 | 없음 |
 | V1-2 | Pass 4+ 혼합·랜덤 복습·작문 | **완료** — Mixed/Smart/All Random/Writing 구현, Source-only 및 저장 회귀 통과 | 없음 |
-| V1-3 | 주요 오류 안정화·수정 반영 | **완료** — 최신 UI·저장·녹음·보안 회귀 포함 46 files / 416 tests와 build 통과 | 없음 |
+| V1-3 | 주요 오류 안정화·수정 반영 | **완료** — 최신 UI·저장·녹음·보안 회귀 포함 50 files / 435 tests와 build 통과 | 새 스킨 실제 휴대폰·마이크 재검증 미실행 |
 | V1-4 | 학습 기록 백업·복원 | **완료** — 자동 계정 저장, 손상 보호, recovery copy, version 1–5 migration과 실제 파일 복원 검증 | 없음 |
-| V1-5 | 고정 HTTPS 주소에서 사용 | **완료** — 보호된 고정 Vercel 주소, 정확한 OAuth redirect, 운영 로그인·보안 헤더 확인 | 없음 |
+| V1-5 | 고정 HTTPS 주소에서 사용 | **완료** — 공개 고정 Vercel 앱, 기존 OAuth redirect, 운영 로그인 확인; 과거 보안 헤더 검사 근거 유지 | 커뮤니티 제공 허락은 별도 |
 | V1-6 | 휴대폰·노트북 등에서 이어서 학습 | **완료** — 휴대폰 Chapter 12가 STA Track에 반영되고 Pass 4+ 복구가 재로그인 뒤 유지됨 | 다른 사용자·부하 시험은 베타 운영 검증 |
-| V1-7 | 통합 검증 | **완료** — 자동 회귀, 운영 OAuth/저장, 보호 배포, 실제 기기 왕복을 구분해 확인 | 커뮤니티 공개는 별도 결정 |
+| V1-7 | 통합 검증 | **완료** — 자동 회귀, 운영 OAuth/저장·스킨과 과거 실제 기기 왕복을 날짜별로 구분 | 실제 기기 재검증·제출 패키지는 별도 |
 
 각 완료 판정은 구현·자동 시험·브라우저·배포 환경 증거를 분리해 기록한다.
 실제 다른 컴퓨터를 사용하지 않은 검사는 두 브라우저 환경 시뮬레이션으로 표시한다.

@@ -1,5 +1,40 @@
 # Codex Handoff — Textbook Mastery Web App
 
+## Current handoff — final submission preparation (2026-10-07)
+
+Read the current PRD section 0 and the authoritative 12-step table at the top of current_task.md
+before acting on older entries. Entries below retain their historical dates and do not represent
+today's approval/deployment gates.
+
+- Design PR #46 merged commit `5e6b75c` into main as `bb73204`.
+- Approved Vercel production deployment `dpl_8cKo2wQZf1Dbfnsr9J5Lckk6w16G` is READY at
+  <https://english-output-webapp.vercel.app/>. No Git auto-deployment connection was added.
+- Latest code verification: 50 files / 435 tests and production build passed. Hosted Google
+  login restored Chapter 1 Chunk Recall; Read navigation survived reload and logout/relogin.
+  Hint/answer actions, 12 Chapter cards/Home, 375px and 1196px overflow checks passed; no console errors.
+  No test self-ratings/writing were added to the real account. Physical phone/microphone checks were
+  not rerun for this skin. The separate 2026-10-05 physical cross-device result remains historical evidence.
+- GA4 English Output account `410691748`, property `557304673`, Measurement ID `G-238VVFM49R`
+  has received data: last-seven-day cards show South Korea users, a privacy-page view and channels.
+  These may be verification visits. Do not report community adoption; it starts after real visits/consent.
+  The browser's saved refusal was preserved and no GA script loaded for that choice.
+- On STA Track, clean main fast-forwarded to `bb73204` and the user-approved
+  `codex/final-submission-preparation` branch was created there. HooksPath remains `.githooks`;
+  effective author/committer are approved noreply. Existing stash and physical-sync worktree stay intact.
+- Step 7 updates PRD, this handoff, current task, product v1, skin, verification and issue records.
+  Word must be authored in the separate **제출용 기획서 Word 작성** session after these documents
+  are merged to main. Do not create PDF before the user's final Word approval.
+- Step 9 requires another approved commit/push/PR/merge for the final PDF and documents, followed by
+  step 10 final-main/history/source/privacy audit and separately approved public visibility.
+  Step 11 submits the GitHub repository URL containing the final web app and PDF, before step 12
+  app sharing. Existing operator/participant Short.io links stay as documented in marketing_tracking_links.md.
+- Repository privacy text/history and old GitHub refs remain unresolved. Neither complete erasure nor
+  public-release readiness is claimed. Any new history rewrite/force push needs a separate approval.
+  Home computer remains unsynced with this release; apply the ancestry/clean-tree/identity/hooks gate
+  below rather than blindly pulling. Preserve old folders and recovery refs.
+- Future dashboard and Source-bounded AI-agent improvements are plans, not implemented features.
+  No participant allowlist/signup-approval feature is planned. Community permission is not presumed.
+
 ## Latest — login-card center alignment (2026-10-05)
 
 Branch `codex/login-center-alignment` centers only the signed-out heading and shared-device reminder.

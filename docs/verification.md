@@ -1,5 +1,44 @@
 # Local verification
 
+## Current release and submission preparation — 2026-10-07
+
+- [x] Step 7 documentation-only update: seven Markdown files reviewed; `git diff --check`,
+  `check:identity`, `check:safety` (159 text files) and `check:publishable` (100 reachable commits)
+  passed on `codex/final-submission-preparation`. No app code changed; the 435-test/build evidence
+  below is the earlier code run, not a rerun for these documentation edits. No staging/commit/push yet.
+- [x] PR #46 merged into main `bb73204`; design commit `5e6b75c` and remote feature head match.
+  Working tree was clean, `.githooks` enabled, effective identities approved noreply; stash/worktree preserved.
+- [x] Latest full run: 50 test files / 435 tests, TypeScript and Vite production build passed.
+  Staged safety and publishable identity history passed. Whole-local-ref history audit still identifies
+  three historical identities in preserved recovery refs; this is not a clean-all-history result.
+- [x] Vercel dry run excludes `.env`, original Source documents, docs/tests/scripts, tmp, recordings
+  and local build output; deployed sources include approved skin images and app runtime files.
+- [x] Approved production deployment `dpl_8cKo2wQZf1Dbfnsr9J5Lckk6w16G` is READY and aliased to
+  <https://english-output-webapp.vercel.app/>. The live JS/CSS contain the new skin; both PNGs,
+  `/privacy` and `/terms` return HTTP 200. This was a CLI deployment; Git auto-deploy was not enabled.
+- [x] Hosted Google login in the previously approved test account restored existing Chapter 1 / Pass 1
+  Chunk Recall. Hint 1, Hint 2, explicit answer reveal and rating controls appeared correctly.
+  No self-rating or writing was fabricated for this real account.
+- [x] Read navigation saved; reload and logout/relogin restored the Read screen. Sign-out completed
+  without a save error. Chapter Library contained all 12 cards; Home returned to Chapter 1 Overview.
+  Navigation position changed during verification; learner ratings/writing were not reset.
+- [x] Hosted browser viewport checks: 375px study and 1196px library had no horizontal overflow.
+  Skin present in DOM and visible in the screenshot. Browser error/warning log empty.
+  Temporary viewport overrides reset. Aside connection failed; in-app browser fallback used.
+- [x] Production bundle includes `G-238VVFM49R`. Privacy controls show saved refusal and the study
+  page loads no Google Analytics script. The user's saved refusal was retained.
+- [x] GA4 English Output property `557304673` report received initial data: South Korea 2 users,
+  privacy-page 1 view and Direct/Unassigned sessions in last-seven-day cards. Real-time 0 at inspection.
+  This confirms receipt, not community adoption or a fresh opt-in event from this deployment.
+- [ ] Fresh opt-in/live learning-page receipt for this skin deployment: not executed; saved refusal
+  retained. Prior hosted opt-in/opt-out execution is recorded in the 2026-10-05 section.
+- [ ] Actual phone touch/readability and real microphone/speaker for this skin: not rerun. The
+  2026-10-05 physical-device continuation remains a separate dated result. No microphone permission requested.
+- [ ] New-batch hosted rating/writing/load or concurrent-device tests: not executed in this release;
+  existing automated/previous hosted evidence is not relabeled as a new production run.
+- [ ] Final PDF, public repository/history cleanup, assignment submission and community permission:
+  not completed. User approval is required at their respective stages; see current_task's 12 steps.
+
 ## Consent-gated GA4 acquisition and page flow — 2026-10-05
 
 - [x] Code boundary accepts only GA4 `G-...` IDs and builds controlled page-view payloads.
@@ -27,9 +66,9 @@
   browser-responsive evidence, not a physical phone test.
 - [x] PR #45 was merged into `main` as `651d918`; the STA Track checkout was fast-forwarded to that
   merge on 2026-10-06 without touching the preserved stash.
-- [ ] GA report ingestion is not yet confirmed. Google states that initial collection can take up to
-  48 hours after the first consented visit. The deployment verification visit is test traffic; real
-  operator or community data will begin only after those users visit and opt in.
+- [x] Initial GA report ingestion confirmed on 2026-10-07 in property `557304673`; see the current
+  release section. Initial verification traffic is not community adoption. Real operator/community
+  data begins after those users visit and opt in, rather than on a fixed calendar deadline.
 
 ## Usage data foundation — 2026-10-05
 
