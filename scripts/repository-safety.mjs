@@ -1,3 +1,5 @@
+import { createHash } from 'node:crypto'
+
 // Pure pattern checks. Findings deliberately contain no matched values or source excerpts.
 const patterns = [
   ['github-token', /\b(?:gh[pousr]_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,})\b/g],
@@ -10,6 +12,19 @@ const patterns = [
   ['literal-secret', /["']?\b(?:api[_-]?key|access[_-]?token|refresh[_-]?token|client[_-]?secret|password|passwd)\b["']?\s*[:=]\s*["'][^"'\r\n]{8,}["']/gi],
   ['personal-computer-path', /(?:\/(?:Users|home)\/[^\s/"'<>]+|[A-Z]:\\Users\\[^\s\\"'<>]+)/g],
 ]
+
+// These project-owned raster assets were manually reviewed before publication.
+// Pin exact digests so any later byte or metadata change requires a fresh review.
+const approvedBinaryAssets = new Map([
+  ['public/skins/walnut-cafe.png', 'fb0c4d35c3ce4ba93dbf083294a3543f0914cd6b67d47f8a99277c6e3a361508'],
+  ['public/skins/walnut-library.png', '5c06016f9842b0789081f9af7cafa7c02821f7bc6138658f69004efbeae878e1'],
+])
+
+export function isApprovedBinary(path, bytes) {
+  const expected = approvedBinaryAssets.get(path.replaceAll('\\', '/'))
+  if (!expected) return false
+  return createHash('sha256').update(bytes).digest('hex') === expected
+}
 
 export function fileRisk(path) {
   if (/(?:^|\/)(?:node_modules|dist|build|\.next|\.git)(?:\/|$)/i.test(path)) return 'excluded-directory'

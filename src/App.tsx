@@ -1,5 +1,6 @@
-import { useEffect, useReducer, useRef, useState } from "react";
-import type { Dispatch } from "react";
+import { createPortal } from "react-dom";
+import { createContext, useContext, useEffect, useLayoutEffect, useReducer, useRef, useState } from "react";
+import type { Dispatch, ReactNode } from "react";
 import { chapterCatalog, chapterCode, chapterLabel, chapterName, type ChapterId, type ChapterMetadata } from "./data/chapters";
 import { chapterContentById } from "./data/chapterContent";
 import { VoicePractice } from "./VoicePractice";
@@ -77,16 +78,42 @@ const chapterSections = [
   { screen: "review", title: "Chapter Review", kind: "Practice" },
 ] as const;
 type ScreenProps = { progress: PassProgress; dispatch: Dispatch<Action> };
-function ChapterLibrary({ progress, onOpen, onAutomatic }: { progress: AppProgress; onOpen: (chapterId: ChapterId) => void; onAutomatic: () => void }) {
+function MobileLearningMenu({ activeId, onSelect, sectionLabel, children }: { activeId: ChapterId; onSelect: (id: ChapterId) => void; sectionLabel: string; children: ReactNode }) {
+  const [pane, setPane] = useState<"chapters" | "sections" | null>(null);
+  const open = pane === "chapters";
+  const current = chapterCatalog.find(chapter => chapter.id === activeId)!;
+  return <div className="learning-menu">
+    <section className="mobile-chapter-picker" aria-label="챕터와 학습 영역 선택">
+    <button className="mobile-chapter-toggle" aria-expanded={open} aria-controls="mobile-chapter-options" onClick={() => setPane(open ? null : "chapters")}>
+      <span><strong>챕터 선택 · Chapter {activeId} / 12</strong><small>{current.title}</small></span>
+      <span aria-hidden="true">{open ? "⌃" : "⌄"}</span>
+    </button>
+    {open && <div id="mobile-chapter-options" className="mobile-chapter-options">
+      {chapterCatalog.map(chapter => <button key={chapter.id} aria-label={`Chapter ${chapter.id} · ${chapter.title}`} aria-current={chapter.id === activeId ? "page" : undefined} disabled={!chapterContentById[chapter.id]} onClick={() => { setPane(null); onSelect(chapter.id); }}>
+        <strong>Chapter {String(chapter.id).padStart(2, "0")}</strong><small>{chapter.title}</small>
+      </button>)}
+    </div>}
+    <button className="mobile-chapter-toggle mobile-section-toggle" aria-expanded={pane === "sections"} aria-controls="mobile-learning-options" onClick={() => setPane(pane === "sections" ? null : "sections")}>
+      <span><strong>학습 영역 · {sectionLabel}</strong><small>현재 챕터에서 공부할 내용</small></span><span aria-hidden="true">{pane === "sections" ? "⌃" : "⌄"}</span>
+    </button>
+    </section>
+    <div id="mobile-learning-options" className="learning-menu-sections" data-open={pane === "sections"} onClick={event => {
+      const button = (event.target as Element).closest("button");
+      if (button && !button.hasAttribute("aria-expanded")) setPane(null);
+    }}>{children}</div>
+  </div>;
+}
+function ChapterLibrary({ progress, onOpen, onAutomatic, onHome }: { progress: AppProgress; onOpen: (chapterId: ChapterId) => void; onAutomatic: () => void; onHome: () => void }) {
   return (
     <div className="library-shell">
       <header className="topbar">
         <span className="brand" aria-label="English Output">
-          <span className="brand-icon"><BookIcon /></span>
+          <span className="brand-icon"><img src="/favicon.svg" alt="" /></span>
           English Output
           <span className="brand-caption">배운 영어를, 내 영어로.</span>
         </span>
         <span className="topbar-label">CHAPTER LIBRARY</span>
+        <button className="topbar-library library-home" onClick={onHome} title={`Chapter ${progress.activeChapterId} Home으로 돌아가기`}><HomeIcon /><span>Home</span></button>
       </header>
       <main className="chapter-library" id="main-content">
         <header className="library-heading">
@@ -227,6 +254,7 @@ function ChapterNavigation({ progress, dispatch }: ScreenProps) {
         <span><strong>Home</strong><small>오늘의 학습 살펴보기</small></span>
       </button>
       <span className="eyebrow chapter-nav-label">{currentChapterCode}</span>
+      <span className="mobile-learning-label">현재 챕터의 학습 영역</span>
       <ol className="chapter-nav-list">
         <li className={isStory ? "chapter-nav-group is-active" : "chapter-nav-group"}>
           {disclosure("story", "My Story", "01", "3 steps")}
@@ -274,7 +302,7 @@ function ChapterNavigation({ progress, dispatch }: ScreenProps) {
           {expanded === "story" ? storyChildren() : expanded === "conversation" ? conversationChildren() : expanded === "output" ? outputChildren() : writingChildren()}
         </ol>
       )}
-      <button className="chapter-nav-progress" aria-current={progress.currentScreen === "complete" ? "page" : undefined} onClick={() => dispatch({ type: "navigate", screen: "complete" })}>Chapter progress</button>
+      <button className="chapter-nav-progress" aria-current={progress.currentScreen === "complete" ? "page" : undefined} onClick={() => dispatch({ type: "navigate", screen: "complete" })}><span>Chapter progress</span><span aria-hidden="true">↗</span></button>
       {progress.pass === 2 && <button className="text-button" onClick={() => dispatch({ type: "selectPass", pass: 1 })}>Review Pass 1</button>}
       {progress.pass === 3 && <><button className="text-button" onClick={() => dispatch({ type: "selectPass", pass: 2 })}>Review Pass 2</button><button className="text-button" onClick={() => dispatch({ type: "selectPass", pass: 1 })}>Review Pass 1</button></>}
     </nav>
@@ -374,7 +402,7 @@ function Pass2Overview({ progress, dispatch }: ScreenProps) {
           <button className="section-row available" onClick={() => dispatch({ type: "navigate", screen: "review" })}><span className="section-number">07</span><span className="section-info"><strong>Chapter Review</strong><small>{reviewComplete ? "Review set complete" : "All questions or difficult ones"}</small></span><span className="status-tag">Core</span><span aria-hidden="true">↗</span></button>
           <button className="section-row" disabled><span className="section-number">08</span><span className="section-info"><strong>Pronunciation</strong><small>Separate learning area</small></span><span className="later-tag">Next pass</span></button>
         </section>
-        <aside className="overview-aside">
+        <OverviewAside>
           <section className="panel start-card">
             <span className="eyebrow">{next.eyebrow}</span>
             <h2>{next.title}</h2>
@@ -386,7 +414,7 @@ function Pass2Overview({ progress, dispatch }: ScreenProps) {
             <button className="text-button" onClick={() => dispatch({ type: "selectPass", pass: 1 })}>Review Pass 1</button>
           </section>
           <div className="gentle-note"><span aria-hidden="true">✦</span><div><strong>Recall before review</strong><p>막히면 Hint나 Read로 돌아가도 괜찮아요.</p></div></div>
-        </aside>
+        </OverviewAside>
       </div>
     </>
   );
@@ -418,9 +446,16 @@ function Pass3Overview({ progress, dispatch }: ScreenProps) {
         {items.map((item, index) => <button className="section-row available" key={item.id} onClick={() => open(item.id)}><span className="section-number">{String(index + 1).padStart(2, "0")}</span><span className="section-info"><strong>{item.label}</strong><small>{item.completed ? "Completed" : item.id === "output" ? "No hint" : "Required"}</small></span><span className="status-tag">{item.completed ? "Done ✓" : "Required"}</span><span aria-hidden="true">↗</span></button>)}
         <button className="section-row" disabled><span className="section-number">08</span><span className="section-info"><strong>Pronunciation</strong><small>Separate learning area</small></span><span className="later-tag">Separate</span></button>
       </section>
-      <aside className="overview-aside"><section className="panel start-card"><span className="eyebrow">{finished ? `${currentChapterCode} COMPLETE` : next ? "CONTINUE PASS 3" : "READY TO FINISH"}</span><h2>{finished ? `${currentChapterName} · Pass 3 complete ✓` : next ? next.label : `Ready to complete ${currentChapterName}`}</h2><p>{finished ? "Pass 1–3 progress is saved in this browser." : next ? "Finish each required area at your own pace." : "All required practice is complete. Save the final completion when you’re ready."}</p><button className="primary full-width" onClick={() => next ? open(next.id) : dispatch({ type: "navigate", screen: "complete" })}>{finished ? "View completion" : next ? `Continue: ${next.label}` : "Review completion"} <span aria-hidden="true">→</span></button><button className="text-button" onClick={() => dispatch({ type: "selectPass", pass: 2 })}>Review Pass 2</button></section><div className="gentle-note"><span aria-hidden="true">✦</span><div><strong>Completion &gt; Perfection</strong><p>정답률이 아니라 실제로 꺼내본 기록으로 완료해요.</p></div></div></aside>
+      <OverviewAside><section className="panel start-card"><span className="eyebrow">{finished ? `${currentChapterCode} COMPLETE` : next ? "CONTINUE PASS 3" : "READY TO FINISH"}</span><h2>{finished ? `${currentChapterName} · Pass 3 complete ✓` : next ? next.label : `Ready to complete ${currentChapterName}`}</h2><p>{finished ? "Pass 1–3 progress is saved in this browser." : next ? "Finish each required area at your own pace." : "All required practice is complete. Save the final completion when you’re ready."}</p><button className="primary full-width" onClick={() => next ? open(next.id) : dispatch({ type: "navigate", screen: "complete" })}>{finished ? "View completion" : next ? `Continue: ${next.label}` : "Review completion"} <span aria-hidden="true">→</span></button><button className="text-button" onClick={() => dispatch({ type: "selectPass", pass: 2 })}>Review Pass 2</button></section><div className="gentle-note"><span aria-hidden="true">✦</span><div><strong>Completion &gt; Perfection</strong><p>정답률이 아니라 실제로 꺼내본 기록으로 완료해요.</p></div></div></OverviewAside>
     </div>
   </>;
+}
+
+const ResumeTargetContext = createContext<HTMLElement | null>(null);
+function OverviewAside({ children }: { children: ReactNode }) {
+  const target = useContext(ResumeTargetContext);
+  const card = <aside className="overview-aside">{children}</aside>;
+  return target ? createPortal(card, target) : card;
 }
 
 function Overview({ progress, dispatch, hasPass2 }: ScreenProps & { hasPass2: boolean }) {
@@ -510,7 +545,7 @@ function Overview({ progress, dispatch, hasPass2 }: ScreenProps & { hasPass2: bo
           <button className="section-row" disabled><span className="section-number">08</span><span className="section-info"><strong>Pronunciation</strong><small>듣고 따라 말하며 발음과 억양을 연습해요.</small></span><span className="later-tag">Coming later</span></button>
           <button className="secondary full-width chapter-progress-link" onClick={() => dispatch({ type: "navigate", screen: "complete" })}>Chapter progress <span aria-hidden="true">→</span></button>
         </section>
-        <aside className="overview-aside">
+        <OverviewAside>
           <section className="panel start-card">
             {complete ? <>
               <span className="eyebrow">CHAPTER COMPLETE</span>
@@ -526,7 +561,7 @@ function Overview({ progress, dispatch, hasPass2 }: ScreenProps & { hasPass2: bo
             </> : <>
               <span className="eyebrow">CONTINUE LEARNING</span>
               <h2>{resumeLabel}</h2>
-              <p>Pick up where you left off.</p>
+              <p className="resume-description">Pick up where you left off.</p>
               <button className="primary full-width" onClick={() => dispatch({ type: "resume" })}>
                 {progress.lastStudiedAt ? "Continue" : "Start"}{" "}<span aria-hidden="true">→</span>
               </button>
@@ -544,7 +579,7 @@ function Overview({ progress, dispatch, hasPass2 }: ScreenProps & { hasPass2: bo
               </p>
             </div>
           </div>
-        </aside>
+        </OverviewAside>
       </div>
     </>
   );
@@ -927,6 +962,15 @@ export default function App({ storage, syncTransport, usageRecorder, registerFlu
   const currentChapterCode = chapterCode(activeContent.metadata);
   const dispatch: Dispatch<Action> = (action) => appDispatch({ type: "chapter", action });
   const main = useRef<HTMLElement>(null);
+  const [wideOverview, setWideOverview] = useState(() => typeof window !== "undefined" && window.innerWidth > 900);
+  const [resumeTarget, setResumeTarget] = useState<HTMLElement | null>(null);
+  useEffect(() => {
+    const media = window.matchMedia("(min-width: 901px)");
+    const update = () => setWideOverview(media.matches);
+    media.addEventListener("change", update);
+    update();
+    return () => media.removeEventListener("change", update);
+  }, []);
   useEffect(() => {
     document.title = appProgress.view === "library" ? "Chapter Library · English Output" : appProgress.view === "automatic" ? "Pass 4+ Automatic · English Output" : `${currentChapterName} · English Output`;
   }, [appProgress.view, currentChapterName]);
@@ -999,19 +1043,33 @@ export default function App({ storage, syncTransport, usageRecorder, registerFlu
   useEffect(() => {
     main.current?.querySelector<HTMLHeadingElement>("h1")?.focus();
     window.scrollTo(0, 0);
-  }, [appProgress.view, progress.currentScreen, chunkId, conversationPosition, outputPosition, reviewPosition]);
+  }, [appProgress.view, appProgress.activeChapterId, progress.currentScreen, chunkId, conversationPosition, outputPosition, reviewPosition]);
   const rated = Object.values(progress.chunkRatings).filter(Boolean).length;
   const sectionTitle = chapterSections.find((section) => section.screen === progress.currentScreen)?.title;
   const locationParts = breadcrumbParts(progress, activeContent.metadata);
+  useLayoutEffect(() => {
+    const root = main.current?.closest<HTMLElement>(".has-sidebar-resume");
+    const top = root?.querySelector<HTMLElement>(".sidebar-overview-top");
+    if (!root || !top) return;
+    const align = () => root.style.setProperty("--skin-hero-height", `${top.getBoundingClientRect().height}px`);
+    const observer = new ResizeObserver(align);
+    observer.observe(top);
+    align();
+    return () => { observer.disconnect(); root.style.removeProperty("--skin-hero-height"); };
+  }, [accountReady, appProgress.view, appProgress.activeChapterId, progress.currentScreen, progress.pass, wideOverview, resumeTarget]);
   if (!accountReady) return <>{safetyPanel}<main className="account-card"><p role="status">학습 기록을 불러오고 있어요…</p></main></>;
   if (appProgress.view === "library") {
-    return <>{safetyPanel}<ChapterLibrary progress={appProgress} onOpen={(chapterId) => appDispatch({ type: "selectChapter", chapterId })} onAutomatic={() => appDispatch({ type: "showAutomatic" })} /></>;
+    return <>{safetyPanel}<ChapterLibrary progress={appProgress} onOpen={(chapterId) => appDispatch({ type: "selectChapter", chapterId })} onAutomatic={() => appDispatch({ type: "showAutomatic" })} onHome={() => {
+      appDispatch({ type: "selectChapter", chapterId: appProgress.activeChapterId });
+      dispatch({ type: "navigate", screen: "overview" });
+    }} /></>;
   }
   if (appProgress.view === "automatic") return <>{safetyPanel}<AutomaticScreen progress={appProgress} dispatch={appDispatch} /></>;
   return (
     <>{safetyPanel}
+    <ResumeTargetContext.Provider value={resumeTarget}>
     <ChapterContentProvider content={activeContent}>
-    <div className="app-shell">
+    <div className={`app-shell study-cafe${wideOverview && progress.currentScreen === "overview" ? " has-sidebar-resume" : ""}`}>
       <a className="skip-link" href="#main-content">
         본문으로 건너뛰기
       </a>
@@ -1033,6 +1091,7 @@ export default function App({ storage, syncTransport, usageRecorder, registerFlu
       </header>
       <div className="workspace">
         <aside className="sidebar">
+          <div className="sidebar-overview-top">
           <div className="sidebar-heading">
             <span className="eyebrow">MY LEARNING</span>
             <h2>{currentChapterName}</h2>
@@ -1040,7 +1099,11 @@ export default function App({ storage, syncTransport, usageRecorder, registerFlu
             {progress.pass === 2 && <span className="badge">Pass 2 · Reinforce</span>}
             {progress.pass === 3 && <span className="badge">Pass 3 · Complete</span>}
           </div>
-          <ChapterNavigation progress={progress} dispatch={dispatch} />
+          {wideOverview && progress.currentScreen === "overview" && <div className="sidebar-resume-slot" ref={setResumeTarget} />}
+          </div>
+          <MobileLearningMenu key={activeContent.metadata.id} activeId={activeContent.metadata.id} sectionLabel={locationParts.slice(1).join(" · ")} onSelect={chapterId => appDispatch({ type: "selectChapter", chapterId })}>
+            <ChapterNavigation progress={progress} dispatch={dispatch} />
+          </MobileLearningMenu>
           <div className="sidebar-progress">
             <span>Chunks self-checked</span>
             <strong>
@@ -1095,6 +1158,7 @@ export default function App({ storage, syncTransport, usageRecorder, registerFlu
       </div>
     </div>
     </ChapterContentProvider>
+    </ResumeTargetContext.Provider>
     </>
   );
 }

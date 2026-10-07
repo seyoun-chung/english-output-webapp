@@ -15,7 +15,9 @@ The separate GA4 account, property and web stream are now created. The web strea
 deployment `dpl_DwJMbCZkCZWS19c5HbiZ6QAjYDtf` is READY on the canonical app URL. Hosted verification
 confirmed zero GA scripts before consent and after refusal, one correctly identified script after
 consent, a working opt-out control, and no horizontal overflow at 375px. GA report ingestion may take
-up to 48 hours. PR creation and merge remain outside the approval used for this deployment.
+up to 48 hours after the first consented visit. PR #45 was merged into `main` as `651d918` on
+2026-10-05. The local STA Track checkout was fast-forwarded to that merge on 2026-10-06; the home
+computer remains intentionally unsynced until it is used again.
 
 ## Usage data foundation — 2026-10-05
 
@@ -1169,3 +1171,6 @@ Real Conversations
 ```
 
 Phase 1 피드백을 반영한 뒤 Phase 2 범위를 다시 정의한다.
+
+### 2026-10-06 skin verification follow-up
+Approved local shared-skin rollout and header alignment checks are complete. See docs/study_village_skin.md, latest verification section, for executed state/interaction counts and device limits. No further local skin defect remains from these checks. Physical phone/microphone checks and Git publication were not performed; no commit/push/deployment approval is inferred.

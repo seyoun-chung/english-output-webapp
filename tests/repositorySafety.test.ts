@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest'
 import { execFileSync, spawnSync } from 'node:child_process'
-import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
-import { fileRisk, remoteRisk, scanText } from '../scripts/repository-safety.mjs'
+import { fileRisk, isApprovedBinary, remoteRisk, scanText } from '../scripts/repository-safety.mjs'
 
 describe('repository safety patterns', () => {
   it.each(['.env', '.env.example', 'src/.env.production', 'docs/sources/book.pdf', 'audio.webm', 'voice.mp3', 'node_modules/a.js', 'dist/index.js', 'build/a.js', '.next/a.js', '.DS_Store', 'debug.log', 'id_ed25519', 'secret.pem'])('rejects risky candidate %s', path => {
@@ -34,6 +34,14 @@ describe('repository safety patterns', () => {
     expect(remoteRisk('ssh://git@github.com/example/project.git')).toBeNull()
     expect(remoteRisk(['https://', 'sample-user', '@github.com/example/project.git'].join(''))).toBe('remote-credentials')
     expect(remoteRisk('https://github.com/example/project.git?access=example')).toBe('remote-query-or-fragment')
+  })
+  it.each(['walnut-cafe.png', 'walnut-library.png'])('pins the manually reviewed binary asset %s by digest', filename => {
+    const path = `public/skins/${filename}`
+    const bytes = readFileSync(resolve(path))
+    expect(isApprovedBinary(path, bytes)).toBe(true)
+    const changed = Buffer.from(bytes)
+    changed[changed.length - 1] ^= 1
+    expect(isApprovedBinary(path, changed)).toBe(false)
   })
 })
 
