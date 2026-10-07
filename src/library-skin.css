@@ -13,6 +13,13 @@
   background: linear-gradient(to bottom, transparent 0%, #44302755 70%, #443027 100%), url("/skins/walnut-library.png") center -110px / cover no-repeat;
 }
 .library-shell .topbar { background: var(--skin-parchment); color: var(--skin-ink); }
+/* Keep library navigation in flow, then pin it above the scrolling chapter cards. */
+.library-shell > .library-topbar { position: sticky; top: 0; z-index: 10; }
+/* Keyboard/anchor scrolling must leave the focused card control below the header. */
+html:has(.library-topbar) { scroll-padding-top: 100px; }
+@media (max-width: 700px) {
+  html:has(.library-topbar) { scroll-padding-top: 82px; }
+}
 .library-shell .brand-icon { background: transparent; }
 .library-shell .brand-icon img { width: 38px; height: 38px; display: block; }
 .library-shell .topbar-label { color: var(--skin-olive); }
