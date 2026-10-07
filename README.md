@@ -6,6 +6,13 @@
 
 새로운 영어 콘텐츠를 계속 제공하는 대신, 사용자가 이미 가지고 있는 교재의 내용을 반복해 익히고 실제로 꺼내 쓸 수 있게 만드는 것을 목표로 합니다.
 
+## 제출용 기획서
+
+사용자가 검토·승인한 최종 기획서: [프로젝트 기획서 PDF (A4 2쪽)](./docs/submission/english-output-webapp-project-plan.pdf)
+
+운영 앱: <https://english-output-webapp.vercel.app/>
+저장소 공개·과제 제출·커뮤니티 공유는 각각 별도의 승인 및 확인 단계입니다.
+
 ```text
 Learn → Memorize → Recall → Output → Write → Review → Repeat
 ```
@@ -20,9 +27,10 @@ Learn → Memorize → Recall → Output → Write → Review → Repeat
 ## Current Scope
 
 현재 Chapter 1–12의 Pass 1–3과 전역 Pass 4+ 혼합·랜덤 복습/작문을 구현했습니다.
-기록 백업·복원과 저장 보호를 사용할 수 있습니다. 보호된 고정 웹 주소에 배포했고,
+자동 기록 저장·복원과 저장 보호를 사용할 수 있습니다. 고정 HTTPS 웹 주소에 배포했고,
 Google 로그인·계정별 Supabase 저장과 운영 주소의 로그인/이어하기를 확인했습니다.
-현재 배포는 Vercel 로그인으로 보호되며 커뮤니티에 공개하지 않았습니다. 실제 두 번째
+현재 앱의 로그인 화면은 공개 주소에서 접근 가능하며, 학습은 Google 로그인을 사용합니다.
+커뮤니티 공유 여부는 아직 결정하지 않았습니다. 2026-10-05 실제 두 번째
 기기인 휴대폰에서 바꾼 위치가 STA Track에 반영되고, STA Track에서 복구한 위치가 다시
 로그인해도 유지되는 것을 확인했습니다.
 전체 완료 기준은
@@ -66,7 +74,7 @@ React + TypeScript + Vite + 일반 CSS를 유지하며 다음 기능을 구현�
 - Pass 4+: 학습한 항목의 Mixed / Smart / All Random 복습과 Multi-Chapter Writing
 - 백업 내보내기·복원·복원 전 사본 재복구, 손상 기록과 여러 탭 덮어쓰기 방지
 - Google 로그인·계정별 저장·충돌 선택·동기화와 제한된 서버 복구 이력. 실제 서울 서비스의
-  로컬 연결 검증은 완료했으며, 고정 배포 주소 및 실제 여러 기기 확인은 아직 남았습니다.
+  연결·고정 배포 주소·기기 간 이어하기 검증 결과는 날짜별로 `docs/verification.md`에 기록합니다.
 
 ## Local Development
 

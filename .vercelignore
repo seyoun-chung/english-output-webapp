@@ -9,6 +9,7 @@ scripts/
 supabase/
 skills/
 tmp/
+output/
 dist/
 build/
 node_modules/

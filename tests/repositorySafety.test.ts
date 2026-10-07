@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { execFileSync, spawnSync } from 'node:child_process'
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 import { fileRisk, isApprovedBinary, remoteRisk, scanText } from '../scripts/repository-safety.mjs'
@@ -39,6 +39,18 @@ describe('repository safety patterns', () => {
     const path = `public/skins/${filename}`
     const bytes = readFileSync(resolve(path))
     expect(isApprovedBinary(path, bytes)).toBe(true)
+    const changed = Buffer.from(bytes)
+    changed[changed.length - 1] ^= 1
+    expect(isApprovedBinary(path, changed)).toBe(false)
+  })
+  it('allows only the exact reviewed submission PDF path and bytes', () => {
+    const path = 'docs/submission/english-output-webapp-project-plan.pdf'
+    const bytes = readFileSync(resolve(path))
+    expect(fileRisk(path)).toBeNull()
+    expect(isApprovedBinary(path, bytes)).toBe(true)
+    expect(isApprovedBinary('docs/submission/other.pdf', bytes)).toBe(false)
+    expect(fileRisk('docs/submission/other.pdf')).toBe('excluded-file-type')
+    expect(fileRisk('docs/sources/english-output-webapp-project-plan.pdf')).toBe('excluded-file-type')
     const changed = Buffer.from(bytes)
     changed[changed.length - 1] ^= 1
     expect(isApprovedBinary(path, changed)).toBe(false)
@@ -83,6 +95,17 @@ describe('read-only Git candidate checks', () => {
       writeFileSync(join(directory, '.gitignore'), '*.log\n')
       expect(run().stderr).toContain('missing-required-ignore')
       expect(run('--staged').stderr).toContain('ignore-policy-not-staged')
+      writeFileSync(join(directory, '.gitignore'), ignorePolicy)
+      mkdirSync(join(directory, 'docs', 'submission'), { recursive: true })
+      const pdfPath = 'docs/submission/english-output-webapp-project-plan.pdf'
+      writeFileSync(join(directory, pdfPath), readFileSync(resolve(pdfPath)))
+      expect(run().status).toBe(1) // Previously staged sensitive .env still blocks.
+      expect(run().stderr).not.toContain('binary-needs-manual-review')
+      writeFileSync(join(directory, pdfPath), 'plain-text replacement without a null byte')
+      expect(run().stderr).toContain('binary-needs-manual-review')
+      git('add', pdfPath)
+      writeFileSync(join(directory, pdfPath), readFileSync(resolve(pdfPath)))
+      expect(run('--staged').stderr).toContain('binary-needs-manual-review')
       git('remote', 'add', 'origin', ['https://', 'sample-user', '@example.com/project.git'].join(''))
       const remoteResult = run()
       expect(remoteResult.stderr).toContain('remote-credentials')
