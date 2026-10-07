@@ -1,5 +1,20 @@
 # Local verification
 
+## Pass 4+ writing return footer — 2026-10-07
+
+- [x] Shared ActionFooter keeps return before Complete writing; existing top return intentionally
+  remains for the long editor. No reducer, content, completion or persistence policy changes.
+- [x] Live local 1440px/375px: click/Enter returns to hub, reentry preserves draft and completion;
+  empty writing keeps return enabled and completion disabled. No horizontal overflow; 44px+ buttons.
+- [x] Three new static-render/reducer/serialization cases cover empty/draft/completed states.
+  Production build passed (existing large-bundle warning).
+- Initial full suite: 446 passed, one existing repositorySafety temporary-Git fixture timed
+  out at 15 seconds; single-file retry also timed out. No test assertion or timeout was weakened.
+- [x] Final unchanged-suite rerun: 52 files / 447 tests passed with one worker (25.44s).
+  Targeted retry also passed 35/35. Timeout root cause remains unconfirmed; no guards bypassed.
+- [ ] Physical phone deferred; production deployment not performed. User approved Git publication
+  through merge after local verification; GitHub PR records the actual publication outcome.
+
 ## Submission video package — 2026-10-07
 
 - [x] Approved v5 MP4 copied without re-encoding: 45,733,307 bytes, SHA256
