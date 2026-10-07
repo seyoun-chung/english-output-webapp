@@ -13,12 +13,14 @@ const patterns = [
   ['personal-computer-path', /(?:\/(?:Users|home)\/[^\s/"'<>]+|[A-Z]:\\Users\\[^\s\\"'<>]+)/g],
 ]
 
-// These project-owned assets and the approved submission PDF were manually reviewed.
+// These assets and user-approved submission deliverables were manually reviewed.
 // Pin exact digests so any later byte or metadata change requires a fresh review.
 const approvedBinaryAssets = new Map([
   ['public/skins/walnut-cafe.png', 'fb0c4d35c3ce4ba93dbf083294a3543f0914cd6b67d47f8a99277c6e3a361508'],
   ['public/skins/walnut-library.png', '5c06016f9842b0789081f9af7cafa7c02821f7bc6138658f69004efbeae878e1'],
   ['docs/submission/english-output-webapp-project-plan.pdf', '35433a8be0e0b3671ebf540aec38fee8998bb63f087fcbf2e1512411711ba825'],
+  ['docs/submission/english-output-webapp-intro.mp4', '0c5afb9e402c713e07e98e30484a2143cf6ecf82aa693c6dd818884c6008e9c2'],
+  ['docs/submission/english-output-webapp-intro-thumbnail.jpg', 'f06a120cebd47cb459af927bb0f41c198fb374e8ec0c55d52b6027aca840ceb5'],
 ])
 
 export function isApprovedBinary(path, bytes) {
@@ -31,7 +33,7 @@ export function fileRisk(path) {
   if (/(?:^|\/)(?:node_modules|dist|build|\.next|\.git)(?:\/|$)/i.test(path)) return 'excluded-directory'
   if (/(?:^|\/)(?:\.env(?:\..*)?|\.DS_Store|id_(?:rsa|dsa|ecdsa|ed25519)|credentials(?:\.json)?|\.npmrc|\.netrc)$/i.test(path)) return 'sensitive-filename'
   if (/\.pdf$/i.test(path) && path !== 'docs/submission/english-output-webapp-project-plan.pdf') return 'excluded-file-type'
-  if (/\.(?:webm|mp3|mp4|m4a|wav|ogg|aac|flac|log|pem|key|p12|pfx)$/i.test(path)) return 'excluded-file-type'
+  if (/\.(?:webm|mp3|mp4|m4a|wav|ogg|aac|flac|log|pem|key|p12|pfx)$/i.test(path) && path !== 'docs/submission/english-output-webapp-intro.mp4') return 'excluded-file-type'
   return null
 }
 
