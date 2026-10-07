@@ -1,5 +1,17 @@
 # Codex Handoff — Textbook Mastery Web App
 
+## Latest — approved submission video package (2026-10-07)
+
+User approved the final v5 introduction video, confirmed the music is their own, and approved
+README packaging through merge. Branch `codex/submission-video` starts at main `99a2c07`.
+The exact approved MP4 and its thumbnail are stored beside the unchanged submission PDF.
+README links the thumbnail to the MP4 file page. Live GitHub navigation passed, but GitHub
+does not preview this large file; the README explicitly instructs Download raw file.
+Only these exact media paths and SHA256 values are permitted by repository safety checks.
+Originals/intermediates remain local and untouched. No app deployment, visibility change,
+history rewriting, recovery-ref deletion or unrelated learning UI change is included.
+See verification for checks and limitations; merge status should be confirmed in GitHub.
+
 ## Latest — skip-link exposure repair (2026-10-07)
 
 Repair PR #51 merged as `61ff172`. Production deployment `dpl_HpQMDu5mActPMhyZLM9riV6etVay`

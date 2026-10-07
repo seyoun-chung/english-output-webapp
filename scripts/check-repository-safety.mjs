@@ -9,7 +9,7 @@ if (args.some(arg => arg !== '--staged')) {
   process.exit(2)
 }
 const staged = args.includes('--staged')
-const git = (...args) => execFileSync('git', args, { stdio: ['ignore', 'pipe', 'pipe'], maxBuffer: 32 * 1024 * 1024 })
+const git = (...args) => execFileSync('git', args, { stdio: ['ignore', 'pipe', 'pipe'], maxBuffer: 64 * 1024 * 1024 })
 const splitNull = buffer => buffer.toString('utf8').split('\0').filter(Boolean)
 const normalizeText = buffer => buffer.toString('utf8').replace(/\r\n/g, '\n')
 const findings = []
@@ -47,8 +47,8 @@ try {
       if (!staged && error.code === 'ENOENT') continue
       add(path, 'unreadable-file'); continue
     }
-    // PDF approval always checks the digest, even if a replacement contains only text.
-    if (/\.pdf$/i.test(path) || bytes.includes(0)) {
+    // Submission binaries always check the digest, even for a plain-text replacement.
+    if (/\.(?:pdf|mp4|jpg)$/i.test(path) || bytes.includes(0)) {
       if (!isApprovedBinary(path, bytes)) add(path, 'binary-needs-manual-review')
       continue
     }

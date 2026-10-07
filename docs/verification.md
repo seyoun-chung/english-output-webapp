@@ -1,5 +1,24 @@
 # Local verification
 
+## Submission video package — 2026-10-07
+
+- [x] Approved v5 MP4 copied without re-encoding: 45,733,307 bytes, SHA256
+  `0c5afb9e402c713e07e98e30484a2143cf6ecf82aa693c6dd818884c6008e9c2`.
+- [x] Thumbnail: 441,731 bytes, SHA256
+  `f06a120cebd47cb459af927bb0f41c198fb374e8ec0c55d52b6027aca840ceb5`.
+- [x] Existing PDF SHA256 unchanged:
+  `35433a8be0e0b3671ebf540aec38fee8998bb63f087fcbf2e1512411711ba825`.
+- [x] Contact sheet/thumbnail inspected; MP4 box bounds and fast-start metadata verified.
+  Metadata pattern scan found no findings. This is not an exhaustive audiovisual privacy audit.
+- [x] 51 files / 444 tests passed; exact-path/hash media gates reject modified bytes and other MP4s.
+  Safety/staged safety, effective noreply identity and publishable refs passed.
+  Whole-ref identity audit still reports three known identities in preserved recovery history.
+- [x] Live GitHub README thumbnail opens the correct MP4 file page. GitHub reports the file
+  is too large for preview; Download raw file is available and README documents this limitation.
+- [x] Vercel package dry-run: 80 nonempty files, zero submission assets. No app deployment.
+- [ ] Current-turn full playback/audio listening not performed. Same-hash source handoff records
+  a full 1,320-frame decode of the approved 55-second v5; local preview server was unavailable.
+
 ## Skip-link clipping repair — 2026-10-07
 
 - Production PR #50 header release was deployed, but a 1.6px skip-link edge was reproduced

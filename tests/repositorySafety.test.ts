@@ -6,6 +6,18 @@ import { join, resolve } from 'node:path'
 import { fileRisk, isApprovedBinary, remoteRisk, scanText } from '../scripts/repository-safety.mjs'
 
 describe('repository safety patterns', () => {
+  it.each(['english-output-webapp-intro.mp4', 'english-output-webapp-intro-thumbnail.jpg'])('pins approved submission media %s to exact bytes', filename => {
+    const path = `docs/submission/${filename}`
+    const bytes = readFileSync(resolve(path))
+    expect(fileRisk(path)).toBeNull()
+    expect(isApprovedBinary(path, bytes)).toBe(true)
+    const changed = Buffer.from(bytes)
+    changed[changed.length - 1] ^= 1
+    expect(isApprovedBinary(path, changed)).toBe(false)
+    expect(isApprovedBinary(path, Buffer.from('plain-text replacement'))).toBe(false)
+    expect(isApprovedBinary(`docs/submission/other-${filename}`, bytes)).toBe(false)
+    expect(fileRisk('docs/submission/other.mp4')).toBe('excluded-file-type')
+  })
   it.each(['.env', '.env.example', 'src/.env.production', 'docs/sources/book.pdf', 'audio.webm', 'voice.mp3', 'node_modules/a.js', 'dist/index.js', 'build/a.js', '.next/a.js', '.DS_Store', 'debug.log', 'id_ed25519', 'secret.pem'])('rejects risky candidate %s', path => {
     expect(fileRisk(path)).not.toBeNull()
   })
